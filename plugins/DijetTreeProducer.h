@@ -26,7 +26,7 @@ class DijetTreeProducer : public edm::EDAnalyzer {
 	private:  
 		void initialize();
 		//---- configurable parameters --------   
-		double mjjMin_,ptMin_,dEtaMax_;
+		double mjjMin_,ptMin_,dEtaMax_,etaMax_;
 		edm::InputTag srcJets_,srcJetsPruned_,srcMET_,srcPU_,srcVrtx_;
 		edm::Service<TFileService> fs_;
 		TTree *outTree_; 
@@ -46,13 +46,13 @@ class DijetTreeProducer : public edm::EDAnalyzer {
 		int npu_;
 };
 
-typedef struct {
+/*typedef struct {
 	TLorentzVector TL;
 	double tau1;
 	double tau2;
 	double tau3;
 	bool Btagged;
-} jetInfo;
+} jetInfo;*/
 
 
 #endif

@@ -35,9 +35,10 @@ DijetTreeProducer::DijetTreeProducer(edm::ParameterSet const& cfg) {
 	srcMET_             = cfg.getParameter<edm::InputTag>             ("met");
 	srcVrtx_            = cfg.getParameter<edm::InputTag>             ("vtx");
 	srcPU_              = cfg.getUntrackedParameter<edm::InputTag>    ("pu",edm::InputTag(""));
-	mjjMin_             = cfg.getParameter<double>                    ("mjjMin");
+	//mjjMin_             = cfg.getParameter<double>                    ("mjjMin");
 	ptMin_              = cfg.getParameter<double>                    ("ptMin");
-	dEtaMax_            = cfg.getParameter<double>                    ("dEtaMax");
+	etaMax_             = cfg.getParameter<double>                    ("etaMax");
+	//dEtaMax_            = cfg.getParameter<double>                    ("dEtaMax");
 	triggerCache_       = triggerExpression::Data(cfg.getParameterSet("triggerConfiguration"));
 	vtriggerAlias_      = cfg.getParameter<std::vector<std::string> > ("triggerAlias");
 	vtriggerSelection_  = cfg.getParameter<std::vector<std::string> > ("triggerSelection");
@@ -75,9 +76,9 @@ void DijetTreeProducer::beginJob() {
 	outTree_->Branch("ht"                   ,&ht_                ,"ht_/F");
 	outTree_->Branch("met"                  ,&met_               ,"met_/F");
 	outTree_->Branch("metSig"               ,&metSig_            ,"metSig_/F");
-	outTree_->Branch("mjj"                  ,&mjj_               ,"mjj_/F");
+	/*outTree_->Branch("mjj"                  ,&mjj_               ,"mjj_/F");
 	outTree_->Branch("dEtajj"               ,&dEtajj_            ,"dEtajj_/F");
-	outTree_->Branch("dPhijj"               ,&dPhijj_            ,"dPhijj_/F"); 
+	outTree_->Branch("dPhijj"               ,&dPhijj_            ,"dPhijj_/F"); */
 	//------------------------------------------------------------------
 	pt_             = new std::vector<float>;
 	jec_            = new std::vector<float>;
@@ -207,7 +208,7 @@ void DijetTreeProducer::analyze(edm::Event const& iEvent, edm::EventSetup const&
 	if (cut_vtx) {
 		nJets_ = 0;
 		float ht(0.0);
-		vector< jetInfo > jets;
+		//vector< jetInfo > jets;
 		for(edm::View<pat::Jet>::const_iterator ijet = pat_jets.begin();ijet != pat_jets.end(); ++ijet) { 
 			double chf = ijet->chargedHadronEnergyFraction();
 			double nhf = ijet->neutralHadronEnergyFraction() + ijet->HFHadronEnergyFraction();
@@ -223,9 +224,10 @@ void DijetTreeProducer::analyze(edm::Event const& iEvent, edm::EventSetup const&
 			float pt   = ijet->pt();
 			bool idL   = (npr>1 && phf<0.99 && nhf<0.99);
 			bool idT   = (idL && ((eta<=2.4 && nhf<0.9 && phf<0.9 && elf<0.99 && muf<0.99 && chf>0 && chm>0) || eta>2.4));
-			jetInfo kjet;
+			//jetInfo kjet;
 
-			if (idT && pt > ptMin_) {
+			//if (idT && pt > ptMin_) {
+			if ( eta < etaMax_ && pt > ptMin_) {
 				ht += pt;
 				chf_           ->push_back(chf);
 				nhf_           ->push_back(nhf);
@@ -244,11 +246,11 @@ void DijetTreeProducer::analyze(edm::Event const& iEvent, edm::EventSetup const&
 				tau2_          ->push_back(ijet->userFloat("tau2"));
 				tau3_          ->push_back(ijet->userFloat("tau3"));
 
-				kjet.TL = TLorentzVector(ijet->px(),ijet->py(),ijet->pz(),ijet->energy());
+				/*kjet.TL = TLorentzVector(ijet->px(),ijet->py(),ijet->pz(),ijet->energy());
 				kjet.tau1 = ijet->userFloat("tau1");
 				kjet.tau2 = ijet->userFloat("tau2");
 				kjet.tau3 = ijet->userFloat("tau3");
-				jets.push_back( kjet );
+				jets.push_back( kjet );*/
 				  
 				//---- match with the pruned jet collection -----
 				double dRmin(1000);
@@ -276,14 +278,16 @@ void DijetTreeProducer::analyze(edm::Event const& iEvent, edm::EventSetup const&
 		run_    = iEvent.id().run();
 		evt_    = iEvent.id().event();
 		lumi_   = iEvent.id().luminosityBlock();
-		if (nJets_ > 1) { 
+		/*if (nJets_ > 1) { 
 			mjj_    = (jets[0].TL+jets[1].TL).M();
 			dEtajj_ = fabs((*eta_)[0]-(*eta_)[1]); 
 			dPhijj_ = fabs(deltaPhi((*phi_)[0],(*phi_)[1]));
 			if (mjj_ > mjjMin_ && dEtajj_ < dEtaMax_) {
 				outTree_->Fill();     
 			}
-		}// if nJets > 1
+		}// if nJets > 1 */
+
+		outTree_->Fill();     
 	}// if vtx
 }
 
@@ -299,9 +303,9 @@ void DijetTreeProducer::initialize() {
 	met_            = -999;
 	metSig_         = -999;
 	ht_             = -999;
-	mjj_            = -999; 
+	/*mjj_            = -999; 
 	dEtajj_         = -999; 
-	dPhijj_         = -999;
+	dPhijj_         = -999;*/
 	pt_             ->clear();
 	eta_            ->clear();
 	phi_            ->clear();
