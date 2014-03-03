@@ -95,6 +95,8 @@ void DijetTreeProducer::beginJob() {
 	phf_            = new std::vector<float>;
 	muf_            = new std::vector<float>;
 	elf_            = new std::vector<float>;
+	area_           = new std::vector<float>;
+	numJetConst_    = new std::vector<float>;
 	outTree_->Branch("jetPt"                ,"vector<float>"     ,&pt_);
 	outTree_->Branch("jetJec"               ,"vector<float>"     ,&jec_);
 	outTree_->Branch("jetEta"               ,"vector<float>"     ,&eta_);
@@ -111,6 +113,8 @@ void DijetTreeProducer::beginJob() {
 	outTree_->Branch("jetPhf"               ,"vector<float>"     ,&phf_);
 	outTree_->Branch("jetMuf"               ,"vector<float>"     ,&muf_);
 	outTree_->Branch("jetElf"               ,"vector<float>"     ,&elf_);   
+	outTree_->Branch("jetArea"              ,"vector<float>"     ,&area_);   
+	outTree_->Branch("numJetConstituent"    ,"vector<float>"     ,&numJetConst_);   
 	//------------------------------------------------------------------
 	triggerResult_ = new std::vector<bool>;
 	outTree_->Branch("triggerResult","vector<bool>",&triggerResult_);
@@ -138,6 +142,8 @@ void DijetTreeProducer::endJob() {
 	delete phf_;
 	delete muf_;
 	delete elf_;
+	delete area_;
+	delete numJetConst_;
 
 	for(unsigned i=0;i<vtriggerSelector_.size();i++) {
 		delete vtriggerSelector_[i];
@@ -208,6 +214,9 @@ void DijetTreeProducer::analyze(edm::Event const& iEvent, edm::EventSetup const&
 			double phf = ijet->photonEnergy()/(ijet->jecFactor(0) * ijet->energy());
 			double elf = ijet->electronEnergy()/(ijet->jecFactor(0) * ijet->energy());
 			double muf = ijet->muonEnergy()/(ijet->jecFactor(0) * ijet->energy());
+			double area = ijet->jetArea();
+			double numJetConst = ijet->getPFConstituents().size();
+			///vector<reco::TrackRefVector> tracksAsocJet = ijet->associatedTracks(); // this is wrong, I have to add it
 			int chm    = ijet->chargedHadronMultiplicity();
 			int npr    = ijet->chargedMultiplicity() + ijet->neutralMultiplicity(); 
 			float eta  = fabs(ijet->eta());
@@ -222,6 +231,8 @@ void DijetTreeProducer::analyze(edm::Event const& iEvent, edm::EventSetup const&
 				nhf_           ->push_back(nhf);
 				phf_           ->push_back(phf);
 				elf_           ->push_back(elf);
+				area_          ->push_back(area);
+				numJetConst_   ->push_back(numJetConst);
 				muf_           ->push_back(muf);
 				jec_           ->push_back(1./ijet->jecFactor(0));
 				pt_            ->push_back(pt);
@@ -305,6 +316,8 @@ void DijetTreeProducer::initialize() {
 	nhf_            ->clear();
 	phf_            ->clear();
 	elf_            ->clear();
+	area_           ->clear();
+	numJetConst_    ->clear();
 	muf_            ->clear();
 	jec_            ->clear();
 	triggerResult_  ->clear();

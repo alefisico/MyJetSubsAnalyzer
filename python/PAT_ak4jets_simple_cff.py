@@ -1,5 +1,5 @@
 import FWCore.ParameterSet.Config as cms
-from MySubsPATtuple.MyPATtuplizer.PAT_goodPV_cff import *
+from jetSubs.MyJetSubsAnalyzer.PAT_goodPV_cff import *
 
 
 # JETS  AK4 ----------------------------

@@ -6,9 +6,9 @@ echo 'Input parameters:'
 SAMPLE=$1
 INPUTDIR=$2
 OUTPUTDIR='/cms/gomez/Stops/st_jj/patTuples/'
-RUNDIR='/cms/gomez/Substructure/PATTuples/CMSSW_5_3_12/src/MySubsPATtuple/MyPATtuplizer/prod/'
+RUNDIR='/cms/gomez/Substructure/Analyzer/CMSSW_5_3_12/src/jetSubs/MyJetSubsAnalyzer/prod/'
 CMSRUNFILE='mypattuplizer_cfg.py'
-JOBS=20
+JOBS=10
 
 echo 'Output directory : '${OUTPUTDIR}
 echo 'Running directory: '${RUNDIR}

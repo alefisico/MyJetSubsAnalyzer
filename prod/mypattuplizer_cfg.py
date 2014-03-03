@@ -38,14 +38,14 @@ process.source = cms.Source("PoolSource",
 #############   Format MessageLogger #################
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
-process.load('MySubsPATtuple.MyPATtuplizer.PAT_ak4jets_simple_cff')
-process.load('MySubsPATtuple.MyPATtuplizer.PAT_ak5jets_simple_cff')
-process.load('MySubsPATtuple.MyPATtuplizer.PAT_ak7jets_simple_cff')
-process.load('MySubsPATtuple.MyPATtuplizer.PAT_ak1p1jets_simple_cff')
-process.load('MySubsPATtuple.MyPATtuplizer.PAT_ca4jets_simple_cff')
-process.load('MySubsPATtuple.MyPATtuplizer.PAT_ca8jets_simple_cff')
-process.load('MySubsPATtuple.MyPATtuplizer.PAT_ca1p1jets_simple_cff')
-process.load('MySubsPATtuple.MyPATtuplizer.PAT_k4jets_simple_cff')
+process.load('jetSubs.MyJetSubsAnalyzer.PAT_ak4jets_simple_cff')
+process.load('jetSubs.MyJetSubsAnalyzer.PAT_ak5jets_simple_cff')
+process.load('jetSubs.MyJetSubsAnalyzer.PAT_ak7jets_simple_cff')
+process.load('jetSubs.MyJetSubsAnalyzer.PAT_ak1p1jets_simple_cff')
+process.load('jetSubs.MyJetSubsAnalyzer.PAT_ca4jets_simple_cff')
+process.load('jetSubs.MyJetSubsAnalyzer.PAT_ca8jets_simple_cff')
+process.load('jetSubs.MyJetSubsAnalyzer.PAT_ca1p2jets_simple_cff')
+process.load('jetSubs.MyJetSubsAnalyzer.PAT_k4jets_simple_cff')
 
 ##-------------------- User analyzer  --------------------------------
 #### AK4 Jets
@@ -205,6 +205,31 @@ process.dijets_CA8 = cms.EDAnalyzer('DijetTreeProducer',
 		)
 )
 
+#### CA1p2
+process.dijets_CA1p2 = cms.EDAnalyzer('DijetTreeProducer',
+		jets             = cms.InputTag('patJetsCA1p2CHSwithNsub'),
+		jetsPruned       = cms.InputTag('patJetsCA1p2CHSpruned'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		mjjMin           = cms.double(0),
+		ptMin            = cms.double(40),
+		dEtaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		## trigger ###################################
+		triggerAlias     = cms.vstring(),
+		triggerSelection = cms.vstring(
+		),
+		triggerConfiguration = cms.PSet(
+		hltResults            = cms.InputTag('TriggerResults','','HLT'),
+		l1tResults            = cms.InputTag(''),
+		daqPartitions         = cms.uint32(1),
+		l1tIgnoreMask         = cms.bool(False),
+		l1techIgnorePrescales = cms.bool(False),
+		throw                 = cms.bool(False)
+		)
+)
+
 #### KT4
 process.dijets_KT4 = cms.EDAnalyzer('DijetTreeProducer',
 		jets             = cms.InputTag('patJetsKT4CHSwithNsub'),
@@ -237,5 +262,6 @@ process.p = cms.Path(process.ak4Jets * process.dijets_AK4 *
 		process.ak1p1Jets * process.dijets_AK1p1 * 
 		process.ca4Jets * process.dijets_CA4 *
 		process.ca8Jets * process.dijets_CA8 *
+		process.ca1p2Jets * process.dijets_CA1p2 *
 		process.kt4Jets * process.dijets_KT4
 		)

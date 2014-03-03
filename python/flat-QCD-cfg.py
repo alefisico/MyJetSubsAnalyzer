@@ -18,7 +18,7 @@ process.source = cms.Source("PoolSource",
 #############   Format MessageLogger #################
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
 
-process.load('MySubsPATtuple.MyPATtuplizer.PAT_ca8jets_simple_cff')
+process.load('jetSubs.MyJetSubsAnalyzer.PAT_ca8jets_simple_cff')
 #process.load('cmsdas2014.exo_dijets_exercise.PAT_ca8jets_simple_cff')
 
 

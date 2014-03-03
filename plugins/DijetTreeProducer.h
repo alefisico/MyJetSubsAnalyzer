@@ -41,7 +41,7 @@ class DijetTreeProducer : public edm::EDAnalyzer {
 		float rho_,met_,metSig_,ht_,mjj_,dEtajj_,dPhijj_ ;
 		std::vector<bool> *triggerResult_;
 		//---- jet variables --------------
-		std::vector<float> *pt_,*jec_,*eta_,*phi_,*mass_,*massPruned_,*dR_,*tau1_,*tau2_,*tau3_,*energy_,*chf_,*nhf_,*phf_,*elf_,*muf_;
+		std::vector<float> *pt_,*jec_,*eta_,*phi_,*mass_,*massPruned_,*dR_,*tau1_,*tau2_,*tau3_,*energy_,*chf_,*nhf_,*phf_,*elf_,*muf_,*area_,*numJetConst_;
 		//---- MC variables ---------------
 		int npu_;
 };
