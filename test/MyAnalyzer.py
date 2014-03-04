@@ -177,9 +177,9 @@ def myAnalyzer( inputList, outputDir, outputDileName, typeJet ):
 				dictEventVar[ 12 ] = events.jetTau3[0]
 				dictEventVar[ 14 ] = events.jetArea[0]
 				dictEventVar[ 16 ] = events.numJetConstituent[0]
-				dictEventVar[ 18 ] = events.jetTau2[0]/events.jetTau1[0]
-				if jetTau2[0] != 0 : dictEventVar[ 19 ] = events.jetTau3[0]/events.jetTau2[0]
-				dictEventVar[ 20 ] = events.jetTau3[0]/events.jetTau1[0]
+				if events.jetTau1[0] != 0 : dictEventVar[ 18 ] = events.jetTau2[0]/events.jetTau1[0]
+				if events.jetTau2[0] != 0 : dictEventVar[ 19 ] = events.jetTau3[0]/events.jetTau2[0]
+				if events.jetTau1[0] != 0 : dictEventVar[ 20 ] = events.jetTau3[0]/events.jetTau1[0]
 				dictEventVar[ 24 ] = events.jetMass[0]
 				dictEventVar[ 26 ] = events.jetMassPruned[0]
 				dictEventVar[ 28 ] = mean( [ events.jetPt[i] for i in range( events.nJets ) ] )
@@ -206,9 +206,9 @@ def myAnalyzer( inputList, outputDir, outputDileName, typeJet ):
 				dictEventVar[ 13 ] = events.jetTau3[1]
 				dictEventVar[ 15 ] = events.jetArea[1]
 				dictEventVar[ 17 ] = events.numJetConstituent[1]
-				dictEventVar[ 21 ] = events.jetTau2[1]/events.jetTau1[1]
+				if events.jetTau1[1] != 0 : dictEventVar[ 21 ] = events.jetTau2[1]/events.jetTau1[1]
 				if events.jetTau2[1] != 0 : dictEventVar[ 22 ] = events.jetTau3[1]/events.jetTau2[1]
-				dictEventVar[ 23 ] = events.jetTau3[1]/events.jetTau1[1]
+				if events.jetTau1[1] != 0 : dictEventVar[ 23 ] = events.jetTau3[1]/events.jetTau1[1]
 				dictEventVar[ 25 ] = events.jetMass[1]
 				dictEventVar[ 27 ] = events.jetMassPruned[1]
 			else:
@@ -243,8 +243,8 @@ def myAnalyzer( inputList, outputDir, outputDileName, typeJet ):
 				dictJetVar[ 6 ]  = events.jetTau1[j]
 				dictJetVar[ 7 ]  = events.jetTau2[j]
 				dictJetVar[ 8 ]  = events.jetTau3[j]
-				dictJetVar[ 9 ]  = events.jetTau2[j]/events.jetTau1[j]
-				dictJetVar[ 10 ] = events.jetTau3[j]/events.jetTau1[j]
+				if events.jetTau1[j] != 0 : dictJetVar[ 9 ]  = events.jetTau2[j]/events.jetTau1[j]
+				if events.jetTau1[j] != 0 : dictJetVar[ 10 ] = events.jetTau3[j]/events.jetTau1[j]
 				if events.jetTau2[j] !=0 : dictJetVar[ 11 ] = events.jetTau3[j]/events.jetTau2[j]
 
 				sorted( dictJetVar.keys() )
@@ -261,7 +261,6 @@ def myAnalyzer( inputList, outputDir, outputDileName, typeJet ):
 	##### Closing
 	print 'Writing output file: '+outputFile.GetName()
 	outputFile.Close()
-	inputFile.Close() 
   
 #########################################################################################
 if __name__ == '__main__':
