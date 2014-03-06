@@ -24,6 +24,19 @@ def setSelectionTitle( signal ):
 	textBox4.SetTextSize(0.04) 
 	textBox4.DrawLatex(0.75,0.55,"|jet #eta| < 2.5")
 	
+def setTitle( signal ):
+
+	textBox=TLatex()
+	textBox.SetNDC()
+	textBox.SetTextSize(0.05) 
+	textBox.SetTextColor(kBlue)
+	textBox.DrawText(0.25,0.95,"CMS Preliminary Simulation")
+
+	textBox1=TLatex()
+	textBox1.SetNDC()
+	textBox1.SetTextSize(0.04) 
+	textBox1.DrawText(0.75,0.65, signal)
+	
 
 
 def setTDRStyle():
