@@ -23,12 +23,20 @@ def get_info( infile, outputDir, sample ):
 	#################################################
 
 	######### Histograms
-	numberPartonsSameJet = TH1F('h_numberPartonsSameJet', 'h_numberPartonsSameJet',	7,  0.,	7.)
+	numberJets = TH1F('h_numberJets', 'h_numberJets', 20,  0., 20.)
+	numberJets_after4jetCut = TH1F('h_numberJets_after4jetCut', 'h_numberJets_after4jetCut', 20,  0., 20.)
+
+	numberPartonsSameJet = TH1F('h_numberPartonsSameJet', 'h_numberPartonsSameJet',	8,  0.,	8.)
 	minDeltaRPartonJet = TH1F('h_minDeltaRPartonJet', 'h_minDeltaRPartonJet',	50, 0.,	5.)
 	secMinDeltaRPartonJet = TH1F('h_secMinDeltaRPartonJet',	'h_secMinDeltaRPartonJet',	50, 0.,	5.)
 	minvsSecMinDeltaRPartonJet = TH2F('h_minDeltaRvsSecMinDeltaR','h_minDeltaRvsSecMinDeltaR', 50, 0., 5., 50, 0., 5. )
 
+	numberPartonsWithDeltaR0p4_4Diff = TH1F('h_numberPartonsWithDeltaR0p4_4Diff', 'h_numberPartonsWithDeltaR0p4_4Diff',	8,  0.,	8.)
 	minDeltaRPartonJet_4Diff = TH1F('h_minDeltaRPartonJet_4Diff', 'h_minDeltaRPartonJet_4Diff',	50, 0.,	5.)
+	minDeltaRPartonJet_4Diff_0 = TH1F('h_minDeltaRPartonJet_4Diff_0', 'h_minDeltaRPartonJet_4Diff_0',	50, 0.,	5.)
+	minDeltaRPartonJet_4Diff_1 = TH1F('h_minDeltaRPartonJet_4Diff_1', 'h_minDeltaRPartonJet_4Diff_1',	50, 0.,	5.)
+	minDeltaRPartonJet_4Diff_2 = TH1F('h_minDeltaRPartonJet_4Diff_2', 'h_minDeltaRPartonJet_4Diff_2',	50, 0.,	5.)
+	minDeltaRPartonJet_4Diff_3 = TH1F('h_minDeltaRPartonJet_4Diff_3', 'h_minDeltaRPartonJet_4Diff_3',	50, 0.,	5.)
 	minDeltaRPartonJet_2PartonSameJetPlus2Diff = TH1F('h_minDeltaRPartonJet_2PartonSameJetPlus2Diff', 'h_minDeltaRPartonJet_2PartonSameJetPlus2Diff',	50, 0.,	5.)
 	secMinDeltaRPartonJet_2PartonSameJetPlus2Diff = TH1F('h_secMinDeltaRPartonJet_2PartonSameJetPlus2Diff',	'h_secMinDeltaRPartonJet_2PartonSameJetPlus2Diff',	50, 0.,	5.)
 	minvsSecMinDeltaRPartonJet_2PartonSameJetPlus2Diff = TH2F('h_minvsSecMinDeltaRPartonJet_2PartonSameJetPlus2Diff','h_minvsSecMinDeltaRPartonJet_2PartonSameJetPlus2Diff', 50, 0., 5., 50, 0., 5. )
@@ -41,11 +49,15 @@ def get_info( infile, outputDir, sample ):
 	minDeltaRPartonJet_4PartonSameJet = TH1F('h_minDeltaRPartonJet_4PartonSameJet', 'h_minDeltaRPartonJet_4PartonSameJet',	50, 0.,	5.)
 
 	#### with DeltaR0p4
-	numberPartonsSameJet_DeltaR0p4 = TH1F('h_numberPartonsSameJet_DeltaR0p4', 'h_numberPartonsSameJet_DeltaR0p4',	16,  0.,	16.)
+	numberPartonsSameJet_DeltaR0p4 = TH1F('h_numberPartonsSameJet_DeltaR0p4', 'h_numberPartonsSameJet_DeltaR0p4',	8,  0., 8.)
 	minDeltaRPartonJet_DeltaR0p4 = TH1F('h_minDeltaRPartonJet_DeltaR0p4', 'h_minDeltaRPartonJet_DeltaR0p4',	20, 0.,	1.)
 	secMinDeltaRPartonJet_DeltaR0p4 = TH1F('h_secMinDeltaRPartonJet_DeltaR0p4',	'h_secMinDeltaRPartonJet_DeltaR0p4',	50, 0.,	5.)
 
 	minDeltaRPartonJet_4Diff_DeltaR0p4 = TH1F('h_minDeltaRPartonJet_4Diff_DeltaR0p4', 'h_minDeltaRPartonJet_4Diff_DeltaR0p4',	20, 0.,	1.)
+	minDeltaRPartonJet_4Diff_DeltaR0p4_0 = TH1F('h_minDeltaRPartonJet_4Diff_DeltaR0p4_0', 'h_minDeltaRPartonJet_4Diff_DeltaR0p4_0',	50, 0.,	5.)
+	minDeltaRPartonJet_4Diff_DeltaR0p4_1 = TH1F('h_minDeltaRPartonJet_4Diff_DeltaR0p4_1', 'h_minDeltaRPartonJet_4Diff_DeltaR0p4_1',	50, 0.,	5.)
+	minDeltaRPartonJet_4Diff_DeltaR0p4_2 = TH1F('h_minDeltaRPartonJet_4Diff_DeltaR0p4_2', 'h_minDeltaRPartonJet_4Diff_DeltaR0p4_2',	50, 0.,	5.)
+	minDeltaRPartonJet_4Diff_DeltaR0p4_3 = TH1F('h_minDeltaRPartonJet_4Diff_DeltaR0p4_3', 'h_minDeltaRPartonJet_4Diff_DeltaR0p4_3',	50, 0.,	5.)
 	invMass_4Diff_DeltaR0p4 = TH1F('h_invMass_4Diff_DeltaR0p4', 'h_invMass_4Diff_DeltaR0p4', 100, 0., 1000. )
 	minDeltaRPartonJet_2PartonSameJetPlus2Diff_DeltaR0p4 = TH1F('h_minDeltaRPartonJet_2PartonSameJetPlus2Diff_DeltaR0p4', 'h_minDeltaRPartonJet_2PartonSameJetPlus2Diff_DeltaR0p4',	20, 0.,	1.)
 	secMinDeltaRPartonJet_2PartonSameJetPlus2Diff_DeltaR0p4 = TH1F('h_secMinDeltaRPartonJet_2PartonSameJetPlus2Diff_DeltaR0p4',	'h_secMinDeltaRPartonJet_2PartonSameJetPlus2Diff_DeltaR0p4',	50, 0.,	5.)
@@ -76,20 +88,30 @@ def get_info( infile, outputDir, sample ):
 	entry = 0
 	print 'Reading: ', infile[ entry ]
 
+	#dummyCounter = 0
+	#dummyCounter2 = 0
+	#dummyList = []
+	#dummyList1 = []
+	#dummyList2 = []
+	#dummyList3 = []
+	#dummyList4 = []
+	#dummyList5 = []
+	#dummyList6 = []
 	for event in events:
 		#---- progress of the reading --------
 		entry += 1
+		Run      = event.eventAuxiliary().run()
+		Lumi     = event.eventAuxiliary().luminosityBlock()
+		NumEvent = event.eventAuxiliary().event()
+		
 		if ( entry % 1000 == 0 ): print '------> Number of events: '+str(entry)
+		#print 'Entry ', Run, ':', Lumi, ':', NumEvent
 
 		event.getByLabel(labelGen, handleGen)
 		event.getByLabel(labelReco, handleReco)
 		gens = handleGen.product()
 		reco = handleReco.product()
 		#print len(gens), len(reco)
-		Run      = event.eventAuxiliary().run()
-		Lumi     = event.eventAuxiliary().luminosityBlock()
-		NumEvent = event.eventAuxiliary().event()
-		
 
 		############# Store Parton information in list
 		listP4PartonsFromStopA = []
@@ -121,44 +143,67 @@ def get_info( infile, outputDir, sample ):
 		#######################################################################################################################################
 
 		#################### Store Jet Info
+		tmplistP4Jets = []
 		listP4Jets = []
 		for jet in reco:
 			if ( jet.pt() > 20 ) and ( abs( jet.eta() ) < 2.5 ):
 				tmpP4 = TLorentzVector()
 				tmpP4.SetPtEtaPhiE( jet.pt(), jet.eta(), jet.phi(), jet.energy() )
+				#tmplistP4Jets.append( tmpP4 )
 				listP4Jets.append( tmpP4 )
+
+		#if len( tmplistP4Jets ) > 3 : listP4Jets = tmplistP4Jets
+		#numberJets.Fill ( len( tmplistP4Jets ) )
+		#numberJets_after4jetCut.Fill( len( listP4Jets ) )
+		#print tmplistP4Jets
+		#print listP4Jets
 		#print len(listP4Jets)
 		#for i in range( len( listP4Jets ) ): print i, listP4Jets[i].Pt()
 		###########################################################################################
 
 		################### Calculate DeltaR between each parton and each jet
 		dictDeltaR = {}
+		dictDeltaR1 = {}
 		dictDeltaR0p4 = {}
 		tmpListJetIndex = []
 		tmpListJetIndexDeltaR0p4 = []
 		for iparton in range( len( listP4PartonsFromStops ) ):
 			listDeltaR = []
+			#print '0 ', listP4PartonsFromStops[iparton].Pt()
 			for ijet in range( len( listP4Jets ) ):
 				deltaR = listP4PartonsFromStops[iparton].DeltaR( listP4Jets[ijet] )
+				#print '1 ', ijet, listP4PartonsFromStops[iparton].Pt(), listP4Jets[ijet].Pt(), deltaR
 				listDeltaR.append( deltaR )
 
+			#print '2 ', listDeltaR
 			sortedListDeltaR = sorted( listDeltaR )
+			#print '3 ', sortedListDeltaR
 			jetIndex = []
 			#print listDeltaR, sortedListDeltaR
 			if len( listDeltaR ) > 0:
-				for i in sortedListDeltaR:
-					tmpjetIndex = listDeltaR.index( i )
+				for ii in sortedListDeltaR:
+					tmpjetIndex = listDeltaR.index( ii )
 					jetIndex.append( tmpjetIndex )
+					#print '4 ', ii, tmpjetIndex
 				dictDeltaR[ iparton ] = [ sortedListDeltaR, jetIndex ]
 				tmpListJetIndex.append( jetIndex[0] )
 				if ( sortedListDeltaR[0] < 0.4 ): 
+					#print '5 ', ii, jetIndex
 					dictDeltaR0p4[ iparton ] = [ sortedListDeltaR, jetIndex ]
 					tmpListJetIndexDeltaR0p4.append( jetIndex[0] )
 
-		#print dictDeltaR
-		#print dictDeltaR0p4
-		#print tmpListJetIndex
-		#print tmpListJetIndexDeltaR0p4
+		#print '6 ', dictDeltaR
+		#dummyList.append( dictDeltaR )
+		#print '6 ', dictDeltaR1
+		#print '7 ', dictDeltaR0p4
+		#if len(dictDeltaR0p4) == 0 : dummyList1.append( dictDeltaR0p4 )
+		#if len(dictDeltaR0p4) == 1 : dummyList2.append( dictDeltaR0p4 )
+		#if len(dictDeltaR0p4) == 2 : dummyList3.append( dictDeltaR0p4 )
+		#if len(dictDeltaR0p4) == 3 : dummyList4.append( dictDeltaR0p4 )
+		#if len(dictDeltaR0p4) == 4 : dummyList5.append( dictDeltaR0p4 )
+		#if len(dictDeltaR0p4) > 4  : dummyList6.append( dictDeltaR0p4 )
+		#print '8 ', tmpListJetIndex
+		#print '9 ', tmpListJetIndexDeltaR0p4
 		###############################################################################################################
 
 		######### All jets
@@ -174,15 +219,33 @@ def get_info( infile, outputDir, sample ):
 		for curr in tmpListJetIndex: appearances[curr] += 1
 		listDuplicates = [ i for i, k in appearances.iteritems() if k > 1 ]
 		numUniqueJets = len( set( tmpListJetIndex ) )
+		#print '10 ', listDuplicates
+		#print '11 ', numUniqueJets
 
-		if len( tmpListJetIndex ) == 4:		
+		if ( len( tmpListJetIndex ) == 4 ) and ( len( listP4Jets ) > 3 ):		
 			##### if no duplicate, i.e. 4 different match jets
 			if ( len( listDuplicates ) == 0 ) and ( numUniqueJets == 4 ):
 				#print '4 diff match jets: ', str(Run)+':'+str(Lumi)+':'+str(NumEvent)
 				#print '1', jLists[0], jLists[1]
+				dummyCounter += 1
+				dummyCounter3 = 0
 				numberPartonsSameJet.Fill( 0 )
 				for jparton, jLists in dictDeltaR.iteritems():
+					#print '12 ', jparton, jLists[0][0]
+					if jparton == 0: 
+						minDeltaRPartonJet_4Diff_0.Fill( jLists[0][0] )
+						if jLists[0][0] < 0.4 : dummyCounter3 += 1
+					if jparton == 1: 
+						minDeltaRPartonJet_4Diff_1.Fill( jLists[0][0] )
+						if jLists[0][0] < 0.4 : dummyCounter3 += 1
+					if jparton == 2: 
+						minDeltaRPartonJet_4Diff_2.Fill( jLists[0][0] )
+						if jLists[0][0] < 0.4 : dummyCounter3 += 1
+					if jparton == 3: 
+						minDeltaRPartonJet_4Diff_3.Fill( jLists[0][0] )
+						if jLists[0][0] < 0.4 : dummyCounter3 += 1
 					minDeltaRPartonJet_4Diff.Fill( jLists[0][0] )
+				numberPartonsWithDeltaR0p4_4Diff.Fill( dummyCounter3 ) 
 
 			##### if one duplicate and 2 different
 			elif ( len( listDuplicates ) == 1 ) and ( numUniqueJets == 3 ):
@@ -291,8 +354,8 @@ def get_info( infile, outputDir, sample ):
 		listDuplicatesDeltaR0p4 = [ i for i, k in appearancesDeltaR0p4.iteritems() if k > 1 ]
 		numUniqueJetsDeltaR0p4 = len( set( tmpListJetIndexDeltaR0p4 ) )
 		#print tmpListJetIndexDeltaR0p4
-		#print listDuplicatesDeltaR0p4
-		#print numUniqueJetsDeltaR0p4
+		#print '13 ', listDuplicatesDeltaR0p4
+		#print '14 ', numUniqueJetsDeltaR0p4
 
 		##### if 4 jets after delta cut
 		if len( tmpListJetIndexDeltaR0p4 ) == 4:		
@@ -300,9 +363,15 @@ def get_info( infile, outputDir, sample ):
 			if ( len( listDuplicatesDeltaR0p4 ) == 0 ) and ( numUniqueJetsDeltaR0p4 == 4 ):
 				#print '1', jLists[0], jLists[1]
 				#print '4 diff match jets: ', str(Run)+':'+str(Lumi)+':'+str(NumEvent)
+				dummyCounter2 += 1
 				numberPartonsSameJet_DeltaR0p4.Fill( 0 )
 				for jparton, jLists in dictDeltaR0p4.iteritems():
+					#print '15 ', jparton, jLists[0][0]
 					#print jLists[1][0], listDuplicates
+					if jparton == 0: minDeltaRPartonJet_4Diff_DeltaR0p4_0.Fill( jLists[0][0] )
+					if jparton == 1: minDeltaRPartonJet_4Diff_DeltaR0p4_1.Fill( jLists[0][0] )
+					if jparton == 2: minDeltaRPartonJet_4Diff_DeltaR0p4_2.Fill( jLists[0][0] )
+					if jparton == 3: minDeltaRPartonJet_4Diff_DeltaR0p4_3.Fill( jLists[0][0] )
 					minDeltaRPartonJet_4Diff_DeltaR0p4.Fill( jLists[0][0] )
 
 				tmpStopA = ( listP4Jets[ tmpListJetIndexDeltaR0p4[0] ] + listP4Jets[ tmpListJetIndexDeltaR0p4[1] ] ).M()
@@ -338,32 +407,10 @@ def get_info( infile, outputDir, sample ):
 					#print ' jetMass ', tmpStopC
 					#print 'stopB ', tmpStopB
 
-			##### if one duplicate and 1 different
-			elif ( len( listDuplicatesDeltaR0p4 ) == 1 ) and ( numUniqueJetsDeltaR0p4 == 2 ):
-				#print '3', jLists[0], jLists[1]
-				#print '3 jet merged + 1 diff match jets: ', str(Run)+':'+str(Lumi)+':'+str(NumEvent)
-				numberPartonsSameJet_DeltaR0p4.Fill( 2 )
-				for jparton, jLists in dictDeltaR0p4.iteritems():
-					#print jLists[1][0], listDuplicates
-					if ( listDuplicatesDeltaR0p4[0] == jLists[1][0] ):
-						minDeltaRPartonJet_3PartonSameJet_DeltaR0p4.Fill( jLists[0][0] )
-						secMinDeltaRPartonJet_3PartonSameJet_DeltaR0p4.Fill( jLists[0][1] )
-
-			##### all partons with same jet
-			elif ( len( listDuplicatesDeltaR0p4 ) == 1 ) and ( numUniqueJetsDeltaR0p4 == 1 ):
-				#print '4', jLists[0], jLists[1]
-				#print '4 jet merged : ', str(Run)+':'+str(Lumi)+':'+str(NumEvent)
-				numberPartonsSameJet_DeltaR0p4.Fill( 3 )
-				for jparton, jLists in dictDeltaR0p4.iteritems():
-					#print jLists[1][0], listDuplicates
-					if ( listDuplicatesDeltaR0p4[0] == jLists[1][0] ):
-						minDeltaRPartonJet_4PartonSameJet_DeltaR0p4.Fill( jLists[0][0] )
-						secMinDeltaRPartonJet_4PartonSameJet_DeltaR0p4.Fill( jLists[0][1] )
-
 			##### if a pair of two duplicates
 			elif ( len( listDuplicatesDeltaR0p4 ) == 2 ) and ( numUniqueJetsDeltaR0p4 == 2 ):
 				#print '5', jLists[0], jLists[1]
-				numberPartonsSameJet_DeltaR0p4.Fill( 4 )
+				numberPartonsSameJet_DeltaR0p4.Fill( 2 )
 				for jparton, jLists in dictDeltaR0p4.iteritems():
 					#print jLists[1][0], listDuplicates
 					if ( listDuplicatesDeltaR0p4[0] == jLists[1][0] ):
@@ -381,59 +428,39 @@ def get_info( infile, outputDir, sample ):
 				#print 'stopA ', tmpStopA
 				#print 'stopB ', tmpStopB
 
+			##### if one duplicate and 1 different
+			elif ( len( listDuplicatesDeltaR0p4 ) == 1 ) and ( numUniqueJetsDeltaR0p4 == 2 ):
+				#print '3', jLists[0], jLists[1]
+				#print '3 jet merged + 1 diff match jets: ', str(Run)+':'+str(Lumi)+':'+str(NumEvent)
+				numberPartonsSameJet_DeltaR0p4.Fill( 3 )
+				for jparton, jLists in dictDeltaR0p4.iteritems():
+					#print jLists[1][0], listDuplicates
+					if ( listDuplicatesDeltaR0p4[0] == jLists[1][0] ):
+						minDeltaRPartonJet_3PartonSameJet_DeltaR0p4.Fill( jLists[0][0] )
+						secMinDeltaRPartonJet_3PartonSameJet_DeltaR0p4.Fill( jLists[0][1] )
+
+
+			##### all partons with same jet
+			elif ( len( listDuplicatesDeltaR0p4 ) == 1 ) and ( numUniqueJetsDeltaR0p4 == 1 ):
+				#print '4', jLists[0], jLists[1]
+				#print '4 jet merged : ', str(Run)+':'+str(Lumi)+':'+str(NumEvent)
+				numberPartonsSameJet_DeltaR0p4.Fill( 4 )
+				for jparton, jLists in dictDeltaR0p4.iteritems():
+					#print jLists[1][0], listDuplicates
+					if ( listDuplicatesDeltaR0p4[0] == jLists[1][0] ):
+						minDeltaRPartonJet_4PartonSameJet_DeltaR0p4.Fill( jLists[0][0] )
+						secMinDeltaRPartonJet_4PartonSameJet_DeltaR0p4.Fill( jLists[0][1] )
+
+
 			##### in case I forgot some category
 			else:
 				#print '6', jLists[0], jLists[1]
 				numberPartonsSameJet_DeltaR0p4.Fill( 5 )
 
-		##### if 3 jets after delta cut
-		elif len( tmpListJetIndexDeltaR0p4 ) == 3:		
-			##### if no duplicates
-			if ( len( listDuplicatesDeltaR0p4 ) == 0 ) and ( numUniqueJetsDeltaR0p4 == 3 ):
-				#print '7', jLists[0], jLists[1]
-				numberPartonsSameJet_DeltaR0p4.Fill( 6 )
-
-			##### if one duplicate and 1 different
-			elif ( len( listDuplicatesDeltaR0p4 ) == 1 ) and ( numUniqueJetsDeltaR0p4 == 2 ):
-				#print '8', jLists[0], jLists[1]
-				numberPartonsSameJet_DeltaR0p4.Fill( 7 )
-
-			##### if one duplicate and 1 different
-			elif ( len( listDuplicatesDeltaR0p4 ) == 1 ) and ( numUniqueJetsDeltaR0p4 == 1 ):
-				#print '9', jLists[0], jLists[1]
-				numberPartonsSameJet_DeltaR0p4.Fill( 8 )
-
-			##### in case I forgot some category
-			else:
-				#print '10', jLists[0], jLists[1]
-				numberPartonsSameJet_DeltaR0p4.Fill( 9 )
-
-		##### if 2 jets after delta cut
-		elif len( tmpListJetIndexDeltaR0p4 ) == 2:		
-			##### if no duplicates
-			if ( len( listDuplicatesDeltaR0p4 ) == 0 ) and ( numUniqueJetsDeltaR0p4 == 2 ):
-				#print '11', jLists[0], jLists[1]
-				numberPartonsSameJet_DeltaR0p4.Fill( 10 )
-
-			##### if one duplicate and 1 different
-			elif ( len( listDuplicatesDeltaR0p4 ) == 1 ) and ( numUniqueJetsDeltaR0p4 == 1 ):
-				#print '12', jLists[0], jLists[1]
-				numberPartonsSameJet_DeltaR0p4.Fill( 11 )
-
-			##### in case I forgot some category
-			else:
-				#print '13', jLists[0], jLists[1]
-				numberPartonsSameJet_DeltaR0p4.Fill( 12 )
-
-		##### if 1 jets after delta cut
-		elif len( tmpListJetIndexDeltaR0p4 ) == 1:		
-			#print '14', jLists[0], jLists[1]
-			numberPartonsSameJet_DeltaR0p4.Fill( 13 )
-
-		###### no jets after delta cut
+		###### events without delta cut
 		else:
 			#print '15', jLists[0], jLists[1]
-			numberPartonsSameJet_DeltaR0p4.Fill( 15 )
+			numberPartonsSameJet_DeltaR0p4.Fill( 6 )
 
 
 ################################################################# Other way to categorize
@@ -463,79 +490,17 @@ def get_info( infile, outputDir, sample ):
 ##############################################################################################################
 
 
-
-
-
-
-
-#		if len(appearancesDeltaR0p4) == 1 : 			###### 4 partons with same jet
-#			numberPartonsSameJet_DeltaR0p4.Fill( 4 )
-#			#print '4 partons with same jet: ', str(Run)+':'+str(Lumi)+':'+str(NumEvent)
-#			for i,listParton in dictDeltaR0p4.iteritems(): 
-#				minDeltaRPartonJet_4PartonSameJet_DeltaR0p4.Fill( listParton[1][0] )
-#		elif len(appearancesDeltaR0p4) == 2 : 
-#			for i, k in appearancesDeltaR0p4.iteritems():
-#				if k == 2: 			###### 2 partons with same jet
-#					numberPartonsSameJet_DeltaR0p4.Fill( 2 )
-#					#print dictDeltaR0p4
-#					#print '2 partons with same jet: ', str(Run)+':'+str(Lumi)+':'+str(NumEvent)
-#					for i,listParton in dictDeltaR0p4.iteritems(): 
-#						minDeltaRPartonJet_2PartonSameJet_DeltaR0p4.Fill( listParton[1][0] )
-#						secMinDeltaRPartonJet_2PartonSameJet_DeltaR0p4.Fill( listParton[1][1] )
-#					break
-#				else: 				###### 3 partons with same jet
-#					numberPartonsSameJet_DeltaR0p4.Fill( 3 )
-#					#print '3 partons with same jet: ', str(Run)+':'+str(Lumi)+':'+str(NumEvent)
-#					for i,listParton in dictDeltaR0p4.iteritems(): 
-#						minDeltaRPartonJet_3PartonSameJet_DeltaR0p4.Fill( listParton[1][0] )
-#						secMinDeltaRPartonJet_3PartonSameJet_DeltaR0p4.Fill( listParton[1][1] )
-#					break
-#		elif len(appearancesDeltaR0p4) == 3: 			###### 2 partons with same jet + 2 diff
-#			numberPartonsSameJet_DeltaR0p4.Fill( 1 )
-#			#print '2 partons with same jet + 2 diff: ', str(Run)+':'+str(Lumi)+':'+str(NumEvent)
-#			for i,listParton in dictDeltaR0p4.iteritems(): 
-#				minDeltaRPartonJet_2PartonSameJetPlus2Diff_DeltaR0p4.Fill( listParton[1][0] )
-#				secMinDeltaRPartonJet_2PartonSameJetPlus2Diff_DeltaR0p4.Fill( listParton[1][1] )
-#		elif len(appearancesDeltaR0p4) == 4: 			###### 4 diff jets
-#			numberPartonsSameJet_DeltaR0p4.Fill( 0 )
-#			#print '4 diff: ', str(Run)+':'+str(Lumi)+':'+str(NumEvent)
-#			for i,listParton in dictDeltaR0p4.iteritems(): 
-#				minDeltaRPartonJet_4Diff_DeltaR0p4.Fill( listParton[1][0] )
-#		else:						###### something wrong (like no jets)
-#			numberPartonsSameJet_DeltaR0p4.Fill( 6 )
-
-		#listJetIndex = [ listMatching[2] for q, listMatching in dictDeltaR.iteritems() if ( len(listMatching) > 1 )]
-		#print listJetIndex, len( listJetIndex )
-
-
-
-
-
-
-
-
-
-		#####################################################
-#		listMatchJets = []
-#		if ( len(listJetIndex) > 1 ) and ( len( listJetIndex ) == len( set( listJetIndex ) ) ) : 	#### check for duplicates
-#			for t in listJetIndex:
-#				listMatchJets.append( listP4Jets[t]  )
-#				#print t, listP4Jets[t].Pt()
-#			massStopA = (listMatchJets[0] + listMatchJets[1]).M()
-#			massStopB = (listMatchJets[2] + listMatchJets[3]).M()
-#			print massStopA, massStopB
-#
-#		else:
-#			print 'NOOOOOOOOOOOOOOOOO'
-#		for z in range( len( listMatchJets ) ) : print z, listMatchJets[z].Pt()
-
-
-
-		#print listMatchJets
-			#numMatchJets = len( set( listJetIndex ))
-		#print numMatchJets
 	################################################################################################## end event loop
 
+	#print 'd1 ', dummyCounter
+	#print 'd2 ', dummyCounter2
+	#print 'd3', len(dummyList)
+	#print 'd4', len(dummyList1)
+	#print 'd5', len(dummyList2)
+	#print 'd6', len(dummyList3)
+	#print 'd7', len(dummyList4)
+	#print 'd8', len(dummyList5)
+	#print 'd9', len(dummyList6)
 	##### write output file 
 	outputFile.cd()
 	outputFile.Write()
@@ -562,4 +527,4 @@ if __name__ == '__main__':
 	outputDir = '/cms/gomez/Stops/st_jj/MCTruth/Plots/'
 	#print outputList[:10]
 
-	get_info( outputList, outputDir, sample )
+	get_info( outputList[:2], outputDir, sample )
