@@ -1,4 +1,4 @@
-// MCTruthAnalyzer.h  : Head of MCTruthAnalyzer.cc 
+// MCTruthTreeProducer.h  : Head of MCTruthTreeProducer.cc 
 // Created by         : Alejandro Gomez Espinosa
 // Contact            : gomez@physics.rutgers.edu
 //
@@ -21,13 +21,13 @@
 // class declaration
 //
 
-class MCTruthAnalyzer : public edm::EDAnalyzer {
+class MCTruthTreeProducer : public edm::EDAnalyzer {
 	public:
-		explicit MCTruthAnalyzer(const edm::ParameterSet&);
+		explicit MCTruthTreeProducer(const edm::ParameterSet&);
 		virtual void beginJob() ;
 		virtual void analyze(const edm::Event&, const edm::EventSetup&);
 		virtual void endJob() ;
-		virtual ~MCTruthAnalyzer();
+		virtual ~MCTruthTreeProducer();
 
 		
 	private:
@@ -36,6 +36,7 @@ class MCTruthAnalyzer : public edm::EDAnalyzer {
 	// ----------member data ---------------------------
 	edm::Service<TFileService> fs;						// Output File 
 	std::string src_;
+	int stopMass_;
 	/*double stop1Mass_;
 	double stop2Mass_;
 	double st1decay_;*/
