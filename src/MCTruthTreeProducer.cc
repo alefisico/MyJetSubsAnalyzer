@@ -1,10 +1,10 @@
-// MCTruthAnalyzer.cc : read GenParticles from AOD and save into a tree some info
+// MCTruthTreeProducer.cc : read GenParticles from AOD and save into a tree some info
 // 			(in this case an stop)
 // Created by         : Alejandro Gomez Espinosa
 // Contact            : gomez@physics.rutgers.edu
 //
 
-#include "../interface/MCTruthAnalyzer.h"
+#include "../interface/MCTruthTreeProducer.h"
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -26,7 +26,7 @@
 #include "TVector3.h"
 
 
-MCTruthAnalyzer::MCTruthAnalyzer(const edm::ParameterSet& iConfig){
+MCTruthTreeProducer::MCTruthTreeProducer(const edm::ParameterSet& iConfig){
 	src_  		= iConfig.getParameter<std::string> ( "src" );   			// Obtain inputs
 	stopMass_ 	= iConfig.getParameter<double>( "stopMass" ) ;
 	/*stop2Mass_( iConfig.getParameter<double>( "stop2Mass" ) ),
@@ -34,7 +34,7 @@ MCTruthAnalyzer::MCTruthAnalyzer(const edm::ParameterSet& iConfig){
 }
 
 void 
-MCTruthAnalyzer::beginJob() {
+MCTruthTreeProducer::beginJob() {
 	//now do what ever initialization is needed
 
 	// Initialize Histograms
@@ -85,7 +85,7 @@ MCTruthAnalyzer::beginJob() {
 //
 
 // ------------ method called to for each event  ------------
-void MCTruthAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
+void MCTruthTreeProducer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup){
 
 	initialize();
 
@@ -160,7 +160,7 @@ void MCTruthAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 
 // ------------ method called once each job just after ending the event loop  ------------
 void 
-MCTruthAnalyzer::endJob() {
+MCTruthTreeProducer::endJob() {
 	delete test;
 	delete stopsPt_;
 	delete stopsEta_;
@@ -178,7 +178,7 @@ MCTruthAnalyzer::endJob() {
 	delete stopBPartonID_;
 }
 
-void MCTruthAnalyzer::initialize() {
+void MCTruthTreeProducer::initialize() {
 	numStops	= -999;
 	numPartonsStopA	= -999;
 	numPartonsStopB	= -999;
@@ -199,7 +199,7 @@ void MCTruthAnalyzer::initialize() {
 	stopBPartonID_ 	-> clear();
 }
 
-MCTruthAnalyzer::~MCTruthAnalyzer()
+MCTruthTreeProducer::~MCTruthTreeProducer()
 {
  
    // do anything here that needs to be done at desctruction time
@@ -208,4 +208,4 @@ MCTruthAnalyzer::~MCTruthAnalyzer()
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(MCTruthAnalyzer);
+DEFINE_FWK_MODULE(MCTruthTreeProducer);

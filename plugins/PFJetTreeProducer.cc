@@ -13,7 +13,7 @@
 #include "TMath.h"
 #include "TLorentzVector.h"
 
-#include "jetSubs/MyJetSubsAnalyzer/plugins/DijetTreeProducer.h"
+#include "jetSubs/MyJetSubsAnalyzer/plugins/PFJetTreeProducer.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -29,7 +29,7 @@
 using namespace std;
 using namespace reco;
 
-DijetTreeProducer::DijetTreeProducer(edm::ParameterSet const& cfg) {
+PFJetTreeProducer::PFJetTreeProducer(edm::ParameterSet const& cfg) {
 	srcJets_            = cfg.getParameter<edm::InputTag>             ("jets");
 	srcJetsPruned_      = cfg.getParameter<edm::InputTag>             ("jetsPruned");
 	srcMET_             = cfg.getParameter<edm::InputTag>             ("met");
@@ -55,7 +55,7 @@ DijetTreeProducer::DijetTreeProducer(edm::ParameterSet const& cfg) {
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void DijetTreeProducer::beginJob() {
+void PFJetTreeProducer::beginJob() {
 
 	//--- book the trigger histograms ---------
 	triggerNamesHisto_ = fs_->make<TH1F>("TriggerNames","TriggerNames",1,0,1);
@@ -125,7 +125,7 @@ void DijetTreeProducer::beginJob() {
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void DijetTreeProducer::endJob() {  
+void PFJetTreeProducer::endJob() {  
 	delete triggerResult_;
 	delete pt_;
 	delete jec_;
@@ -152,7 +152,7 @@ void DijetTreeProducer::endJob() {
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void DijetTreeProducer::analyze(edm::Event const& iEvent, edm::EventSetup const& iSetup) {
+void PFJetTreeProducer::analyze(edm::Event const& iEvent, edm::EventSetup const& iSetup) {
 
 	initialize();
 
@@ -294,7 +294,7 @@ void DijetTreeProducer::analyze(edm::Event const& iEvent, edm::EventSetup const&
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void DijetTreeProducer::initialize() {
+void PFJetTreeProducer::initialize() {
 	run_            = -999;
 	evt_            = -999;
 	lumi_           = -999;
@@ -329,8 +329,8 @@ void DijetTreeProducer::initialize() {
 	npu_ = -999;
 }
 //////////////////////////////////////////////////////////////////////////////////////////
-DijetTreeProducer::~DijetTreeProducer() 
+PFJetTreeProducer::~PFJetTreeProducer() 
 {
 }
 
-DEFINE_FWK_MODULE(DijetTreeProducer);
+DEFINE_FWK_MODULE(PFJetTreeProducer);

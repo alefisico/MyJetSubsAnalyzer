@@ -1,5 +1,5 @@
-#ifndef DijetTreeProducer_h
-#define DijetTreeProducer_h
+#ifndef PFJetTreeProducer_h
+#define PFJetTreeProducer_h
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/EDAnalyzer.h"
@@ -13,15 +13,15 @@
 #include "TTree.h"
 #include "TH1F.h"
 
-class DijetTreeProducer : public edm::EDAnalyzer {
+class PFJetTreeProducer : public edm::EDAnalyzer {
 
 	public:
 		typedef reco::Particle::LorentzVector LorentzVector;
-		explicit DijetTreeProducer(edm::ParameterSet const& cfg);
+		explicit PFJetTreeProducer(edm::ParameterSet const& cfg);
 		virtual void beginJob();
 		virtual void analyze(edm::Event const& iEvent, edm::EventSetup const& iSetup);
 		virtual void endJob();
-		virtual ~DijetTreeProducer();
+		virtual ~PFJetTreeProducer();
 
 	private:  
 		void initialize();
