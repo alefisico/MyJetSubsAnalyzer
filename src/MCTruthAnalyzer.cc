@@ -27,9 +27,9 @@
 
 
 MCTruthAnalyzer::MCTruthAnalyzer(const edm::ParameterSet& iConfig){
-	src_  = iConfig.getParameter<std::string> ( "src" );   			// Obtain inputs
-	/*stop1Mass_( iConfig.getParameter<double>( "stop1Mass" ) ),
-	stop2Mass_( iConfig.getParameter<double>( "stop2Mass" ) ),
+	src_  		= iConfig.getParameter<std::string> ( "src" );   			// Obtain inputs
+	stopMass_ 	= iConfig.getParameter<double>( "stopMass" ) ;
+	/*stop2Mass_( iConfig.getParameter<double>( "stop2Mass" ) ),
 	st1decay_( iConfig.getParameter<double>( "st1decay" ) )*/
 }
 
@@ -99,6 +99,10 @@ void MCTruthAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 	const std::vector<reco::GenParticle> & p = *particles; 
 
 	//cout<< iEvent.id().event() << endl;
+	//check pdgId of stop
+	int stopId;
+	if ( stopMass_ == 50 ){ stopId = 1000002; }
+	else{ stopId = 1000006; }
 
 	// Begin Loop for GenParticles
 	numStops = 0;
@@ -113,7 +117,7 @@ void MCTruthAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 		const Candidate * mom = p[i].mother();				// call mother particle
 
 		//////////// MCTruth Stops
-		if( abs( p[i].pdgId() ) == 1000002 ){
+		if( abs( p[i].pdgId() ) == stopId ){
 			//cout<< p[i].pdgId() << " " << p[i].mass() << endl;
 			stopsPt_	->push_back( p[i].pt() );
 			stopsEta_	->push_back( p[i].eta() );
@@ -122,11 +126,11 @@ void MCTruthAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 			numStops++;			
 		}
 		
-		bool partonJet = ( ( abs ( p[i].pdgId() ) == 1 ) || ( abs( p[i].pdgId() == 2 ) ) || ( abs( p[i].pdgId() == 3 ) ) || ( abs( p[i].pdgId() == 4 ) ) || ( abs( p[i].pdgId() == 5 ) ) || ( abs( p[i].pdgId() == 21 ) ) );
+		//bool partonJet = ( ( abs ( p[i].pdgId() ) == 1 ) || ( abs( p[i].pdgId() == 2 ) ) || ( abs( p[i].pdgId() == 3 ) ) || ( abs( p[i].pdgId() == 4 ) ) || ( abs( p[i].pdgId() == 5 ) ) || ( abs( p[i].pdgId() == 21 ) ) );
 
 		if( mom ){
 
-			if( mom->pdgId() == 1000002 ){
+			if( mom->pdgId() == stopId ){
 				stopAPt_	->push_back( p[i].pt() );
 				stopAEta_	->push_back( p[i].eta() );
 				stopAEnergy_	->push_back( p[i].energy() );
@@ -135,7 +139,7 @@ void MCTruthAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& i
 				numPartonsStopA++;			
 			}
 
-			if( mom->pdgId() == -1000002 ){
+			if( mom->pdgId() == -stopId ){
 				stopBPt_	->push_back( p[i].pt() );
 				stopBEta_	->push_back( p[i].eta() );
 				stopBEnergy_	->push_back( p[i].energy() );
