@@ -1,5 +1,12 @@
 #!/usr/bin/env python
 
+'''
+File: myMCTruthJetsMatching.py --mass 50 (optional) --debug -- final
+Author: Alejandro Gomez Espinosa
+Email: gomez@physics.rutgers.edu
+Description: Read genParticles and AK5PFJets info, Matching and count number of events in different categories.
+'''
+
 import sys,os,time
 import optparse
 from collections import defaultdict
@@ -358,50 +365,9 @@ def get_info( infile, outputDir, sample, mass, couts, final ):
 			#if debug: print '6', jLists[0], jLists[1]
 			numberPartonsSameJet.Fill( 6 )
 			#if debug: print tmpListJetIndex, listDuplicates, numUniqueJets
+		###########################################################################################################
 
-##########################################################################
-#		appearances = defaultdict(int)
-#		for curr in tmpListJetIndex: appearances[curr] += 1
-#		#for i, k in appearances.iteritems(): print i, k #appearances
-#
-#		if len(appearances) == 1 : 			###### 4 partons with same jet
-#			numberPartonsSameJet.Fill( 4 )
-#			for i,listParton in dictDeltaR.iteritems(): 
-#				minDeltaRPartonJet_4Merged.Fill( listParton[1][0] )
-#		elif len(appearances) == 2 : 
-#			for i, k in appearances.iteritems():
-#				if k == 2: 			###### 2 partons with same jet
-#					numberPartonsSameJet.Fill( 2 )
-#					#if debug: print dictDeltaR
-#					#if debug: print '2 partons with same jet: ', str(Run)+':'+str(Lumi)+':'+str(NumEvent)
-#					for i,listParton in dictDeltaR.iteritems(): 
-#						minDeltaRPartonJet_2PartonSameJet.Fill( listParton[1][0] )
-#						secMinDeltaRPartonJet_2PartonSameJet.Fill( listParton[1][1] )
-#					break
-#				else: 				###### 3 partons with same jet
-#					numberPartonsSameJet.Fill( 3 )
-#					#if debug: print '3 partons with same jet: ', str(Run)+':'+str(Lumi)+':'+str(NumEvent)
-#					for i,listParton in dictDeltaR.iteritems(): 
-#						minDeltaRPartonJet_3Merged1Match.Fill( listParton[1][0] )
-#						secMinDeltaRPartonJet_3Merged1Match.Fill( listParton[1][1] )
-#					break
-#		elif len(appearances) == 3: 			###### 2 partons with same jet + 2 diff
-#			numberPartonsSameJet.Fill( 1 )
-#			#if debug: print '2 partons with same jet + 2 diff: ', str(Run)+':'+str(Lumi)+':'+str(NumEvent)
-#			for i,listParton in dictDeltaR.iteritems(): 
-#				minDeltaRPartonJet_2Merged2Matched.Fill( listParton[1][0] )
-#				secMinDeltaRPartonJet_2Merged2Matched.Fill( listParton[1][1] )
-#		elif len(appearances) == 4: 			###### 4 diff jets
-#			numberPartonsSameJet.Fill( 0 )
-#			#if debug: print '4 diff: ', str(Run)+':'+str(Lumi)+':'+str(NumEvent)
-#			for i,listParton in dictDeltaR.iteritems(): 
-#				minDeltaRPartonJet_4Matched.Fill( listParton[1][0] )
-#		else:						###### something wrong (like no jets)
-#			numberPartonsSameJet.Fill( 6 )
-#		#if debug: print tmpListJetIndex, listP4Jets
-#########################################################################################################
-		
-		###### DeltaR < 0.4
+		########################## DeltaR < 0.4
 		#### check if cut is applied:
 		for i,listParton in dictDeltaR0p4.iteritems(): 
 			if len( listParton[0] ) > 0: minDeltaRPartonJet_DeltaR0p4.Fill( listParton[0][0] )
@@ -527,34 +493,6 @@ def get_info( infile, outputDir, sample, mass, couts, final ):
 		else:
 			#if debug: print '15', jLists[0], jLists[1]
 			numberPartonsSameJet_DeltaR0p4.Fill( 6 )
-
-
-################################################################# Other way to categorize
-#		if 2 in listRepDeltaR0p4: 								##### if at least two index are repeated 
-#			if len( listRepDeltaR0p4 ) == 1: 							##### 2 partons in the only match jet identified
-#				print '1', tmpListJetIndexDeltaR0p4, listRepDeltaR0p4
-#				numberPartonsSameJet_DeltaR0p4.Fill( 1 )
-#				for i,listParton in dictDeltaR0p4.iteritems(): 
-#					minDeltaRPartonJet_2PartonSameJet_DeltaR0p4.Fill( listParton[1][0] )
-#					secMinDeltaRPartonJet_2PartonSameJet_DeltaR0p4.Fill( listParton[1][1] )
-#
-#			elif ( len( listRepDeltaR0p4 ) == 2 ) and ( len(tmpListJetIndexDeltaR0p4) == 3): 	##### 2 partons in one match jet and 1 extra match jet
-#				print '2', tmpListJetIndexDeltaR0p4, listRepDeltaR0p4
-#				numberPartonsSameJet_DeltaR0p4.Fill( 2 )
-#			elif ( len( listRepDeltaR0p4 ) == 2 ) and ( len(tmpListJetIndexDeltaR0p4) == 4):	##### a pair of 2 partons in one match jet
-#				print '3', tmpListJetIndexDeltaR0p4, listRepDeltaR0p4
-#				numberPartonsSameJet_DeltaR0p4.Fill( 3 )
-#			elif ( len( listRepDeltaR0p4 ) == 3 ):							##### 2 partons in one match jet and 2 extra match jet
-#				print '4', tmpListJetIndexDeltaR0p4, listRepDeltaR0p4
-#				numberPartonsSameJet_DeltaR0p4.Fill( 4 )
-#		elif ( len( listRepDeltaR0p4 ) == 0 ): 							##### if there are no match jets
-#			print '6', tmpListJetIndexDeltaR0p4, listRepDeltaR0p4
-#			numberPartonsSameJet_DeltaR0p4.Fill( 6 )
-#		else: 											###### no repeated index
-#			print '5', tmpListJetIndexDeltaR0p4, listRepDeltaR0p4
-#			numberPartonsSameJet_DeltaR0p4.Fill( 0 )
-##############################################################################################################
-
 
 	################################################################################################## end event loop
 
