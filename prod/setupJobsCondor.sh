@@ -3,7 +3,8 @@
 echo '------------------------------------------------------------------'
 echo 'Input parameters:'
 
-SAMPLE=$1
+MASS=$1
+SAMPLE='stopUDD312_'${MASS}
 INPUTDIR=$2
 OUTPUTDIR='/cms/gomez/Stops/st_jj/patTuples/'
 RUNDIR='/cms/gomez/Substructure/Analyzer/CMSSW_5_3_12/src/jetSubs/MyJetSubsAnalyzer/prod/'
@@ -48,7 +49,7 @@ do
 echo "Output = \$(Outputdir)/${SAMPLE}__${job}_\$(Cluster)_\$(Process).stdout" >> ${condorFile}
 echo "Error  = \$(Outputdir)/${SAMPLE}__${job}_\$(Cluster)_\$(Process).stderr" >>  ${condorFile}
 echo "Log    = \$(Outputdir)/${SAMPLE}__${job}_\$(Cluster)_\$(Process).stdlog" >>  ${condorFile}
-echo "Arguments = ${JOBS} ${job} ${INPUTDIR} ${OUTPUTDIR}${SAMPLE}/results/ ${SAMPLE}" >>  ${condorFile}
+echo "Arguments = ${JOBS} ${job} ${INPUTDIR} ${OUTPUTDIR}${SAMPLE}/results/ ${MASS}" >>  ${condorFile}
 echo -e "Queue\n" >>  ${condorFile}
 
 done
