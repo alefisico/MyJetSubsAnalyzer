@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
 '''
-File: myMCTruthJetsMatching.py --mass 50 (optional) --debug -- final
+File: myMCTruthJetsMatching.py --mass 50 (optional) --debug -- final --jetAlgo AK5
 Author: Alejandro Gomez Espinosa
 Email: gomez@physics.rutgers.edu
-Description: Read genParticles and AK5PFJets info, Matching and count number of events in different categories.
+Description: Read genParticles and PFJets info, Matching and count number of events in different categories.
 '''
 
 import sys,os,time
@@ -20,19 +20,19 @@ dateKey   = time.strftime("%y%m%d%H%M")
 monthKey   = time.strftime("%y%m%d")
 
 ######################################
-def get_info( infile, outputDir, sample, mass, couts, final ):
+def get_info( infile, outputDir, sample, mass, couts, final, jetAlgo ):
 
 	if not final: 
-		outputFile = TFile( outputDir + sample + '_Matching_Plots_'+dateKey+'.root', 'RECREATE' )
+		outputFile = TFile( outputDir + sample + '_Matching_'+jetAlgo+'_Plots_'+dateKey+'.root', 'RECREATE' )
 	else:
 		if not ( os.path.exists( outputDir + 'rootFiles/' + monthKey ) ): os.makedirs( outputDir + 'rootFiles/' + monthKey )
-		outputFile = TFile( outputDir + 'rootFiles/' + monthKey + '/' + sample + '_Matching_Plots.root', 'RECREATE' )
+		outputFile = TFile( outputDir + 'rootFiles/' + monthKey + '/' + sample + '_Matching_'+jetAlgo+'_Plots.root', 'RECREATE' )
 
 	######## Extra, send print to file
-	if couts == False :
-		outfileStdOut = sys.stdout
-		f = file('tmp_'+sample+'_'+dateKey+'.txt', 'w')
-		sys.stdout = f
+	#if couts == False :
+	#	outfileStdOut = sys.stdout
+	#	f = file('tmp_'+sample+'_'+jetAlgo+'_'+dateKey+'.txt', 'w')
+	#	sys.stdout = f
 	#################################################
 
 	######### Histograms
@@ -41,155 +41,139 @@ def get_info( infile, outputDir, sample, mass, couts, final ):
 	maxMass = float(mass)*3. 
 	nBinsMass = int(round( maxMass/5 ))
 
-	numberJets 	= TH1F('h_numberJets', 'h_numberJets', 20,  0., 20.)
-	numberPartons 	= TH1F('h_numberPartons', 'h_numberPartons', 6,  0., 6.)
+	numberJets 	= TH1F('h_numberJets_'+jetAlgo, 'h_numberJets_'+jetAlgo, 20,  0., 20.)
+	numberPartons 	= TH1F('h_numberPartons_'+jetAlgo, 'h_numberPartons_'+jetAlgo, 6,  0., 6.)
 
-	numberPartonsSameJet 		= TH1F('h_numberPartonsSameJet',	'h_numberPartonsSameJet',	8,   		0.,	8. )
-	minDeltaRPartonJet 		= TH1F('h_minDeltaRPartonJet',		'h_minDeltaRPartonJet',		nBinsDeltaR, 	0.,	maxDeltaR )
-	secMinDeltaRPartonJet		= TH1F('h_secMinDeltaRPartonJet', 	'h_secMinDeltaRPartonJet',	nBinsDeltaR, 	0.,	maxDeltaR )
-	minvsSecMinDeltaRPartonJet 	= TH2F('h_minDeltaRvsSecMinDeltaR',	'h_minDeltaRvsSecMinDeltaR',nBinsDeltaR,0.,maxDeltaR, nBinsDeltaR, 0., maxDeltaR )
+	numberPartonsSameJet 		= TH1F('h_numberPartonsSameJet_'+jetAlgo,	'h_numberPartonsSameJet_'+jetAlgo,	8,   		0.,	8. )
+	minDeltaRPartonJet 		= TH1F('h_minDeltaRPartonJet_'+jetAlgo,		'h_minDeltaRPartonJet_'+jetAlgo,		nBinsDeltaR, 	0.,	maxDeltaR )
+	secMinDeltaRPartonJet		= TH1F('h_secMinDeltaRPartonJet_'+jetAlgo, 	'h_secMinDeltaRPartonJet_'+jetAlgo,	nBinsDeltaR, 	0.,	maxDeltaR )
+	minvsSecMinDeltaRPartonJet 	= TH2F('h_minDeltaRvsSecMinDeltaR_'+jetAlgo,	'h_minDeltaRvsSecMinDeltaR_'+jetAlgo,nBinsDeltaR,0.,maxDeltaR, nBinsDeltaR, 0., maxDeltaR )
 
-	numberPartonsWithDeltaR0p4_4Matched = TH1F('h_numberPartonsWithDeltaR0p4_4Matched', 'h_numberPartonsWithDeltaR0p4_4Matched',	8,  0.,	8. )
-	minDeltaRPartonJet_4Matched 	= TH1F('h_minDeltaRPartonJet_4Matched', 	'h_minDeltaRPartonJet_4Matched',	nBinsDeltaR, 	0.,	maxDeltaR )
-	minDeltaRPartonJet_4Matched_0 	= TH1F('h_minDeltaRPartonJet_4Matched_0', 	'h_minDeltaRPartonJet_4Matched_0',	nBinsDeltaR, 	0.,	maxDeltaR )
-	minDeltaRPartonJet_4Matched_1 	= TH1F('h_minDeltaRPartonJet_4Matched_1', 	'h_minDeltaRPartonJet_4Matched_1',	nBinsDeltaR, 	0.,	maxDeltaR )
-	minDeltaRPartonJet_4Matched_2 	= TH1F('h_minDeltaRPartonJet_4Matched_2', 	'h_minDeltaRPartonJet_4Matched_2',	nBinsDeltaR, 	0.,	maxDeltaR )
-	minDeltaRPartonJet_4Matched_3 	= TH1F('h_minDeltaRPartonJet_4Matched_3', 	'h_minDeltaRPartonJet_4Matched_3',	nBinsDeltaR, 	0.,	maxDeltaR )
-	invMass_4Matched 			= TH1F('h_invMass_4Matched', 		'h_invMass_4Matched', 		nBinsMass, 	0., 	maxMass )
+	numberPartonsWithDeltaR0p4_4Matched = TH1F('h_numberPartonsWithDeltaR0p4_4Matched_'+jetAlgo, 'h_numberPartonsWithDeltaR0p4_4Matched_'+jetAlgo,	8,  0.,	8. )
+	minDeltaRPartonJet_4Matched 	= TH1F('h_minDeltaRPartonJet_4Matched_'+jetAlgo, 	'h_minDeltaRPartonJet_4Matched_'+jetAlgo,	nBinsDeltaR, 	0.,	maxDeltaR )
+	minDeltaRPartonJet_4Matched_0 	= TH1F('h_minDeltaRPartonJet_4Matched_0_'+jetAlgo, 	'h_minDeltaRPartonJet_4Matched_0_'+jetAlgo,	nBinsDeltaR, 	0.,	maxDeltaR )
+	minDeltaRPartonJet_4Matched_1 	= TH1F('h_minDeltaRPartonJet_4Matched_1_'+jetAlgo, 	'h_minDeltaRPartonJet_4Matched_1_'+jetAlgo,	nBinsDeltaR, 	0.,	maxDeltaR )
+	minDeltaRPartonJet_4Matched_2 	= TH1F('h_minDeltaRPartonJet_4Matched_2_'+jetAlgo, 	'h_minDeltaRPartonJet_4Matched_2_'+jetAlgo,	nBinsDeltaR, 	0.,	maxDeltaR )
+	minDeltaRPartonJet_4Matched_3 	= TH1F('h_minDeltaRPartonJet_4Matched_3_'+jetAlgo, 	'h_minDeltaRPartonJet_4Matched_3_'+jetAlgo,	nBinsDeltaR, 	0.,	maxDeltaR )
+	invMass_4Matched 			= TH1F('h_invMass_4Matched_'+jetAlgo, 		'h_invMass_4Matched_'+jetAlgo, 		nBinsMass, 	0., 	maxMass )
 
-	minDeltaRPartonJet_2Merged2Matched_Merged 	= TH1F('h_minDeltaRPartonJet_2Merged2Matched_Merged', 		'h_minDeltaRPartonJet_2Merged2Matched_Merged'		,nBinsDeltaR, 	0., 	maxDeltaR )
-	secMinDeltaRPartonJet_2Merged2Matched_Merged 	= TH1F('h_secMinDeltaRPartonJet_2Merged2Matched_Merged',	'h_secMinDeltaRPartonJet_2Merged2Matched_Merged'	,nBinsDeltaR, 	0., 	maxDeltaR )
-	minDeltaRPartonJet_2Merged2Matched_NOMerged 	= TH1F('h_minDeltaRPartonJet_2Merged2Matched_NOMerged', 		'h_minDeltaRPartonJet_2Merged2Matched_NOMerged'		,nBinsDeltaR, 	0., 	maxDeltaR )
-	secMinDeltaRPartonJet_2Merged2Matched_NOMerged 	= TH1F('h_secMinDeltaRPartonJet_2Merged2Matched_NOMerged',	'h_secMinDeltaRPartonJet_2Merged2Matched_NOMerged'	,nBinsDeltaR, 	0., 	maxDeltaR )
-	minvsSecMinDeltaRPartonJet_2Merged2Matched_Merged 	= TH2F('h_minvsSecMinDeltaRPartonJet_2Merged2Matched_Merged',	'h_minvsSecMinDeltaRPartonJet_2Merged2Matched_Merged', 	nBinsDeltaR, 	0., 	maxDeltaR, 	nBinsDeltaR, 	0., 	maxDeltaR )
-	minvsSecMinDeltaRPartonJet_2Merged2Matched_NOMerged 	= TH2F('h_minvsSecMinDeltaRPartonJet_2Merged2Matched_NOMerged',	'h_minvsSecMinDeltaRPartonJet_2Merged2Matched_NOMerged', 	nBinsDeltaR, 	0., 	maxDeltaR, 	nBinsDeltaR, 	0., 	maxDeltaR )
-	invMass_2Merged2Matched_NOMerged 	= TH1F('h_invMass_2Merged2Matched_NOMerged', 	'h_invMass_2Merged2Matched_NOMerged', 	nBinsMass, 	0., 	maxMass )
-	invMass_2Merged2Matched_Merged 		= TH1F('h_invMass_2Merged2Matched_Merged', 	'h_invMass_2Merged2Matched_Merged', 	nBinsMass, 	0., 	maxMass )
+	minDeltaRPartonJet_2Merged2Matched_Merged 	= TH1F('h_minDeltaRPartonJet_2Merged2Matched_Merged_'+jetAlgo, 		'h_minDeltaRPartonJet_2Merged2Matched_Merged_'+jetAlgo,	nBinsDeltaR, 	0., 	maxDeltaR )
+	secMinDeltaRPartonJet_2Merged2Matched_Merged 	= TH1F('h_secMinDeltaRPartonJet_2Merged2Matched_Merged_'+jetAlgo,	'h_secMinDeltaRPartonJet_2Merged2Matched_Merged_'+jetAlgo, 	nBinsDeltaR, 	0., 	maxDeltaR )
+	minDeltaRPartonJet_2Merged2Matched_NOMerged 	= TH1F('h_minDeltaRPartonJet_2Merged2Matched_NOMerged_'+jetAlgo, 		'h_minDeltaRPartonJet_2Merged2Matched_NOMerged_'+jetAlgo,	nBinsDeltaR, 	0., 	maxDeltaR )
+	secMinDeltaRPartonJet_2Merged2Matched_NOMerged 	= TH1F('h_secMinDeltaRPartonJet_2Merged2Matched_NOMerged_'+jetAlgo,	'h_secMinDeltaRPartonJet_2Merged2Matched_NOMerged_'+jetAlgo,	nBinsDeltaR, 	0., 	maxDeltaR )
+	minvsSecMinDeltaRPartonJet_2Merged2Matched_Merged 	= TH2F('h_minvsSecMinDeltaRPartonJet_2Merged2Matched_Merged_'+jetAlgo,	'h_minvsSecMinDeltaRPartonJet_2Merged2Matched_Merged_'+jetAlgo, 	nBinsDeltaR, 	0., 	maxDeltaR, 	nBinsDeltaR, 	0., 	maxDeltaR )
+	minvsSecMinDeltaRPartonJet_2Merged2Matched_NOMerged 	= TH2F('h_minvsSecMinDeltaRPartonJet_2Merged2Matched_NOMerged_'+jetAlgo,	'h_minvsSecMinDeltaRPartonJet_2Merged2Matched_NOMerged_'+jetAlgo, 	nBinsDeltaR, 	0., 	maxDeltaR, 	nBinsDeltaR, 	0., 	maxDeltaR )
+	invMass_2Merged2Matched_NOMerged 	= TH1F('h_invMass_2Merged2Matched_NOMerged_'+jetAlgo, 	'h_invMass_2Merged2Matched_NOMerged_'+jetAlgo, 	nBinsMass, 	0., 	maxMass )
+	invMass_2Merged2Matched_Merged 		= TH1F('h_invMass_2Merged2Matched_Merged_'+jetAlgo, 	'h_invMass_2Merged2Matched_Merged_'+jetAlgo, 	nBinsMass, 	0., 	maxMass )
 
-	minDeltaRPartonJet_Pair2Merged 		= TH1F('h_minDeltaRPartonJet_Pair2Merged', 'h_minDeltaRPartonJet_Pair2Merged', nBinsDeltaR, 0., maxDeltaR )
-	secMinDeltaRPartonJet_Pair2Merged 	= TH1F('h_secMinDeltaRPartonJet_Pair2Merged','h_secMinDeltaRPartonJet_Pair2Merged', nBinsDeltaR, 0., maxDeltaR )
-	minvsSecMinDeltaRPartonJet_Pair2Merged 	= TH2F('h_minvsSecMinDeltaRPartonJet_Pair2Merged','h_minvsSecMinDeltaRPartonJet_Pair2Merged', nBinsDeltaR, 0., 	maxDeltaR, nBinsDeltaR, 0., maxDeltaR )
-	invMass_Pair2Merged_Merged 		= TH1F('h_invMass_Pair2Merged_Merged', 	'h_invMass_Pair2Merged_Merged', 	nBinsMass, 0., 	maxMass )
+	minDeltaRPartonJet_Pair2Merged 		= TH1F('h_minDeltaRPartonJet_Pair2Merged_'+jetAlgo, 'h_minDeltaRPartonJet_Pair2Merged_'+jetAlgo, nBinsDeltaR, 0., maxDeltaR )
+	secMinDeltaRPartonJet_Pair2Merged 	= TH1F('h_secMinDeltaRPartonJet_Pair2Merged_'+jetAlgo,'h_secMinDeltaRPartonJet_Pair2Merged_'+jetAlgo, nBinsDeltaR, 0., maxDeltaR )
+	minvsSecMinDeltaRPartonJet_Pair2Merged 	= TH2F('h_minvsSecMinDeltaRPartonJet_Pair2Merged_'+jetAlgo,'h_minvsSecMinDeltaRPartonJet_Pair2Merged_'+jetAlgo, nBinsDeltaR, 0., 	maxDeltaR, nBinsDeltaR, 0., maxDeltaR )
+	invMass_Pair2Merged_Merged 		= TH1F('h_invMass_Pair2Merged_Merged_'+jetAlgo, 	'h_invMass_Pair2Merged_Merged_'+jetAlgo, 	nBinsMass, 0., 	maxMass )
 
-	minDeltaRPartonJet_3Merged1Match 		= TH1F('h_minDeltaRPartonJet_3Merged1Match', 	'h_minDeltaRPartonJet_3Merged1Match',	nBinsDeltaR, 0., maxDeltaR)
-	secMinDeltaRPartonJet_3Merged1Match 		= TH1F('h_secMinDeltaRPartonJet_3Merged1Match','h_secMinDeltaRPartonJet_3Merged1Match', nBinsDeltaR, 0., maxDeltaR)
-	minvsSecMinDeltaRPartonJet_3Merged1Match 	= TH2F('h_minvsSecMinDeltaRPartonJet_3Merged1Match','h_minvsSecMinDeltaRPartonJet_3Merged1Match', nBinsDeltaR, 0., maxDeltaR, nBinsDeltaR, 0., maxDeltaR )
-	invMass_3Merged1Match_Merged 			= TH1F('h_invMass_3Merged1Match_Merged', 	'h_invMass_3Merged1Match_Merged', 	nBinsMass, 0., 	maxMass )
+	minDeltaRPartonJet_3Merged1Match 		= TH1F('h_minDeltaRPartonJet_3Merged1Match_'+jetAlgo, 	'h_minDeltaRPartonJet_3Merged1Match_'+jetAlgo,	nBinsDeltaR, 0., maxDeltaR)
+	secMinDeltaRPartonJet_3Merged1Match 		= TH1F('h_secMinDeltaRPartonJet_3Merged1Match_'+jetAlgo,'h_secMinDeltaRPartonJet_3Merged1Match_'+jetAlgo, nBinsDeltaR, 0., maxDeltaR)
+	minvsSecMinDeltaRPartonJet_3Merged1Match 	= TH2F('h_minvsSecMinDeltaRPartonJet_3Merged1Match_'+jetAlgo,'h_minvsSecMinDeltaRPartonJet_3Merged1Match_'+jetAlgo, nBinsDeltaR, 0., maxDeltaR, nBinsDeltaR, 0., maxDeltaR )
+	invMass_3Merged1Match_Merged 			= TH1F('h_invMass_3Merged1Match_Merged_'+jetAlgo, 	'h_invMass_3Merged1Match_Merged_'+jetAlgo, 	nBinsMass, 0., 	maxMass )
 
-	minDeltaRPartonJet_4Merged = TH1F('h_minDeltaRPartonJet_4Merged', 'h_minDeltaRPartonJet_4Merged',	nBinsDeltaR, 0., maxDeltaR)
+	minDeltaRPartonJet_4Merged = TH1F('h_minDeltaRPartonJet_4Merged_'+jetAlgo, 'h_minDeltaRPartonJet_4Merged_'+jetAlgo,	nBinsDeltaR, 0., maxDeltaR)
 
 	#### with DeltaR0p4
 	nBinsDeltaR0p4 = 20
 	maxDeltaR0p4 = 1.
-	numberPartonsSameJet_DeltaR0p4 		= TH1F('h_numberPartonsSameJet_DeltaR0p4', 	'h_numberPartonsSameJet_DeltaR0p4',	8,  		0.,8. )
-	minDeltaRPartonJet_DeltaR0p4 		= TH1F('h_minDeltaRPartonJet_DeltaR0p4', 	'h_minDeltaRPartonJet_DeltaR0p4',	nBinsDeltaR0p4,	0.,maxDeltaR0p4 )
-	secMinDeltaRPartonJet_DeltaR0p4 	= TH1F('h_secMinDeltaRPartonJet_DeltaR0p4',	'h_secMinDeltaRPartonJet_DeltaR0p4',	nBinsDeltaR, 	0.,maxDeltaR)
+	numberPartonsSameJet_DeltaR0p4 		= TH1F('h_numberPartonsSameJet_DeltaR0p4_'+jetAlgo, 	'h_numberPartonsSameJet_DeltaR0p4_'+jetAlgo,	8,  		0.,8. )
+	minDeltaRPartonJet_DeltaR0p4 		= TH1F('h_minDeltaRPartonJet_DeltaR0p4_'+jetAlgo, 	'h_minDeltaRPartonJet_DeltaR0p4_'+jetAlgo,	nBinsDeltaR0p4,	0.,maxDeltaR0p4 )
+	secMinDeltaRPartonJet_DeltaR0p4 	= TH1F('h_secMinDeltaRPartonJet_DeltaR0p4_'+jetAlgo,	'h_secMinDeltaRPartonJet_DeltaR0p4_'+jetAlgo,	nBinsDeltaR, 	0.,maxDeltaR)
 
-	minDeltaRPartonJet_4Matched_DeltaR0p4 	= TH1F('h_minDeltaRPartonJet_4Matched_DeltaR0p4', 	'h_minDeltaRPartonJet_4Matched_DeltaR0p4',		nBinsDeltaR0p4,	0.,	maxDeltaR0p4)
-	minDeltaRPartonJet_4Matched_DeltaR0p4_0 	= TH1F('h_minDeltaRPartonJet_4Matched_DeltaR0p4_0', 'h_minDeltaRPartonJet_4Matched_DeltaR0p4_0',	nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
-	minDeltaRPartonJet_4Matched_DeltaR0p4_1 	= TH1F('h_minDeltaRPartonJet_4Matched_DeltaR0p4_1', 'h_minDeltaRPartonJet_4Matched_DeltaR0p4_1',	nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
-	minDeltaRPartonJet_4Matched_DeltaR0p4_2 	= TH1F('h_minDeltaRPartonJet_4Matched_DeltaR0p4_2', 'h_minDeltaRPartonJet_4Matched_DeltaR0p4_2',	nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
-	minDeltaRPartonJet_4Matched_DeltaR0p4_3 	= TH1F('h_minDeltaRPartonJet_4Matched_DeltaR0p4_3', 'h_minDeltaRPartonJet_4Matched_DeltaR0p4_3',	nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
-	invMass_4Matched_DeltaR0p4 		= TH1F('h_invMass_4Matched_DeltaR0p4', 	'h_invMass_4Matched_DeltaR0p4', 	nBinsMass, 	0., maxMass )
+	minDeltaRPartonJet_4Matched_DeltaR0p4 	= TH1F('h_minDeltaRPartonJet_4Matched_DeltaR0p4_'+jetAlgo, 	'h_minDeltaRPartonJet_4Matched_DeltaR0p4_'+jetAlgo,		nBinsDeltaR0p4,	0.,	maxDeltaR0p4)
+	minDeltaRPartonJet_4Matched_DeltaR0p4_0 	= TH1F('h_minDeltaRPartonJet_4Matched_DeltaR0p4_0_'+jetAlgo, 'h_minDeltaRPartonJet_4Matched_DeltaR0p4_0_'+jetAlgo,	nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
+	minDeltaRPartonJet_4Matched_DeltaR0p4_1 	= TH1F('h_minDeltaRPartonJet_4Matched_DeltaR0p4_1_'+jetAlgo, 'h_minDeltaRPartonJet_4Matched_DeltaR0p4_1_'+jetAlgo,	nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
+	minDeltaRPartonJet_4Matched_DeltaR0p4_2 	= TH1F('h_minDeltaRPartonJet_4Matched_DeltaR0p4_2_'+jetAlgo, 'h_minDeltaRPartonJet_4Matched_DeltaR0p4_2_'+jetAlgo,	nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
+	minDeltaRPartonJet_4Matched_DeltaR0p4_3 	= TH1F('h_minDeltaRPartonJet_4Matched_DeltaR0p4_3_'+jetAlgo, 'h_minDeltaRPartonJet_4Matched_DeltaR0p4_3_'+jetAlgo,	nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
+	invMass_4Matched_DeltaR0p4 		= TH1F('h_invMass_4Matched_DeltaR0p4_'+jetAlgo, 	'h_invMass_4Matched_DeltaR0p4_'+jetAlgo, 	nBinsMass, 	0., maxMass )
 
-	minDeltaRPartonJet_2Merged2Matched_Merged_DeltaR0p4 	= TH1F('h_minDeltaRPartonJet_2Merged2Matched_Merged_DeltaR0p4', 'h_minDeltaRPartonJet_2Merged2Matched_Merged_DeltaR0p4',	nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
-	secMinDeltaRPartonJet_2Merged2Matched_Merged_DeltaR0p4 = TH1F('h_secMinDeltaRPartonJet_2Merged2Matched_Merged_DeltaR0p4', 'h_secMinDeltaRPartonJet_2Merged2Matched_Merged_DeltaR0p4',nBinsDeltaR, 	0.,	maxDeltaR )
-	minDeltaRPartonJet_2Merged2Matched_NOMerged_DeltaR0p4 	= TH1F('h_minDeltaRPartonJet_2Merged2Matched_NOMerged_DeltaR0p4', 'h_minDeltaRPartonJet_2Merged2Matched_NOMerged_DeltaR0p4',	nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
-	secMinDeltaRPartonJet_2Merged2Matched_NOMerged_DeltaR0p4 = TH1F('h_secMinDeltaRPartonJet_2Merged2Matched_NOMerged_DeltaR0p4', 'h_secMinDeltaRPartonJet_2Merged2Matched_NOMerged_DeltaR0p4',nBinsDeltaR, 	0.,	maxDeltaR )
-	minvsSecMinDeltaRPartonJet_2Merged2Matched_Merged_DeltaR0p4 	= TH2F('h_minvsSecMinDeltaRPartonJet_2Merged2Matched_Merged_DeltaR0p4',	'h_minvsSecMinDeltaRPartonJet_2Merged2Matched_Merged_DeltaR0p4', 	nBinsDeltaR, 	0., 	maxDeltaR, 	nBinsDeltaR, 	0., 	maxDeltaR )
-	minvsSecMinDeltaRPartonJet_2Merged2Matched_NOMerged_DeltaR0p4 	= TH2F('h_minvsSecMinDeltaRPartonJet_2Merged2Matched_NOMerged_DeltaR0p4',	'h_minvsSecMinDeltaRPartonJet_2Merged2Matched_NOMerged_DeltaR0p4', 	nBinsDeltaR, 	0., 	maxDeltaR, 	nBinsDeltaR, 	0., 	maxDeltaR )
-	invMass_2Merged2Matched_DeltaR0p4_NOMerged 	= TH1F('h_invMass_2Merged2Matched_DeltaR0p4_NOMerged', 	'h_invMass_2Merged2Matched_DeltaR0p4_NOMerged', 	nBinsMass, 	0., 	maxMass )
-	invMass_2Merged2Matched_DeltaR0p4_Merged 	= TH1F('h_invMass_2Merged2Matched_DeltaR0p4_Merged', 	'h_invMass_2Merged2Matched_DeltaR0p4_Merged', 		nBinsMass, 	0., 	maxMass )
+	minDeltaRPartonJet_2Merged2Matched_Merged_DeltaR0p4 	= TH1F('h_minDeltaRPartonJet_2Merged2Matched_Merged_DeltaR0p4_'+jetAlgo, 'h_minDeltaRPartonJet_2Merged2Matched_Merged_DeltaR0p4_'+jetAlgo,	nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
+	secMinDeltaRPartonJet_2Merged2Matched_Merged_DeltaR0p4 = TH1F('h_secMinDeltaRPartonJet_2Merged2Matched_Merged_DeltaR0p4_'+jetAlgo, 'h_secMinDeltaRPartonJet_2Merged2Matched_Merged_DeltaR0p4_'+jetAlgo,nBinsDeltaR, 	0.,	maxDeltaR )
+	minDeltaRPartonJet_2Merged2Matched_NOMerged_DeltaR0p4 	= TH1F('h_minDeltaRPartonJet_2Merged2Matched_NOMerged_DeltaR0p4_'+jetAlgo, 'h_minDeltaRPartonJet_2Merged2Matched_NOMerged_DeltaR0p4_'+jetAlgo,	nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
+	secMinDeltaRPartonJet_2Merged2Matched_NOMerged_DeltaR0p4 = TH1F('h_secMinDeltaRPartonJet_2Merged2Matched_NOMerged_DeltaR0p4_'+jetAlgo, 'h_secMinDeltaRPartonJet_2Merged2Matched_NOMerged_DeltaR0p4_'+jetAlgo,nBinsDeltaR, 	0.,	maxDeltaR )
+	minvsSecMinDeltaRPartonJet_2Merged2Matched_Merged_DeltaR0p4 	= TH2F('h_minvsSecMinDeltaRPartonJet_2Merged2Matched_Merged_DeltaR0p4_'+jetAlgo,	'h_minvsSecMinDeltaRPartonJet_2Merged2Matched_Merged_DeltaR0p4_'+jetAlgo, 	nBinsDeltaR, 	0., 	maxDeltaR, 	nBinsDeltaR, 	0., 	maxDeltaR )
+	minvsSecMinDeltaRPartonJet_2Merged2Matched_NOMerged_DeltaR0p4 	= TH2F('h_minvsSecMinDeltaRPartonJet_2Merged2Matched_NOMerged_DeltaR0p4_'+jetAlgo,	'h_minvsSecMinDeltaRPartonJet_2Merged2Matched_NOMerged_DeltaR0p4_'+jetAlgo, 	nBinsDeltaR, 	0., 	maxDeltaR, 	nBinsDeltaR, 	0., 	maxDeltaR )
+	invMass_2Merged2Matched_DeltaR0p4_NOMerged 	= TH1F('h_invMass_2Merged2Matched_DeltaR0p4_NOMerged_'+jetAlgo, 	'h_invMass_2Merged2Matched_DeltaR0p4_NOMerged_'+jetAlgo, 	nBinsMass, 	0., 	maxMass )
+	invMass_2Merged2Matched_DeltaR0p4_Merged 	= TH1F('h_invMass_2Merged2Matched_DeltaR0p4_Merged_'+jetAlgo, 	'h_invMass_2Merged2Matched_DeltaR0p4_Merged_'+jetAlgo, 		nBinsMass, 	0., 	maxMass )
 
-	minDeltaRPartonJet_Pair2Merged_DeltaR0p4_A 	= TH1F('h_minDeltaRPartonJet_Pair2Merged_DeltaR0p4_A', 	'h_minDeltaRPartonJet_Pair2Merged_DeltaR0p4_A',		nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
-	secMinDeltaRPartonJet_Pair2Merged_DeltaR0p4_A 	= TH1F('h_secMinDeltaRPartonJet_Pair2Merged_DeltaR0p4_A', 'h_secMinDeltaRPartonJet_Pair2Merged_DeltaR0p4_A',	nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
-	minDeltaRPartonJet_Pair2Merged_DeltaR0p4_B 	= TH1F('h_minDeltaRPartonJet_Pair2Merged_DeltaR0p4_B', 	'h_minDeltaRPartonJet_Pair2Merged_DeltaR0p4_B',		nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
-	secMinDeltaRPartonJet_Pair2Merged_DeltaR0p4_B 	= TH1F('h_secMinDeltaRPartonJet_Pair2Merged_DeltaR0p4_B', 'h_secMinDeltaRPartonJet_Pair2Merged_DeltaR0p4_B',	nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
-	invMass_Pair2Merged_DeltaR0p4_Merged 		= TH1F('h_invMass_Pair2Merged_DeltaR0p4_Merged', 	'h_invMass_Pair2Merged_DeltaR0p4_Merged', 		nBinsMass, 	0., 	maxMass )
+	minDeltaRPartonJet_Pair2Merged_DeltaR0p4_A 	= TH1F('h_minDeltaRPartonJet_Pair2Merged_DeltaR0p4_A_'+jetAlgo, 	'h_minDeltaRPartonJet_Pair2Merged_DeltaR0p4_A_'+jetAlgo,		nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
+	secMinDeltaRPartonJet_Pair2Merged_DeltaR0p4_A 	= TH1F('h_secMinDeltaRPartonJet_Pair2Merged_DeltaR0p4_A_'+jetAlgo, 'h_secMinDeltaRPartonJet_Pair2Merged_DeltaR0p4_A_'+jetAlgo,	nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
+	minDeltaRPartonJet_Pair2Merged_DeltaR0p4_B 	= TH1F('h_minDeltaRPartonJet_Pair2Merged_DeltaR0p4_B_'+jetAlgo, 	'h_minDeltaRPartonJet_Pair2Merged_DeltaR0p4_B_'+jetAlgo,		nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
+	secMinDeltaRPartonJet_Pair2Merged_DeltaR0p4_B 	= TH1F('h_secMinDeltaRPartonJet_Pair2Merged_DeltaR0p4_B_'+jetAlgo, 'h_secMinDeltaRPartonJet_Pair2Merged_DeltaR0p4_B_'+jetAlgo,	nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
+	invMass_Pair2Merged_DeltaR0p4_Merged 		= TH1F('h_invMass_Pair2Merged_DeltaR0p4_Merged_'+jetAlgo, 	'h_invMass_Pair2Merged_DeltaR0p4_Merged_'+jetAlgo, 		nBinsMass, 	0., 	maxMass )
 
-	minDeltaRPartonJet_3Merged1Match_DeltaR0p4 	= TH1F('h_minDeltaRPartonJet_3Merged1Match_DeltaR0p4', 	'h_minDeltaRPartonJet_3Merged1Match_DeltaR0p4',	nBinsDeltaR0p4, 	0.,	maxDeltaR0p4 )
-	secMinDeltaRPartonJet_3Merged1Match_DeltaR0p4 	= TH1F('h_secMinDeltaRPartonJet_3Merged1Match_DeltaR0p4',	'h_secMinDeltaRPartonJet_3Merged1Match_DeltaR0p4',	nBinsDeltaR, 		0.,	maxDeltaR )
-	invMass_3Merged1Match_DeltaR0p4_Merged 	= TH1F('h_invMass_3Merged1Match_DeltaR0p4_Merged', 		'h_invMass_3Merged1Match_DeltaR0p4_Merged', 		nBinsMass, 		0., 	maxMass )
+	minDeltaRPartonJet_3Merged1Match_DeltaR0p4 	= TH1F('h_minDeltaRPartonJet_3Merged1Match_DeltaR0p4_'+jetAlgo, 	'h_minDeltaRPartonJet_3Merged1Match_DeltaR0p4_'+jetAlgo,	nBinsDeltaR0p4, 	0.,	maxDeltaR0p4 )
+	secMinDeltaRPartonJet_3Merged1Match_DeltaR0p4 	= TH1F('h_secMinDeltaRPartonJet_3Merged1Match_DeltaR0p4_'+jetAlgo,	'h_secMinDeltaRPartonJet_3Merged1Match_DeltaR0p4_'+jetAlgo,	nBinsDeltaR, 		0.,	maxDeltaR )
+	invMass_3Merged1Match_DeltaR0p4_Merged 	= TH1F('h_invMass_3Merged1Match_DeltaR0p4_Merged_'+jetAlgo, 		'h_invMass_3Merged1Match_DeltaR0p4_Merged_'+jetAlgo, 		nBinsMass, 		0., 	maxMass )
 
-	minDeltaRPartonJet_4Merged_DeltaR0p4 = TH1F('h_minDeltaRPartonJet_4Merged_DeltaR0p4', 'h_minDeltaRPartonJet_4Merged_DeltaR0p4',	nBinsDeltaR0p4, 0.,	maxDeltaR0p4)
+	minDeltaRPartonJet_4Merged_DeltaR0p4 = TH1F('h_minDeltaRPartonJet_4Merged_DeltaR0p4_'+jetAlgo, 'h_minDeltaRPartonJet_4Merged_DeltaR0p4_'+jetAlgo,	nBinsDeltaR0p4, 0.,	maxDeltaR0p4)
 
-	#h2D = TH2F('h_minDeltaRvsSecMinDeltaR','h_minDeltaRvsSecMinDeltaR', nBinsDeltaR, 0., maxDeltaR, nBinsDeltaR, 0., maxDeltaR )
+	#h2D = TH2F('h_minDeltaRvsSecMinDeltaR_'+jetAlgo,'h_minDeltaRvsSecMinDeltaR_'+jetAlgo, nBinsDeltaR, 0., maxDeltaR, nBinsDeltaR, 0., maxDeltaR )
 
 	#####################################################################################################################################
 
-	########### Read Events
-	events = Events (infile)
-	handleGen = Handle ("vector<reco::GenParticle>")
-	labelGen = "genParticles"
-	handleReco = Handle ("vector<reco::PFJet>")
-	labelReco = "ak5PFJets"
+	##### Get GenTree 
+	events = TChain( 'PFJet_'+jetAlgo+'/events' )
 
-	entry = 0
-	print 'Reading: ', infile[ entry ]
+	# Loop over the filenames and add to tree.
+	for filename in infile:
+		print("Adding file: " + filename)
+		events.Add(filename)
+	#events = inputFile.Get('dijets_'+type+'/events')
 
-	#dummyCounter = 0
-	#dummyCounter2 = 0
-	#dummyList = []
-	#dummyList1 = []
-	#dummyList2 = []
-	#dummyList3 = []
-	#dummyList4 = []
-	#dummyList5 = []
-	#dummyList6 = []
-	for event in events:
+	##### read the tree & fill histosgrams -
+	numEntries = events.GetEntries()
+	
+	#print 'Jet Algorithm processing: '+type, '------> Number of events: '+str(numEntries)
+	print '------> Number of events: '+str(numEntries)
+	d = 0
+
+	for i in xrange(numEntries):
+		events.GetEntry(i)
+
 		#---- progress of the reading --------
-		entry += 1
-		Run      = event.eventAuxiliary().run()
-		Lumi     = event.eventAuxiliary().luminosityBlock()
-		NumEvent = event.eventAuxiliary().event()
-		
-		if ( entry % 1000 == 0 ): print '------> Number of events: '+str(entry)
-		if couts: print 'Entry ', Run, ':', Lumi, ':', NumEvent
+		fraction = 10.*i/(1.*numEntries)
+		if TMath.FloorNint(fraction) > d: print str(10*TMath.FloorNint(fraction))+'%' 
+		d = TMath.FloorNint(fraction)
 
-		event.getByLabel(labelGen, handleGen)
-		event.getByLabel(labelReco, handleReco)
-		gens = handleGen.product()
-		reco = handleReco.product()
-		#if debug: print len(gens), len(reco)
+		#---- progress of the reading --------
+		Run      = events.runNo
+		Lumi     = events.lumi
+		NumEvent = events.evtNo
+		if couts: print 'Entry ', Run, ':', Lumi, ':', NumEvent
 
 		############# Store Parton information in list
 		listP4PartonsFromStopA = []
 		listP4PartonsFromStopB = []
-		for parton in gens:
-			if ( parton.status() == 3 ) and ( parton.mother() ):
-				#if debug: print parton.pdgId()
 
-				if '50' in sample: stopPdgId = 1000002
-				else: stopPdgId = 1000006
-
-				if parton.mother().pdgId() == stopPdgId:
-					#if debug: print parton.pdgId()
-					tmpP4 = TLorentzVector()
-					tmpP4.SetPtEtaPhiE( parton.pt(), parton.eta(), parton.phi(), parton.energy()  )
-					listP4PartonsFromStopA.append( tmpP4 )
-
-				if parton.mother().pdgId() == -stopPdgId:
-					#if debug: print parton.pdgId()
-					tmpP4 = TLorentzVector()
-					tmpP4.SetPtEtaPhiE( parton.pt(), parton.eta(), parton.phi(), parton.energy()  )
-					listP4PartonsFromStopB.append( tmpP4 )
+		for k in range( events.numPartonsStopA ):
+			tmpP4 = TLorentzVector()
+			tmpP4.SetPtEtaPhiE( events.stopAPt[k], events.stopAEta[k], events.stopAPhi[k], events.stopAEnergy[k]  )
+			listP4PartonsFromStopA.append( tmpP4 )
+		for k in range( events.numPartonsStopB ):
+			tmpP4 = TLorentzVector()
+			tmpP4.SetPtEtaPhiE( events.stopBPt[k], events.stopBEta[k], events.stopBPhi[k], events.stopBEnergy[k]  )
+			listP4PartonsFromStopB.append( tmpP4 )
 
 		listP4PartonsFromStops = listP4PartonsFromStopA + listP4PartonsFromStopB
 		numberPartons.Fill( len( listP4PartonsFromStops ) )
-		#tmpMCStopA = ( listP4PartonsFromStopA[0] + listP4PartonsFromStopA[1] ).M()
-		#tmpMCStopB = ( listP4PartonsFromStopB[0] + listP4PartonsFromStopB[1] ).M()
-		#if debug: print tmpMCStopA, tmpMCStopB
-		#if debug: print listP4PartonsFromStops[0].Pt(), listP4PartonsFromStops[1].Pt(), listP4PartonsFromStops[2].Pt(), listP4PartonsFromStops[3].Pt() 
+		tmpMCStopA = ( listP4PartonsFromStopA[0] + listP4PartonsFromStopA[1] ).M()
+		tmpMCStopB = ( listP4PartonsFromStopB[0] + listP4PartonsFromStopB[1] ).M()
+		if couts: print tmpMCStopA, tmpMCStopB
+		if couts: print listP4PartonsFromStops[0].Pt(), listP4PartonsFromStops[1].Pt(), listP4PartonsFromStops[2].Pt(), listP4PartonsFromStops[3].Pt() 
 		#######################################################################################################################################
 
 		#################### Store Jet Info
-		#tmplistP4Jets = []
 		listP4Jets = []
-		for jet in reco:
-			if ( jet.pt() > 20 ) and ( abs( jet.eta() ) < 2.5 ):
+		for j in range( events.nJets ):
+			if ( events.jetPt[j] > 20 ) and ( abs( events.jetEta[j] ) < 2.5 ):
 				tmpP4 = TLorentzVector()
-				tmpP4.SetPtEtaPhiE( jet.pt(), jet.eta(), jet.phi(), jet.energy() )
-				#tmplistP4Jets.append( tmpP4 )
+				tmpP4.SetPtEtaPhiE( events.jetPt[j], events.jetEta[j], events.jetPhi[j], events.jetEnergy[j] )
 				listP4Jets.append( tmpP4 )
 
 		numberJets.Fill( len( listP4Jets ) )
@@ -197,7 +181,8 @@ def get_info( infile, outputDir, sample, mass, couts, final ):
 		#if debug: print tmplistP4Jets
 		#if debug: print listP4Jets
 		#if debug: print len(listP4Jets)
-		#for i in range( len( listP4Jets ) ): print i, listP4Jets[i].Pt()
+		if couts: 
+			for i in range( len( listP4Jets ) ): print i, listP4Jets[i].Pt()
 		###########################################################################################
 
 		################### Calculate DeltaR between each parton and each jet
@@ -476,7 +461,7 @@ def get_info( infile, outputDir, sample, mass, couts, final ):
 					if ( listDuplicatesDeltaR0p4[0] == jLists[1][0] ):
 						minDeltaRPartonJet_3Merged1Match_DeltaR0p4.Fill( jLists[0][0] )
 						secMinDeltaRPartonJet_3Merged1Match_DeltaR0p4.Fill( jLists[0][1] )
-				tmpMass = ( listP4[ listDuplicatesDeltaR0p4[0] ] ).M()
+				tmpMass = ( listP4Jets[ listDuplicatesDeltaR0p4[0] ] ).M()
 				invMass_3Merged1Match_DeltaR0p4_Merged.Fill( tmpMass )
 
 
@@ -522,9 +507,9 @@ def get_info( infile, outputDir, sample, mass, couts, final ):
 	outputFile.Close()
 
 	###### Extra: send prints to file
-	if couts == False: 
-		sys.stdout = outfileStdOut
-		f.close()
+	#if couts == False: 
+	#	sys.stdout = outfileStdOut
+	#	f.close()
 	#########################
 
 
@@ -535,6 +520,7 @@ if __name__ == '__main__':
 	
 	parser = optparse.OptionParser(usage=usage)
 	parser.add_option( '-m', '--mass', action='store', type='int', dest='mass', default=50, help='Mass of the Stop' )
+	parser.add_option( '-j', '--jetAlgo', action='store', type='string', dest='jetAlgo', default='AK5', help='Jet Algorithm' )
 	parser.add_option( '-d', '--debug', action='store_true', dest='couts', default=False, help='True print couts in screen, False print in a file' )
 	parser.add_option( '-f', '--final', action='store_true', dest='final', default=False, help='If True, final version' )
 
@@ -543,12 +529,14 @@ if __name__ == '__main__':
 	mass = options.mass
 	couts = options.couts
 	final = options.final
+	jetAlgo = options.jetAlgo
 
-	sample = 'stop_UDD312_'+str(mass)
+	sample = 'stopUDD312_'+str(mass)
 	#list = os.popen('ls -1 /cms/gomez/Substructure/Generation/Simulation/CMSSW_5_3_2_patch4/src/mySimulations/stop_UDD312_50/aodsim/*.root').read().splitlines()
-	list = os.popen('ls -1 /cms/gomez/Stops/st_jj/AOD/'+sample+'/*.root').read().splitlines()
-	outputList = [i if i.startswith('file') else 'file:' + i for i in list]
-	outputDir = '/cms/gomez/Stops/st_jj/MCTruth/'
+	list = os.popen('ls -1 /cms/gomez/Stops/st_jj/patTuples/'+sample+'/results/140317/*.root').read().splitlines()
+	inputList = [i if i.startswith('file') else 'file:' + i for i in list]
 
-	if not final : get_info( outputList[:2], outputDir, sample, mass, couts, final )
-	else: get_info( outputList, outputDir, sample, mass, couts, final )
+	outputDir = '/cms/gomez/Stops/st_jj/treeResults/'
+
+	if not final : get_info( inputList[:2], outputDir, sample, mass, couts, final, jetAlgo )
+	else: get_info( inputList, outputDir, sample, mass, couts, final, jetAlgo )
