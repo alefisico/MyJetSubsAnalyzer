@@ -305,7 +305,7 @@ def get_info( infile, outputDir, sample, mass, couts, final ):
 						secMinDeltaRPartonJet_2Merged2Matched_NOMerged.Fill( jLists[0][1] )
 						minvsSecMinDeltaRPartonJet_2Merged2Matched_NOMerged.Fill( jLists[0][0], jLists[0][1] )
 
-				if couts: print tmpListJetIndex
+				#if couts: print tmpListJetIndex
 				if ( listDuplicates[0] != tmpListJetIndex[0] ) and ( listDuplicates[0] != tmpListJetIndex[1] ): 
 					tmpStopA = ( listP4Jets[ tmpListJetIndex[0] ] + listP4Jets[ tmpListJetIndex[1] ] ).M()
 					invMass_2Merged2Matched_NOMerged.Fill( tmpStopA )
@@ -450,10 +450,18 @@ def get_info( infile, outputDir, sample, mass, couts, final ):
 						minDeltaRPartonJet_Pair2Merged_DeltaR0p4_B.Fill( jLists[0][0] )
 						secMinDeltaRPartonJet_Pair2Merged_DeltaR0p4_B.Fill( jLists[0][1] )
 
-				tmpStopA = ( listP4Jets[ listDuplicatesDeltaR0p4[0] ] ).M()
-				invMass_Pair2Merged_DeltaR0p4_Merged.Fill( tmpStopA )
-				tmpStopB = ( listP4Jets[ listDuplicatesDeltaR0p4[1] ] ).M()
-				invMass_Pair2Merged_DeltaR0p4_Merged.Fill( tmpStopB )
+				if ( listDuplicatesDeltaR0p4[0] == tmpListJetIndexDeltaR0p4[0] ) and ( listDuplicatesDeltaR0p4[0] == tmpListJetIndexDeltaR0p4[1] ): 
+					tmpStopA = ( listP4Jets[ listDuplicatesDeltaR0p4[0] ] ).M()
+					invMass_Pair2Merged_DeltaR0p4_Merged.Fill( tmpStopA )
+					tmpStopB = ( listP4Jets[ listDuplicatesDeltaR0p4[1] ] ).M()
+					invMass_Pair2Merged_DeltaR0p4_Merged.Fill( tmpStopB )
+					if couts: print tmpStopA, tmpStopB, tmpListJetIndexDeltaR0p4
+				elif ( listDuplicatesDeltaR0p4[0] == tmpListJetIndexDeltaR0p4[2] ) and ( listDuplicatesDeltaR0p4[0] == tmpListJetIndexDeltaR0p4[3] ): 
+					tmpStopA = ( listP4Jets[ listDuplicatesDeltaR0p4[1] ] ).M()
+					invMass_Pair2Merged_DeltaR0p4_Merged.Fill( tmpStopA )
+					tmpStopB = ( listP4Jets[ listDuplicatesDeltaR0p4[0] ] ).M()
+					invMass_Pair2Merged_DeltaR0p4_Merged.Fill( tmpStopB )
+					if couts: print tmpStopA, tmpStopB, tmpListJetIndexDeltaR0p4
 				#if debug: print 'Pair 2 jet merged : ', str(Run)+':'+str(Lumi)+':'+str(NumEvent)
 				#if debug: print 'stopA ', tmpStopA
 				#if debug: print 'stopB ', tmpStopB
