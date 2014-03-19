@@ -7,7 +7,7 @@ from jetSubs.MyJetSubsAnalyzer.PAT_goodPV_cff import *
 from RecoJets.JetProducers.ak5PFJets_cfi import ak5PFJets
 ak5PFJetsCHS = ak5PFJets.clone(
   src = 'pfNoPileUp',
-  jetPtMin = cms.double(30.0),
+  jetPtMin = cms.double(20.0),
   doAreaFastjet = cms.bool(True),
   #rParam = cms.double(1.1),
   #jetAlgorithm = cms.string("CambridgeAachen"),
@@ -40,6 +40,28 @@ patJetsAK5CHS.addGenJetMatch = False
 patJetsAK5CHS.getJetMCFlavour = False
 patJetsAK5CHS.jetCorrFactorsSource = cms.VInputTag(cms.InputTag('patJetCorrFactorsAK5CHS'))
 
+####### Adding jets without JEC (just for comaprison)
+patJetCorrFactorsAK5CHSNOJEC = patJetCorrFactors.clone()
+patJetCorrFactorsAK5CHSNOJEC.src = jetSource
+patJetCorrFactorsAK5CHSNOJEC.levels = []
+#patJetCorrFactorsAK5CHSNOJEC.payload = 'AK5PFchs'
+#patJetCorrFactorsAK5CHSNOJEC.useRho = True
+patJetsAK5CHSNOJEC = patJets.clone()
+patJetsAK5CHSNOJEC.jetSource = jetSource
+patJetsAK5CHSNOJEC.addJetCharge = False
+patJetsAK5CHSNOJEC.embedCaloTowers = False
+patJetsAK5CHSNOJEC.embedPFCandidates = False
+patJetsAK5CHSNOJEC.addAssociatedTracks = False
+patJetsAK5CHSNOJEC.addBTagInfo = False
+patJetsAK5CHSNOJEC.addDiscriminators = False
+patJetsAK5CHSNOJEC.addJetID = False
+patJetsAK5CHSNOJEC.addGenPartonMatch = False
+patJetsAK5CHSNOJEC.embedGenPartonMatch = False
+patJetsAK5CHSNOJEC.addGenJetMatch = False
+patJetsAK5CHSNOJEC.getJetMCFlavour = False
+patJetsAK5CHSNOJEC.jetCorrFactorsSource = cms.VInputTag(cms.InputTag('patJetCorrFactorsAK5CHSNOJEC'))
+
+
 #### Adding Nsubjetiness
 
 patJetsAK5CHSwithNsub = cms.EDProducer("NjettinessAdder",
@@ -52,7 +74,7 @@ patJetsAK5CHSwithNsub = cms.EDProducer("NjettinessAdder",
 from RecoJets.JetProducers.ak5PFJetsPruned_cfi import ak5PFJetsPruned
 ak5PFJetsCHSpruned = ak5PFJetsPruned.clone(
   src = 'pfNoPileUp',
-  jetPtMin = cms.double(30.0),
+  jetPtMin = cms.double(20.0),
   doAreaFastjet = cms.bool(True),
   #rParam = cms.double(0.8),
   #jetAlgorithm = cms.string("CambridgeAachen"),
@@ -94,6 +116,8 @@ ak5Jets = cms.Sequence(
   ak5PFJetsCHS + 
   patJetCorrFactorsAK5CHS +
   patJetsAK5CHS +  
+  patJetCorrFactorsAK5CHSNOJEC +
+  patJetsAK5CHSNOJEC +  
   patJetsAK5CHSwithNsub +
   ak5PFJetsCHSpruned +
   patJetCorrFactorsAK5CHSpruned +
