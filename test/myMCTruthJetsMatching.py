@@ -35,14 +35,18 @@ def get_info( infile, outputDir, sample, mass, couts, final, jetAlgo ):
 	#	sys.stdout = f
 	#################################################
 
-	######### Histograms
+	########################################################################## Histograms
+	################################## Matching
 	nBinsDeltaR = 50
 	maxDeltaR = 5. 
-	maxMass = float(mass)*3. 
+	maxMass = float(mass)*4. 
+	maxJetPt = float(mass)*10
 	nBinsMass = int(round( maxMass/5 ))
+	nBinsJetPt = int(round( maxMass/10 ))
 
 	numberJets 	= TH1F('h_numberJets_'+jetAlgo, 'h_numberJets_'+jetAlgo, 20,  0., 20.)
 	numberPartons 	= TH1F('h_numberPartons_'+jetAlgo, 'h_numberPartons_'+jetAlgo, 6,  0., 6.)
+	jetPt	 	= TH1F('h_jetPt_'+jetAlgo, 'h_jetPt_'+jetAlgo, nBinsMass,  0., maxMass)
 
 	numberPartonsSameJet 		= TH1F('h_numberPartonsSameJet_'+jetAlgo,	'h_numberPartonsSameJet_'+jetAlgo,	8,   		0.,	8. )
 	minDeltaRPartonJet 		= TH1F('h_minDeltaRPartonJet_'+jetAlgo,		'h_minDeltaRPartonJet_'+jetAlgo,		nBinsDeltaR, 	0.,	maxDeltaR )
@@ -55,7 +59,8 @@ def get_info( infile, outputDir, sample, mass, couts, final, jetAlgo ):
 	minDeltaRPartonJet_4Matched_1 	= TH1F('h_minDeltaRPartonJet_4Matched_1_'+jetAlgo, 	'h_minDeltaRPartonJet_4Matched_1_'+jetAlgo,	nBinsDeltaR, 	0.,	maxDeltaR )
 	minDeltaRPartonJet_4Matched_2 	= TH1F('h_minDeltaRPartonJet_4Matched_2_'+jetAlgo, 	'h_minDeltaRPartonJet_4Matched_2_'+jetAlgo,	nBinsDeltaR, 	0.,	maxDeltaR )
 	minDeltaRPartonJet_4Matched_3 	= TH1F('h_minDeltaRPartonJet_4Matched_3_'+jetAlgo, 	'h_minDeltaRPartonJet_4Matched_3_'+jetAlgo,	nBinsDeltaR, 	0.,	maxDeltaR )
-	invMass_4Matched 			= TH1F('h_invMass_4Matched_'+jetAlgo, 		'h_invMass_4Matched_'+jetAlgo, 		nBinsMass, 	0., 	maxMass )
+	invMass_4Matched 		= TH1F('h_invMass_4Matched_'+jetAlgo, 		'h_invMass_4Matched_'+jetAlgo, 		nBinsMass, 	0., 	maxMass )
+	jetPt_4Matched		 	= TH1F('h_jetPt_4Matched_'+jetAlgo, 'h_jetPt_4Matched_'+jetAlgo, nBinsMass,  0., maxMass)
 
 	minDeltaRPartonJet_2Merged2Matched_Merged 	= TH1F('h_minDeltaRPartonJet_2Merged2Matched_Merged_'+jetAlgo, 		'h_minDeltaRPartonJet_2Merged2Matched_Merged_'+jetAlgo,	nBinsDeltaR, 	0., 	maxDeltaR )
 	secMinDeltaRPartonJet_2Merged2Matched_Merged 	= TH1F('h_secMinDeltaRPartonJet_2Merged2Matched_Merged_'+jetAlgo,	'h_secMinDeltaRPartonJet_2Merged2Matched_Merged_'+jetAlgo, 	nBinsDeltaR, 	0., 	maxDeltaR )
@@ -65,22 +70,27 @@ def get_info( infile, outputDir, sample, mass, couts, final, jetAlgo ):
 	minvsSecMinDeltaRPartonJet_2Merged2Matched_NOMerged 	= TH2F('h_minvsSecMinDeltaRPartonJet_2Merged2Matched_NOMerged_'+jetAlgo,	'h_minvsSecMinDeltaRPartonJet_2Merged2Matched_NOMerged_'+jetAlgo, 	nBinsDeltaR, 	0., 	maxDeltaR, 	nBinsDeltaR, 	0., 	maxDeltaR )
 	invMass_2Merged2Matched_NOMerged 	= TH1F('h_invMass_2Merged2Matched_NOMerged_'+jetAlgo, 	'h_invMass_2Merged2Matched_NOMerged_'+jetAlgo, 	nBinsMass, 	0., 	maxMass )
 	invMass_2Merged2Matched_Merged 		= TH1F('h_invMass_2Merged2Matched_Merged_'+jetAlgo, 	'h_invMass_2Merged2Matched_Merged_'+jetAlgo, 	nBinsMass, 	0., 	maxMass )
+	jetPt_2Merged2Matched_NOMerged		 	= TH1F('h_jetPt_2Merged2Matched_NOMerged_'+jetAlgo, 'h_jetPt_2Merged2Matched_NOMerged_'+jetAlgo, nBinsMass,  0., maxMass)
+	jetPt_2Merged2Matched_Merged		 	= TH1F('h_jetPt_2Merged2Matched_Merged_'+jetAlgo, 'h_jetPt_2Merged2Matched_Merged_'+jetAlgo, nBinsJetPt,  0., maxJetPt)
 
 	minDeltaRPartonJet_Pair2Merged 		= TH1F('h_minDeltaRPartonJet_Pair2Merged_'+jetAlgo, 'h_minDeltaRPartonJet_Pair2Merged_'+jetAlgo, nBinsDeltaR, 0., maxDeltaR )
 	secMinDeltaRPartonJet_Pair2Merged 	= TH1F('h_secMinDeltaRPartonJet_Pair2Merged_'+jetAlgo,'h_secMinDeltaRPartonJet_Pair2Merged_'+jetAlgo, nBinsDeltaR, 0., maxDeltaR )
 	minvsSecMinDeltaRPartonJet_Pair2Merged 	= TH2F('h_minvsSecMinDeltaRPartonJet_Pair2Merged_'+jetAlgo,'h_minvsSecMinDeltaRPartonJet_Pair2Merged_'+jetAlgo, nBinsDeltaR, 0., 	maxDeltaR, nBinsDeltaR, 0., maxDeltaR )
 	invMass_Pair2Merged_Merged 		= TH1F('h_invMass_Pair2Merged_Merged_'+jetAlgo, 	'h_invMass_Pair2Merged_Merged_'+jetAlgo, 	nBinsMass, 0., 	maxMass )
+	jetPt_Pair2Merged		 	= TH1F('h_jetPt_Pair2Merged_'+jetAlgo, 'h_jetPt_Pair2Merged_'+jetAlgo, nBinsJetPt,  0., maxJetPt)
 
 	minDeltaRPartonJet_3Merged1Match 		= TH1F('h_minDeltaRPartonJet_3Merged1Match_'+jetAlgo, 	'h_minDeltaRPartonJet_3Merged1Match_'+jetAlgo,	nBinsDeltaR, 0., maxDeltaR)
 	secMinDeltaRPartonJet_3Merged1Match 		= TH1F('h_secMinDeltaRPartonJet_3Merged1Match_'+jetAlgo,'h_secMinDeltaRPartonJet_3Merged1Match_'+jetAlgo, nBinsDeltaR, 0., maxDeltaR)
 	minvsSecMinDeltaRPartonJet_3Merged1Match 	= TH2F('h_minvsSecMinDeltaRPartonJet_3Merged1Match_'+jetAlgo,'h_minvsSecMinDeltaRPartonJet_3Merged1Match_'+jetAlgo, nBinsDeltaR, 0., maxDeltaR, nBinsDeltaR, 0., maxDeltaR )
 	invMass_3Merged1Match_Merged 			= TH1F('h_invMass_3Merged1Match_Merged_'+jetAlgo, 	'h_invMass_3Merged1Match_Merged_'+jetAlgo, 	nBinsMass, 0., 	maxMass )
+	jetPt_3Merged1Match_Merged		 	= TH1F('h_jetPt_3Merged1Match_Merged_'+jetAlgo, 'h_jetPt_3Merged1Match_Merged_'+jetAlgo, nBinsMass,  0., maxMass)
 
 	minDeltaRPartonJet_4Merged = TH1F('h_minDeltaRPartonJet_4Merged_'+jetAlgo, 'h_minDeltaRPartonJet_4Merged_'+jetAlgo,	nBinsDeltaR, 0., maxDeltaR)
 
 	#### with DeltaR0p4
 	nBinsDeltaR0p4 = 20
 	maxDeltaR0p4 = 1.
+	jetPt_DeltaR0p4			 	= TH1F('h_jetPt_DeltaR0p4_'+jetAlgo, 'h_jetPt_DeltaR0p4_'+jetAlgo, nBinsMass,  0., maxMass)
 	numberPartonsSameJet_DeltaR0p4 		= TH1F('h_numberPartonsSameJet_DeltaR0p4_'+jetAlgo, 	'h_numberPartonsSameJet_DeltaR0p4_'+jetAlgo,	8,  		0.,8. )
 	minDeltaRPartonJet_DeltaR0p4 		= TH1F('h_minDeltaRPartonJet_DeltaR0p4_'+jetAlgo, 	'h_minDeltaRPartonJet_DeltaR0p4_'+jetAlgo,	nBinsDeltaR0p4,	0.,maxDeltaR0p4 )
 	secMinDeltaRPartonJet_DeltaR0p4 	= TH1F('h_secMinDeltaRPartonJet_DeltaR0p4_'+jetAlgo,	'h_secMinDeltaRPartonJet_DeltaR0p4_'+jetAlgo,	nBinsDeltaR, 	0.,maxDeltaR)
@@ -91,6 +101,7 @@ def get_info( infile, outputDir, sample, mass, couts, final, jetAlgo ):
 	minDeltaRPartonJet_4Matched_DeltaR0p4_2 	= TH1F('h_minDeltaRPartonJet_4Matched_DeltaR0p4_2_'+jetAlgo, 'h_minDeltaRPartonJet_4Matched_DeltaR0p4_2_'+jetAlgo,	nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
 	minDeltaRPartonJet_4Matched_DeltaR0p4_3 	= TH1F('h_minDeltaRPartonJet_4Matched_DeltaR0p4_3_'+jetAlgo, 'h_minDeltaRPartonJet_4Matched_DeltaR0p4_3_'+jetAlgo,	nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
 	invMass_4Matched_DeltaR0p4 		= TH1F('h_invMass_4Matched_DeltaR0p4_'+jetAlgo, 	'h_invMass_4Matched_DeltaR0p4_'+jetAlgo, 	nBinsMass, 	0., maxMass )
+	jetPt_4Matched_DeltaR0p4		 	= TH1F('h_jetPt_4Matched_DeltaR0p4_'+jetAlgo, 'h_jetPt_4Matched_DeltaR0p4_'+jetAlgo, nBinsMass,  0., maxMass)
 
 	minDeltaRPartonJet_2Merged2Matched_Merged_DeltaR0p4 	= TH1F('h_minDeltaRPartonJet_2Merged2Matched_Merged_DeltaR0p4_'+jetAlgo, 'h_minDeltaRPartonJet_2Merged2Matched_Merged_DeltaR0p4_'+jetAlgo,	nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
 	secMinDeltaRPartonJet_2Merged2Matched_Merged_DeltaR0p4 = TH1F('h_secMinDeltaRPartonJet_2Merged2Matched_Merged_DeltaR0p4_'+jetAlgo, 'h_secMinDeltaRPartonJet_2Merged2Matched_Merged_DeltaR0p4_'+jetAlgo,nBinsDeltaR, 	0.,	maxDeltaR )
@@ -100,21 +111,66 @@ def get_info( infile, outputDir, sample, mass, couts, final, jetAlgo ):
 	minvsSecMinDeltaRPartonJet_2Merged2Matched_NOMerged_DeltaR0p4 	= TH2F('h_minvsSecMinDeltaRPartonJet_2Merged2Matched_NOMerged_DeltaR0p4_'+jetAlgo,	'h_minvsSecMinDeltaRPartonJet_2Merged2Matched_NOMerged_DeltaR0p4_'+jetAlgo, 	nBinsDeltaR, 	0., 	maxDeltaR, 	nBinsDeltaR, 	0., 	maxDeltaR )
 	invMass_2Merged2Matched_DeltaR0p4_NOMerged 	= TH1F('h_invMass_2Merged2Matched_DeltaR0p4_NOMerged_'+jetAlgo, 	'h_invMass_2Merged2Matched_DeltaR0p4_NOMerged_'+jetAlgo, 	nBinsMass, 	0., 	maxMass )
 	invMass_2Merged2Matched_DeltaR0p4_Merged 	= TH1F('h_invMass_2Merged2Matched_DeltaR0p4_Merged_'+jetAlgo, 	'h_invMass_2Merged2Matched_DeltaR0p4_Merged_'+jetAlgo, 		nBinsMass, 	0., 	maxMass )
+	jetPt_2Merged2Matched_DeltaR0p4_NOMerged	= TH1F('h_jetPt_2Merged2Matched_DeltaR0p4_NOMerged_'+jetAlgo, 'h_jetPt_2Merged2Matched_DeltaR0p4_NOMerged_'+jetAlgo, nBinsMass,  0., maxMass)
+	jetPt_2Merged2Matched_DeltaR0p4_Merged		= TH1F('h_jetPt_2Merged2Matched_DeltaR0p4_Merged_'+jetAlgo, 'h_jetPt_2Merged2Matched_DeltaR0p4_Merged_'+jetAlgo, nBinsJetPt,  0., maxJetPt)
 
 	minDeltaRPartonJet_Pair2Merged_DeltaR0p4_A 	= TH1F('h_minDeltaRPartonJet_Pair2Merged_DeltaR0p4_A_'+jetAlgo, 	'h_minDeltaRPartonJet_Pair2Merged_DeltaR0p4_A_'+jetAlgo,		nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
 	secMinDeltaRPartonJet_Pair2Merged_DeltaR0p4_A 	= TH1F('h_secMinDeltaRPartonJet_Pair2Merged_DeltaR0p4_A_'+jetAlgo, 'h_secMinDeltaRPartonJet_Pair2Merged_DeltaR0p4_A_'+jetAlgo,	nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
 	minDeltaRPartonJet_Pair2Merged_DeltaR0p4_B 	= TH1F('h_minDeltaRPartonJet_Pair2Merged_DeltaR0p4_B_'+jetAlgo, 	'h_minDeltaRPartonJet_Pair2Merged_DeltaR0p4_B_'+jetAlgo,		nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
 	secMinDeltaRPartonJet_Pair2Merged_DeltaR0p4_B 	= TH1F('h_secMinDeltaRPartonJet_Pair2Merged_DeltaR0p4_B_'+jetAlgo, 'h_secMinDeltaRPartonJet_Pair2Merged_DeltaR0p4_B_'+jetAlgo,	nBinsDeltaR0p4, 0.,	maxDeltaR0p4 )
 	invMass_Pair2Merged_DeltaR0p4_Merged 		= TH1F('h_invMass_Pair2Merged_DeltaR0p4_Merged_'+jetAlgo, 	'h_invMass_Pair2Merged_DeltaR0p4_Merged_'+jetAlgo, 		nBinsMass, 	0., 	maxMass )
+	jetPt_Pair2Merged_DeltaR0p4		 	= TH1F('h_jetPt_Pair2Merged_DeltaR0p4_'+jetAlgo, 'h_jetPt_Pair2Merged_DeltaR0p4_'+jetAlgo, nBinsJetPt,  0., maxJetPt)
 
 	minDeltaRPartonJet_3Merged1Match_DeltaR0p4 	= TH1F('h_minDeltaRPartonJet_3Merged1Match_DeltaR0p4_'+jetAlgo, 	'h_minDeltaRPartonJet_3Merged1Match_DeltaR0p4_'+jetAlgo,	nBinsDeltaR0p4, 	0.,	maxDeltaR0p4 )
 	secMinDeltaRPartonJet_3Merged1Match_DeltaR0p4 	= TH1F('h_secMinDeltaRPartonJet_3Merged1Match_DeltaR0p4_'+jetAlgo,	'h_secMinDeltaRPartonJet_3Merged1Match_DeltaR0p4_'+jetAlgo,	nBinsDeltaR, 		0.,	maxDeltaR )
 	invMass_3Merged1Match_DeltaR0p4_Merged 	= TH1F('h_invMass_3Merged1Match_DeltaR0p4_Merged_'+jetAlgo, 		'h_invMass_3Merged1Match_DeltaR0p4_Merged_'+jetAlgo, 		nBinsMass, 		0., 	maxMass )
+	jetPt_3Merged1Match_DeltaR0p4_Merged 	= TH1F('h_jetPt_3Merged1Match_DeltaR0p4_Merged_'+jetAlgo, 'h_jetPt_3Merged1Match_DeltaR0p4_Merged_'+jetAlgo, nBinsMass,  0., maxMass)
 
 	minDeltaRPartonJet_4Merged_DeltaR0p4 = TH1F('h_minDeltaRPartonJet_4Merged_DeltaR0p4_'+jetAlgo, 'h_minDeltaRPartonJet_4Merged_DeltaR0p4_'+jetAlgo,	nBinsDeltaR0p4, 0.,	maxDeltaR0p4)
 
 	#h2D = TH2F('h_minDeltaRvsSecMinDeltaR_'+jetAlgo,'h_minDeltaRvsSecMinDeltaR_'+jetAlgo, nBinsDeltaR, 0., maxDeltaR, nBinsDeltaR, 0., maxDeltaR )
+	#################################################
 
+	################## Analysis Variables
+#	ht 		= TH1F('h_ht_'+jetAlgo, 	'h_ht_'+jetAlgo, 	100,  	0, 	500.)
+#	numberPV 	= TH1F('h_numberPV_'+jetAlgo, 	'h_numberPV_'+jetAlgo, 	50,  	0., 	50.)
+#	MET 		= TH1F('h_MET_'+jetAlgo, 	'h_MET_'+jetAlgo, 	40,  	0, 	200.)
+#	jet1Tau1 	= TH1F('h_jet1Tau1_'+jetAlgo, 	'h_jet1Tau1_'+jetAlgo, 	40,  	0, 	1.)
+#	jet1Tau2 	= TH1F('h_jet1Tau2_'+jetAlgo, 	'h_jet1Tau2_'+jetAlgo, 	40,  	0, 	1.)
+#	jet1Tau3 	= TH1F('h_jet1Tau3_'+jetAlgo, 	'h_jet1Tau3_'+jetAlgo, 	40,  	0, 	1.)
+#	jet2Tau1 	= TH1F('h_jet2Tau1_'+jetAlgo, 	'h_jet2Tau1_'+jetAlgo, 	40,  	0, 	1.)
+#	jet2Tau2 	= TH1F('h_jet2Tau2_'+jetAlgo, 	'h_jet2Tau2_'+jetAlgo, 	40,  	0, 	1.)
+#	jet2Tau3 	= TH1F('h_jet2Tau3_'+jetAlgo, 	'h_jet2Tau3_'+jetAlgo, 	40,  	0, 	1.)
+#	jet1Area 	= TH1F('h_jet1Area_'+jetAlgo, 	'h_jet1Area_'+jetAlgo, 	40,  	0, 	1.)
+#	jet2Area 	= TH1F('h_jet2Area_'+jetAlgo, 	'h_jet2Area_'+jetAlgo, 	40,  	0, 	1.)
+
+#	dictEvent[ 16 ] = [ 'jet1numConst',	0.,	50.,	50]
+#	dictEvent[ 17 ] = [ 'jet2numConst',	0.,	50.,	50]
+#	dictEvent[ 18 ] = [ 'jet1Tau21',	0.,	1.,	100]
+#	dictEvent[ 19 ] = [ 'jet1Tau32',	0.,	1.,	100]
+#	dictEvent[ 20 ] = [ 'jet1Tau31',	0.,	1.,	100]
+#	dictEvent[ 21 ] = [ 'jet2Tau21',	0.,	1.,	100]
+#	dictEvent[ 22 ] = [ 'jet2Tau32',	0.,	1.,	100]
+#	dictEvent[ 23 ] = [ 'jet2Tau31',	0.,	1.,	100]
+#	dictEvent[ 24 ] = [ 'jet1Mass',		0.,	100.,	50]
+#	dictEvent[ 25 ] = [ 'jet2Mass',		0.,	100.,	50]
+#	dictEvent[ 26 ] = [ 'jet1MassPruned',	0.,	100.,	50]
+#	dictEvent[ 27 ] = [ 'jet2MassPruned',	0.,	100.,	50]
+#	dictEvent[ 28 ] = [ 'avgJetPt',      	0.,	200.,	40]
+#
+#	dictJet = {}
+#	dictJet[ 0 ]  = ['jetPt', 		0.,	500.,	100]
+#	dictJet[ 1 ]  = ['jetEta',		-5.,	5.,	100]
+#	dictJet[ 2 ]  = ['jetPhi',		-pi,	pi,	100]
+#	dictJet[ 3 ]  = ['jetMass',		0.,	100.,	50]
+#	dictJet[ 4 ]  = ['jetMassPruned',	0.,	100.,	50]
+#	dictJet[ 5 ]  = ['jetArea',		0.,	5., 	50]
+#	dictJet[ 6 ]  = ['jetTau1',		0.,	1.,	100]
+#	dictJet[ 7 ]  = ['jetTau2',		0.,	1.,	100]
+#	dictJet[ 8 ]  = ['jetTau3',		0.,	1.,	100]
+#	dictJet[ 9 ]  = ['jetTau21',		0.,	1.,	100]
+#	dictJet[ 10 ] = ['jetTau31',		0.,	1.,	100]
+#	dictJet[ 11 ] = ['jetTau32',		0.,	1.,	100]
 	#####################################################################################################################################
 
 	##### Get GenTree 
@@ -245,7 +301,9 @@ def get_info( infile, outputDir, sample, mass, couts, final, jetAlgo ):
 		#if debug: print '10 ', listDuplicates
 		#if debug: print '11 ', numUniqueJets
 
+
 		if ( len( tmpListJetIndex ) == 4 ) and ( len( listP4Jets ) > 3 ):		
+			for z in range( len( listP4Jets ) ): jetPt.Fill( listP4Jets[z].Pt() )
 			##### if no duplicate, i.e. 4 different match jets
 			if ( len( listDuplicates ) == 0 ) and ( numUniqueJets == 4 ):
 				counter4MatchedMatch = 0
@@ -273,6 +331,7 @@ def get_info( infile, outputDir, sample, mass, couts, final, jetAlgo ):
 				tmpB = ( listP4Jets[ tmpListJetIndex[2] ] + listP4Jets[ tmpListJetIndex[3] ] ).M()
 				invMass_4Matched.Fill( tmpA )
 				invMass_4Matched.Fill( tmpB )
+				for x in range( len( tmpListJetIndex ) ): jetPt_4Matched.Fill( listP4Jets[ tmpListJetIndex[x] ].Pt() )
 
 			##### if one duplicate and 2 different
 			elif ( len( listDuplicates ) == 1 ) and ( numUniqueJets == 3 ):
@@ -294,14 +353,20 @@ def get_info( infile, outputDir, sample, mass, couts, final, jetAlgo ):
 				if ( listDuplicates[0] != tmpListJetIndex[0] ) and ( listDuplicates[0] != tmpListJetIndex[1] ): 
 					tmpStopA = ( listP4Jets[ tmpListJetIndex[0] ] + listP4Jets[ tmpListJetIndex[1] ] ).M()
 					invMass_2Merged2Matched_NOMerged.Fill( tmpStopA )
+					jetPt_2Merged2Matched_NOMerged.Fill( listP4Jets[ tmpListJetIndex[0] ].Pt() )
+					jetPt_2Merged2Matched_NOMerged.Fill( listP4Jets[ tmpListJetIndex[1] ].Pt() )
 					tmpStopC = ( listP4Jets[ listDuplicates[0] ] ).M()
 					invMass_2Merged2Matched_Merged.Fill( tmpStopC )
+					jetPt_2Merged2Matched_Merged.Fill( listP4Jets[ listDuplicates[0] ].Pt() )
 					#if couts: print 'yes1', tmpStopA, tmpStopC
 				elif ( listDuplicates[0] != tmpListJetIndex[2] ) and ( listDuplicates[0] != tmpListJetIndex[3] ): 
 					tmpStopB = ( listP4Jets[ tmpListJetIndex[2] ] + listP4Jets[ tmpListJetIndex[3] ] ).M()
 					invMass_2Merged2Matched_NOMerged.Fill( tmpStopB )
+					jetPt_2Merged2Matched_NOMerged.Fill( listP4Jets[ tmpListJetIndex[2] ].Pt() )
+					jetPt_2Merged2Matched_NOMerged.Fill( listP4Jets[ tmpListJetIndex[3] ].Pt() )
 					tmpStopC = ( listP4Jets[ listDuplicates[0] ] ).M()
 					invMass_2Merged2Matched_Merged.Fill( tmpStopC )
+					jetPt_2Merged2Matched_Merged.Fill( listP4Jets[ listDuplicates[0] ].Pt() )
 					#if couts: print 'yes2', tmpStopB, tmpStopC
 
 			##### if a pair of two duplicates
@@ -317,8 +382,10 @@ def get_info( infile, outputDir, sample, mass, couts, final, jetAlgo ):
 						#if debug: print jLists[1][0], listDuplicates
 				tmpStopA = ( listP4Jets[ listDuplicates[0] ] ).M()
 				invMass_Pair2Merged_Merged.Fill( tmpStopA )
+				jetPt_Pair2Merged.Fill( listP4Jets[ listDuplicates[0] ].Pt() )
 				tmpStopB = ( listP4Jets[ listDuplicates[1] ] ).M()
 				invMass_Pair2Merged_Merged.Fill( tmpStopB )
+				jetPt_Pair2Merged.Fill( listP4Jets[ listDuplicates[1] ].Pt() )
 
 			##### if one duplicate and 1 different
 			elif ( len( listDuplicates ) == 1 ) and ( numUniqueJets == 2 ):
@@ -333,6 +400,7 @@ def get_info( infile, outputDir, sample, mass, couts, final, jetAlgo ):
 						#if debug: print jLists[1][0], listDuplicates
 				tmpMass = ( listP4Jets[ listDuplicates[0] ] ).M()
 				invMass_3Merged1Match_Merged.Fill( tmpMass )
+				jetPt_3Merged1Match_Merged.Fill( listP4Jets[ listDuplicates[0] ].Pt() )
 
 			##### all partons with same jet
 			elif ( len( listDuplicates ) == 1 ) and ( numUniqueJets == 1 ):
@@ -369,6 +437,7 @@ def get_info( infile, outputDir, sample, mass, couts, final, jetAlgo ):
 
 		##### if 4 jets after delta cut
 		if len( tmpListJetIndexDeltaR0p4 ) == 4:		
+			for z in range( len( listP4Jets ) ): jetPt_DeltaR0p4.Fill( listP4Jets[z].Pt() )
 			##### if no duplicate, i.e. 4 different match jets
 			if ( len( listDuplicatesDeltaR0p4 ) == 0 ) and ( numUniqueJetsDeltaR0p4 == 4 ):
 				#if debug: print '1', jLists[0], jLists[1]
@@ -388,12 +457,12 @@ def get_info( infile, outputDir, sample, mass, couts, final, jetAlgo ):
 				tmpStopB = ( listP4Jets[ tmpListJetIndexDeltaR0p4[2] ] + listP4Jets[ tmpListJetIndexDeltaR0p4[3] ] ).M()
 				invMass_4Matched_DeltaR0p4.Fill( tmpStopA )
 				invMass_4Matched_DeltaR0p4.Fill( tmpStopB )
+				for x in range( len( tmpListJetIndexDeltaR0p4 ) ): jetPt_4Matched_DeltaR0p4.Fill( listP4Jets[ tmpListJetIndexDeltaR0p4[x] ].Pt() )
 				#if debug: print tmpStopA, tmpStopB
 
 			##### if one duplicate and 2 different
 			elif ( len( listDuplicatesDeltaR0p4 ) == 1 ) and ( numUniqueJetsDeltaR0p4 == 3 ):
 				#if debug: print '2', jLists[0], jLists[1]
-				numberPartonsSameJet_DeltaR0p4.Fill( 1 )
 				for jparton, jLists in dictDeltaR0p4.iteritems():
 					#if debug: print jLists[1][0], listDuplicates
 					if ( listDuplicatesDeltaR0p4[0] == jLists[1][0] ):
@@ -406,14 +475,19 @@ def get_info( infile, outputDir, sample, mass, couts, final, jetAlgo ):
 						minvsSecMinDeltaRPartonJet_2Merged2Matched_NOMerged_DeltaR0p4.Fill( jLists[0][0], jLists[0][1] )
 
 				if ( listDuplicatesDeltaR0p4[0] != tmpListJetIndexDeltaR0p4[0] ) and ( listDuplicatesDeltaR0p4[0] != tmpListJetIndexDeltaR0p4[1] ): 
+					numberPartonsSameJet_DeltaR0p4.Fill( 1 )
 					tmpStopA = ( listP4Jets[ tmpListJetIndexDeltaR0p4[0] ] + listP4Jets[ tmpListJetIndexDeltaR0p4[1] ] ).M()
 					tmpStopC = ( listP4Jets[ listDuplicatesDeltaR0p4[0] ] ).M()
 					invMass_2Merged2Matched_DeltaR0p4_NOMerged.Fill( tmpStopA )
 					invMass_2Merged2Matched_DeltaR0p4_Merged.Fill( tmpStopC )
+					jetPt_2Merged2Matched_DeltaR0p4_NOMerged.Fill( listP4Jets[ tmpListJetIndex[0] ].Pt() )
+					jetPt_2Merged2Matched_DeltaR0p4_NOMerged.Fill( listP4Jets[ tmpListJetIndex[1] ].Pt() )
+					jetPt_2Merged2Matched_DeltaR0p4_Merged.Fill( listP4Jets[ listDuplicates[0] ].Pt() )
 					#if debug: print '1 jet merged + 2 diff match jets: ', str(Run)+':'+str(Lumi)+':'+str(NumEvent)
 					#if debug: print 'jetMass ', tmpStopC
 					#if debug: print 'stopA ', tmpStopA
 				elif ( listDuplicatesDeltaR0p4[0] != tmpListJetIndexDeltaR0p4[2] ) and ( listDuplicatesDeltaR0p4[0] != tmpListJetIndexDeltaR0p4[3] ): 
+					numberPartonsSameJet_DeltaR0p4.Fill( 1 )
 					tmpStopB = ( listP4Jets[ tmpListJetIndexDeltaR0p4[2] ] + listP4Jets[ tmpListJetIndexDeltaR0p4[3] ] ).M()
 					tmpStopC = ( listP4Jets[ listDuplicatesDeltaR0p4[0] ] ).M()
 					invMass_2Merged2Matched_DeltaR0p4_NOMerged.Fill( tmpStopB )
@@ -425,7 +499,6 @@ def get_info( infile, outputDir, sample, mass, couts, final, jetAlgo ):
 			##### if a pair of two duplicates
 			elif ( len( listDuplicatesDeltaR0p4 ) == 2 ) and ( numUniqueJetsDeltaR0p4 == 2 ):
 				#if debug: print '5', jLists[0], jLists[1]
-				numberPartonsSameJet_DeltaR0p4.Fill( 2 )
 				for jparton, jLists in dictDeltaR0p4.iteritems():
 					#if debug: print jLists[1][0], listDuplicates
 					if ( listDuplicatesDeltaR0p4[0] == jLists[1][0] ):
@@ -436,16 +509,22 @@ def get_info( infile, outputDir, sample, mass, couts, final, jetAlgo ):
 						secMinDeltaRPartonJet_Pair2Merged_DeltaR0p4_B.Fill( jLists[0][1] )
 
 				if ( listDuplicatesDeltaR0p4[0] == tmpListJetIndexDeltaR0p4[0] ) and ( listDuplicatesDeltaR0p4[0] == tmpListJetIndexDeltaR0p4[1] ): 
+					numberPartonsSameJet_DeltaR0p4.Fill( 2 )
 					tmpStopA = ( listP4Jets[ listDuplicatesDeltaR0p4[0] ] ).M()
 					invMass_Pair2Merged_DeltaR0p4_Merged.Fill( tmpStopA )
 					tmpStopB = ( listP4Jets[ listDuplicatesDeltaR0p4[1] ] ).M()
 					invMass_Pair2Merged_DeltaR0p4_Merged.Fill( tmpStopB )
+					jetPt_Pair2Merged_DeltaR0p4.Fill( listP4Jets[ listDuplicatesDeltaR0p4[0] ].Pt() )
+					jetPt_Pair2Merged_DeltaR0p4.Fill( listP4Jets[ listDuplicatesDeltaR0p4[1] ].Pt() )
 					if couts: print tmpStopA, tmpStopB, tmpListJetIndexDeltaR0p4
 				elif ( listDuplicatesDeltaR0p4[0] == tmpListJetIndexDeltaR0p4[2] ) and ( listDuplicatesDeltaR0p4[0] == tmpListJetIndexDeltaR0p4[3] ): 
+					numberPartonsSameJet_DeltaR0p4.Fill( 2 )
 					tmpStopA = ( listP4Jets[ listDuplicatesDeltaR0p4[1] ] ).M()
 					invMass_Pair2Merged_DeltaR0p4_Merged.Fill( tmpStopA )
 					tmpStopB = ( listP4Jets[ listDuplicatesDeltaR0p4[0] ] ).M()
 					invMass_Pair2Merged_DeltaR0p4_Merged.Fill( tmpStopB )
+					jetPt_Pair2Merged_DeltaR0p4.Fill( listP4Jets[ listDuplicatesDeltaR0p4[0] ].Pt() )
+					jetPt_Pair2Merged_DeltaR0p4.Fill( listP4Jets[ listDuplicatesDeltaR0p4[1] ].Pt() )
 					if couts: print tmpStopA, tmpStopB, tmpListJetIndexDeltaR0p4
 				#if debug: print 'Pair 2 jet merged : ', str(Run)+':'+str(Lumi)+':'+str(NumEvent)
 				#if debug: print 'stopA ', tmpStopA
@@ -463,6 +542,7 @@ def get_info( infile, outputDir, sample, mass, couts, final, jetAlgo ):
 						secMinDeltaRPartonJet_3Merged1Match_DeltaR0p4.Fill( jLists[0][1] )
 				tmpMass = ( listP4Jets[ listDuplicatesDeltaR0p4[0] ] ).M()
 				invMass_3Merged1Match_DeltaR0p4_Merged.Fill( tmpMass )
+				jetPt_3Merged1Match_DeltaR0p4_Merged.Fill( listP4Jets[ listDuplicatesDeltaR0p4[0] ].Pt() )
 
 
 			##### all partons with same jet
@@ -533,7 +613,7 @@ if __name__ == '__main__':
 
 	sample = 'stopUDD312_'+str(mass)
 	#list = os.popen('ls -1 /cms/gomez/Substructure/Generation/Simulation/CMSSW_5_3_2_patch4/src/mySimulations/stop_UDD312_50/aodsim/*.root').read().splitlines()
-	list = os.popen('ls -1 /cms/gomez/Stops/st_jj/patTuples/'+sample+'/results/140317/*.root').read().splitlines()
+	list = os.popen('ls -1 /cms/gomez/Stops/st_jj/patTuples/'+sample+'/results/140325/*.root').read().splitlines()
 	inputList = [i if i.startswith('file') else 'file:' + i for i in list]
 
 	outputDir = '/cms/gomez/Stops/st_jj/treeResults/'
