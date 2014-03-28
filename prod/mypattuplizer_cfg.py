@@ -46,11 +46,10 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.load('jetSubs.MyJetSubsAnalyzer.PAT_ak4jets_simple_cff')
 process.load('jetSubs.MyJetSubsAnalyzer.PAT_ak5jets_simple_cff')
 process.load('jetSubs.MyJetSubsAnalyzer.PAT_ak7jets_simple_cff')
-process.load('jetSubs.MyJetSubsAnalyzer.PAT_ak1p1jets_simple_cff')
 process.load('jetSubs.MyJetSubsAnalyzer.PAT_ca4jets_simple_cff')
 process.load('jetSubs.MyJetSubsAnalyzer.PAT_ca8jets_simple_cff')
-process.load('jetSubs.MyJetSubsAnalyzer.PAT_ca1p2jets_simple_cff')
-process.load('jetSubs.MyJetSubsAnalyzer.PAT_k4jets_simple_cff')
+process.load('jetSubs.MyJetSubsAnalyzer.PAT_kt4jets_simple_cff')
+process.load('jetSubs.MyJetSubsAnalyzer.PAT_kt8jets_simple_cff')
 
 ##-------------------- User analyzer  --------------------------------
 #### MCTruth Plots
@@ -60,9 +59,9 @@ process.load('jetSubs.MyJetSubsAnalyzer.PAT_k4jets_simple_cff')
 #)
 
 ######################################## AK4 Jets
-process.PFJet_AK4 = cms.EDAnalyzer('PFJetTreeProducer',
-		jets             = cms.InputTag('patJetsAK4CHSwithNsub'),
-		jetsPruned       = cms.InputTag('patJetsAK4CHSpruned'),
+###### NO JET CORRECTIONS
+process.PFJet_AK4_NOJEC = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsAK4CHSNOJEC'),
 		met              = cms.InputTag('pfMet'),
 		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
 		ptMin            = cms.double(20),
@@ -72,17 +71,81 @@ process.PFJet_AK4 = cms.EDAnalyzer('PFJetTreeProducer',
 		genSrc 		 = cms.InputTag('genParticles'),
 		stopMass 	 = cms.double( mass ),
 		## trigger ###################################
-		triggerAlias     = cms.vstring(),#'Fat','PFHT650','HT750','HT550'),
-		triggerSelection = cms.vstring(
-		),
-		triggerConfiguration = cms.PSet(
-			hltResults            = cms.InputTag('TriggerResults','','HLT'),
-			l1tResults            = cms.InputTag(''),
-			daqPartitions         = cms.uint32(1),
-			l1tIgnoreMask         = cms.bool(False),
-			l1techIgnorePrescales = cms.bool(False),
-			throw                 = cms.bool(False)
-		)
+		#triggerAlias     = cms.vstring(),#'Fat','PFHT650','HT750','HT550'),
+		#triggerSelection = cms.vstring(
+		#),
+		#triggerConfiguration = cms.PSet(
+		#	hltResults            = cms.InputTag('TriggerResults','','HLT'),
+		#	l1tResults            = cms.InputTag(''),
+		#	daqPartitions         = cms.uint32(1),
+		#	l1tIgnoreMask         = cms.bool(False),
+		#	l1techIgnorePrescales = cms.bool(False),
+		#	throw                 = cms.bool(False)
+		#)
+)
+##### With Jet Corrections
+process.PFJet_AK4 = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsAK4CHSwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections and Pruning
+process.PFJet_AK4Pruned = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsAK4CHSprunedwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections and Trimming
+process.PFJet_AK4Trimmed = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsAK4CHStrimmedwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections and Filtering
+process.PFJet_AK4Filtered = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsAK4CHSfilteredwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections and Mass Drop Filtering
+process.PFJet_AK4MassDropFiltered = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsAK4CHSmassDropFilteredwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
 )
 ############################################################################################
 
@@ -90,7 +153,6 @@ process.PFJet_AK4 = cms.EDAnalyzer('PFJetTreeProducer',
 ###### NO JET CORRECTIONS
 process.PFJet_AK5_NOJEC = cms.EDAnalyzer('PFJetTreeProducer',
 		jets             = cms.InputTag('patJetsAK5CHSNOJEC'),
-		jetsPruned       = cms.InputTag('patJetsAK5CHSpruned'),
 		met              = cms.InputTag('pfMet'),
 		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
 		ptMin            = cms.double(20),
@@ -99,23 +161,11 @@ process.PFJet_AK5_NOJEC = cms.EDAnalyzer('PFJetTreeProducer',
 		pu               = cms.untracked.InputTag('addPileupInfo'),
 		genSrc 		 = cms.InputTag('genParticles'),
 		stopMass 	 = cms.double( mass ),
-		## trigger ###################################
-		triggerAlias     = cms.vstring(),#'Fat','PFHT650','HT750','HT550'),
-		triggerSelection = cms.vstring(
-		),
-		triggerConfiguration = cms.PSet(
-			hltResults            = cms.InputTag('TriggerResults','','HLT'),
-			l1tResults            = cms.InputTag(''),
-			daqPartitions         = cms.uint32(1),
-			l1tIgnoreMask         = cms.bool(False),
-			l1techIgnorePrescales = cms.bool(False),
-			throw                 = cms.bool(False)
-		)
 )
+
 ##### With Jet Corrections
 process.PFJet_AK5 = cms.EDAnalyzer('PFJetTreeProducer',
 		jets             = cms.InputTag('patJetsAK5CHSwithNsub'),
-		jetsPruned       = cms.InputTag('patJetsAK5CHSpruned'),
 		met              = cms.InputTag('pfMet'),
 		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
 		ptMin            = cms.double(20),
@@ -124,25 +174,79 @@ process.PFJet_AK5 = cms.EDAnalyzer('PFJetTreeProducer',
 		pu               = cms.untracked.InputTag('addPileupInfo'),
 		genSrc 		 = cms.InputTag('genParticles'),
 		stopMass 	 = cms.double( mass ),
-		## trigger ###################################
-		triggerAlias     = cms.vstring(),#'Fat','PFHT650','HT750','HT550'),
-		triggerSelection = cms.vstring(
-		),
-		triggerConfiguration = cms.PSet(
-			hltResults            = cms.InputTag('TriggerResults','','HLT'),
-			l1tResults            = cms.InputTag(''),
-			daqPartitions         = cms.uint32(1),
-			l1tIgnoreMask         = cms.bool(False),
-			l1techIgnorePrescales = cms.bool(False),
-			throw                 = cms.bool(False)
-		)
 )
-############################################################################################
 
-################################################################################# AK7 Jets
+##### With Jet Corrections and Pruning
+process.PFJet_AK5Pruned = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsAK5CHSprunedwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections and Trimming
+process.PFJet_AK5Trimmed = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsAK5CHStrimmedwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections and Filtering
+process.PFJet_AK5Filtered = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsAK5CHSfilteredwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections and Mass Drop Filtering
+process.PFJet_AK5MassDropFiltered = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsAK5CHSmassDropFilteredwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+###################################################################################################
+
+
+###################################################################### AK7 Jets
+###### NO JET CORRECTIONS
+process.PFJet_AK7_NOJEC = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsAK7CHSNOJEC'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections
 process.PFJet_AK7 = cms.EDAnalyzer('PFJetTreeProducer',
 		jets             = cms.InputTag('patJetsAK7CHSwithNsub'),
-		jetsPruned       = cms.InputTag('patJetsAK7CHSpruned'),
 		met              = cms.InputTag('pfMet'),
 		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
 		ptMin            = cms.double(20),
@@ -151,25 +255,11 @@ process.PFJet_AK7 = cms.EDAnalyzer('PFJetTreeProducer',
 		pu               = cms.untracked.InputTag('addPileupInfo'),
 		genSrc 		 = cms.InputTag('genParticles'),
 		stopMass 	 = cms.double( mass ),
-		## trigger ###################################
-		triggerAlias     = cms.vstring(),#'Fat','PFHT650','HT750','HT550'),
-		triggerSelection = cms.vstring(
-		),
-		triggerConfiguration = cms.PSet(
-			hltResults            = cms.InputTag('TriggerResults','','HLT'),
-			l1tResults            = cms.InputTag(''),
-			daqPartitions         = cms.uint32(1),
-			l1tIgnoreMask         = cms.bool(False),
-			l1techIgnorePrescales = cms.bool(False),
-			throw                 = cms.bool(False)
-		)
 )
-###################################################################################################
 
-########################################################################## AK1.1
-process.PFJet_AK1p1 = cms.EDAnalyzer('PFJetTreeProducer',
-		jets             = cms.InputTag('patJetsAK1p1CHSwithNsub'),
-		jetsPruned       = cms.InputTag('patJetsAK1p1CHSpruned'),
+##### With Jet Corrections and Pruning
+process.PFJet_AK7Pruned = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsAK7CHSprunedwithNsub'),
 		met              = cms.InputTag('pfMet'),
 		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
 		ptMin            = cms.double(20),
@@ -178,31 +268,65 @@ process.PFJet_AK1p1 = cms.EDAnalyzer('PFJetTreeProducer',
 		pu               = cms.untracked.InputTag('addPileupInfo'),
 		genSrc 		 = cms.InputTag('genParticles'),
 		stopMass 	 = cms.double( mass ),
-		## trigger ###################################
-		#triggerAlias     = cms.vstring('Fat','PFHT650','PFNoPUHT650','HT750','HT550'),
-		triggerAlias     = cms.vstring(),#'Fat','PFHT650','HT750','HT550'),
-		triggerSelection = cms.vstring(
-		#'HLT_FatDiPFJetMass750_DR1p1_Deta1p5_v*',
-		#'HLT_PFHT650_v*',
-		#'HLT_PFNoPUHT650_v*',
-		#'HLT_HT750_v*',  
-		#'HLT_HT550_v*'
-		),
-		triggerConfiguration = cms.PSet(
-			hltResults            = cms.InputTag('TriggerResults','','HLT'),
-			l1tResults            = cms.InputTag(''),
-			daqPartitions         = cms.uint32(1),
-			l1tIgnoreMask         = cms.bool(False),
-			l1techIgnorePrescales = cms.bool(False),
-			throw                 = cms.bool(False)
-		)
+)
+
+##### With Jet Corrections and Trimming
+process.PFJet_AK7Trimmed = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsAK7CHStrimmedwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections and Filtering
+process.PFJet_AK7Filtered = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsAK7CHSfilteredwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections and Mass Drop Filtering
+process.PFJet_AK7MassDropFiltered = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsAK7CHSmassDropFilteredwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
 )
 ###################################################################################################
 
-####################################################################################### CA4
+###################################################################### CA4 Jets
+###### NO JET CORRECTIONS
+process.PFJet_CA4_NOJEC = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsCA4CHSNOJEC'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections
 process.PFJet_CA4 = cms.EDAnalyzer('PFJetTreeProducer',
 		jets             = cms.InputTag('patJetsCA4CHSwithNsub'),
-		jetsPruned       = cms.InputTag('patJetsCA4CHSpruned'),
 		met              = cms.InputTag('pfMet'),
 		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
 		ptMin            = cms.double(20),
@@ -211,25 +335,78 @@ process.PFJet_CA4 = cms.EDAnalyzer('PFJetTreeProducer',
 		pu               = cms.untracked.InputTag('addPileupInfo'),
 		genSrc 		 = cms.InputTag('genParticles'),
 		stopMass 	 = cms.double( mass ),
-		## trigger ###################################
-		triggerAlias     = cms.vstring(),
-		triggerSelection = cms.vstring(
-		),
-		triggerConfiguration = cms.PSet(
-			hltResults            = cms.InputTag('TriggerResults','','HLT'),
-			l1tResults            = cms.InputTag(''),
-			daqPartitions         = cms.uint32(1),
-			l1tIgnoreMask         = cms.bool(False),
-			l1techIgnorePrescales = cms.bool(False),
-			throw                 = cms.bool(False)
-		)
+)
+
+##### With Jet Corrections and Pruning
+process.PFJet_CA4Pruned = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsCA4CHSprunedwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections and Trimming
+process.PFJet_CA4Trimmed = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsCA4CHStrimmedwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections and Filtering
+process.PFJet_CA4Filtered = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsCA4CHSfilteredwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections and Mass Drop Filtering
+process.PFJet_CA4MassDropFiltered = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsCA4CHSmassDropFilteredwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
 )
 ###################################################################################################
 
-################################################################################## CA8
+###################################################################### CA8 Jets
+###### NO JET CORRECTIONS
+process.PFJet_CA8_NOJEC = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsCA8CHSNOJEC'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections
 process.PFJet_CA8 = cms.EDAnalyzer('PFJetTreeProducer',
 		jets             = cms.InputTag('patJetsCA8CHSwithNsub'),
-		jetsPruned       = cms.InputTag('patJetsCA8CHSpruned'),
 		met              = cms.InputTag('pfMet'),
 		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
 		ptMin            = cms.double(20),
@@ -238,25 +415,11 @@ process.PFJet_CA8 = cms.EDAnalyzer('PFJetTreeProducer',
 		pu               = cms.untracked.InputTag('addPileupInfo'),
 		genSrc 		 = cms.InputTag('genParticles'),
 		stopMass 	 = cms.double( mass ),
-		## trigger ###################################
-		triggerAlias     = cms.vstring(),
-		triggerSelection = cms.vstring(
-		),
-		triggerConfiguration = cms.PSet(
-			hltResults            = cms.InputTag('TriggerResults','','HLT'),
-			l1tResults            = cms.InputTag(''),
-			daqPartitions         = cms.uint32(1),
-			l1tIgnoreMask         = cms.bool(False),
-			l1techIgnorePrescales = cms.bool(False),
-			throw                 = cms.bool(False)
-		)
 )
-###################################################################################################
 
-################################################################################## CA1p2
-process.PFJet_CA1p2 = cms.EDAnalyzer('PFJetTreeProducer',
-		jets             = cms.InputTag('patJetsCA1p2CHSwithNsub'),
-		jetsPruned       = cms.InputTag('patJetsCA1p2CHSpruned'),
+##### With Jet Corrections and Pruning
+process.PFJet_CA8Pruned = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsCA8CHSprunedwithNsub'),
 		met              = cms.InputTag('pfMet'),
 		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
 		ptMin            = cms.double(20),
@@ -265,25 +428,65 @@ process.PFJet_CA1p2 = cms.EDAnalyzer('PFJetTreeProducer',
 		pu               = cms.untracked.InputTag('addPileupInfo'),
 		genSrc 		 = cms.InputTag('genParticles'),
 		stopMass 	 = cms.double( mass ),
-		## trigger ###################################
-		triggerAlias     = cms.vstring(),
-		triggerSelection = cms.vstring(
-		),
-		triggerConfiguration = cms.PSet(
-			hltResults            = cms.InputTag('TriggerResults','','HLT'),
-			l1tResults            = cms.InputTag(''),
-			daqPartitions         = cms.uint32(1),
-			l1tIgnoreMask         = cms.bool(False),
-			l1techIgnorePrescales = cms.bool(False),
-			throw                 = cms.bool(False)
-		)
+)
+
+##### With Jet Corrections and Trimming
+process.PFJet_CA8Trimmed = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsCA8CHStrimmedwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections and Filtering
+process.PFJet_CA8Filtered = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsCA8CHSfilteredwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections and Mass Drop Filtering
+process.PFJet_CA8MassDropFiltered = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsCA8CHSmassDropFilteredwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
 )
 ###################################################################################################
 
-##################################################################################### KT4
+###################################################################### KT4 Jets
+###### NO JET CORRECTIONS
+process.PFJet_KT4_NOJEC = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsKT4CHSNOJEC'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections
 process.PFJet_KT4 = cms.EDAnalyzer('PFJetTreeProducer',
 		jets             = cms.InputTag('patJetsKT4CHSwithNsub'),
-		jetsPruned       = cms.InputTag('patJetsKT4CHSpruned'),
 		met              = cms.InputTag('pfMet'),
 		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
 		ptMin            = cms.double(20),
@@ -292,30 +495,148 @@ process.PFJet_KT4 = cms.EDAnalyzer('PFJetTreeProducer',
 		pu               = cms.untracked.InputTag('addPileupInfo'),
 		genSrc 		 = cms.InputTag('genParticles'),
 		stopMass 	 = cms.double( mass ),
-		## trigger ###################################
-		triggerAlias     = cms.vstring(),
-		triggerSelection = cms.vstring(
-		),
-		triggerConfiguration = cms.PSet(
-			hltResults            = cms.InputTag('TriggerResults','','HLT'),
-			l1tResults            = cms.InputTag(''),
-			daqPartitions         = cms.uint32(1),
-			l1tIgnoreMask         = cms.bool(False),
-			l1techIgnorePrescales = cms.bool(False),
-			throw                 = cms.bool(False)
-		)
+)
+
+##### With Jet Corrections and Pruning
+process.PFJet_KT4Pruned = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsKT4CHSprunedwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections and Trimming
+process.PFJet_KT4Trimmed = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsKT4CHStrimmedwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections and Filtering
+process.PFJet_KT4Filtered = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsKT4CHSfilteredwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections and Mass Drop Filtering
+process.PFJet_KT4MassDropFiltered = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsKT4CHSmassDropFilteredwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
 )
 ###################################################################################################
 
+###################################################################### KT8 Jets
+###### NO JET CORRECTIONS
+process.PFJet_KT8_NOJEC = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsKT8CHSNOJEC'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections
+process.PFJet_KT8 = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsKT8CHSwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections and Pruning
+process.PFJet_KT8Pruned = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsKT8CHSprunedwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections and Trimming
+process.PFJet_KT8Trimmed = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsKT8CHStrimmedwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections and Filtering
+process.PFJet_KT8Filtered = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsKT8CHSfilteredwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+
+##### With Jet Corrections and Mass Drop Filtering
+process.PFJet_KT8MassDropFiltered = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsKT8CHSmassDropFilteredwithNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+)
+###################################################################################################
 
 ############################################## Run Process
 process.p = cms.Path( #process.MCTruthAna *
-		process.ak4Jets * process.PFJet_AK4 * 
-		process.ak5Jets *process.PFJet_AK5_NOJEC * process.PFJet_AK5 *   ##### Add AK5_NOJEC just to compare
-		process.ak7Jets * process.PFJet_AK7 * 
-		process.ak1p1Jets * process.PFJet_AK1p1 * 
-		process.ca4Jets * process.PFJet_CA4 *
-		process.ca8Jets * process.PFJet_CA8 *
-		process.ca1p2Jets * process.PFJet_CA1p2 *
-		process.kt4Jets * process.PFJet_KT4
+		process.ak4Jets * process.PFJet_AK4_NOJEC * process.PFJet_AK4 * process.PFJet_AK4Pruned * process.PFJet_AK4Trimmed * process.PFJet_AK4Filtered * process.PFJet_AK4MassDropFiltered *  
+		process.ak5Jets * process.PFJet_AK5_NOJEC * process.PFJet_AK5 * process.PFJet_AK5Pruned * process.PFJet_AK5Trimmed * process.PFJet_AK5Filtered * process.PFJet_AK5MassDropFiltered *  
+		process.ak7Jets * process.PFJet_AK7_NOJEC * process.PFJet_AK7 * process.PFJet_AK7Pruned * process.PFJet_AK7Trimmed * process.PFJet_AK7Filtered * process.PFJet_AK7MassDropFiltered *  
+		process.ca4Jets * process.PFJet_CA4_NOJEC * process.PFJet_CA4 * process.PFJet_CA4Pruned * process.PFJet_CA4Trimmed * process.PFJet_CA4Filtered * process.PFJet_CA4MassDropFiltered *  
+		process.ca8Jets * process.PFJet_CA8_NOJEC * process.PFJet_CA8 * process.PFJet_CA8Pruned * process.PFJet_CA8Trimmed * process.PFJet_CA8Filtered * process.PFJet_CA8MassDropFiltered *  
+		process.kt4Jets * process.PFJet_KT4_NOJEC * process.PFJet_KT4 * process.PFJet_KT4Pruned * process.PFJet_KT4Trimmed * process.PFJet_KT4Filtered * process.PFJet_KT4MassDropFiltered *  
+		process.kt8Jets * process.PFJet_KT8_NOJEC * process.PFJet_KT8 * process.PFJet_KT8Pruned * process.PFJet_KT8Trimmed * process.PFJet_KT8Filtered * process.PFJet_KT8MassDropFiltered   
 		)
