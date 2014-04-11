@@ -802,7 +802,7 @@ if __name__ == '__main__':
 
 	sample = 'stopUDD312_'+str(mass)
 	#list = os.popen('ls -1 /cms/gomez/Substructure/Generation/Simulation/CMSSW_5_3_2_patch4/src/mySimulations/stop_UDD312_50/aodsim/*.root').read().splitlines()
-	list = os.popen('ls -1 /cms/gomez/Stops/st_jj/patTuples/'+sample+'/results/140402/*.root').read().splitlines()
+	list = os.popen('ls -1 /cms/gomez/Stops/st_jj/patTuples/'+sample+'/results/140403/*.root').read().splitlines()
 	#list = [ '/cms/gomez/Stops/st_jj/patTuples/stopUDD312_50_tree_test_grom.root' ]
 	inputList = [i if i.startswith('file') else 'file:' + i for i in list]
 
