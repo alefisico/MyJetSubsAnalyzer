@@ -26,8 +26,8 @@ class PFJetTreeProducer : public edm::EDAnalyzer {
 	private:  
 		void initialize();
 		//---- configurable parameters --------   
-		double mjjMin_,ptMin_,dEtaMax_,etaMax_;
-		edm::InputTag srcJets_,srcJetsPruned_,srcMET_,srcPU_,srcVrtx_;
+		double mjjMin_,ptMin_,dEtaMax_,etaMax_,stopMass_;
+		edm::InputTag srcJets_,srcJetsPruned_,srcMET_,srcPU_,srcVrtx_, genSrc_;
 		edm::Service<TFileService> fs_;
 		TTree *outTree_; 
 		//---- TRIGGER -------------------------
@@ -44,6 +44,8 @@ class PFJetTreeProducer : public edm::EDAnalyzer {
 		std::vector<float> *pt_,*jec_,*eta_,*phi_,*mass_,*massPruned_,*dR_,*tau1_,*tau2_,*tau3_,*energy_,*chf_,*nhf_,*phf_,*elf_,*muf_,*area_,*numJetConst_;
 		//---- MC variables ---------------
 		int npu_;
+		int numStops, numPartonsStopA, numPartonsStopB;
+		std::vector<float> *stopsPt_, *stopsEta_, *stopsMass_, *stopsPhi_, *stopAPt_, *stopAEta_, *stopAEnergy_, *stopAPhi_, *stopAPartonID_, *stopBPt_, *stopBEta_, *stopBEnergy_, *stopBPhi_, *stopBPartonID_;
 };
 
 /*typedef struct {
