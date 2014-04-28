@@ -21,13 +21,19 @@ dateKey   = time.strftime("%y%m%d%H%M")
 monthKey   = time.strftime("%y%m%d")
 
 ######################################
-def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weight ):
+def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weight, Job ):
 
-	if not final: 
-		outputFile = TFile( outputDir + sample + '_'+jetAlgo+'_'+grooming+'_Plots_'+dateKey+'.root', 'RECREATE' )
+	#if not final: 
+	#	outputFile = TFile( outputDir + sample + '_'+jetAlgo+'_'+grooming+'_Plots_'+dateKey+'.root', 'RECREATE' )
+	#else:
+	#	if not ( os.path.exists( outputDir + 'rootFiles/' + monthKey ) ): os.makedirs( outputDir + 'rootFiles/' + monthKey )
+	#	outputFile = TFile( outputDir + 'rootFiles/' + monthKey + '/' + sample + '_'+jetAlgo+'_'+grooming+'_Plots.root', 'RECREATE' )
+
+	if not ( os.path.exists( outputDir + sample + '/rootFiles/' ) ): os.makedirs( outputDir + sample +'/rootFiles/' )
+	if 'QCD' in sample:
+		outputFile = TFile( outputDir + sample + '/rootFiles/' + sample + '_'+jetAlgo+'_'+grooming+'_'+str(Job)+'_Plots.root', 'RECREATE' )
 	else:
-		if not ( os.path.exists( outputDir + 'rootFiles/' + monthKey ) ): os.makedirs( outputDir + 'rootFiles/' + monthKey )
-		outputFile = TFile( outputDir + 'rootFiles/' + monthKey + '/' + sample + '_'+jetAlgo+'_'+grooming+'_Plots.root', 'RECREATE' )
+		outputFile = TFile( outputDir + sample + '/rootFiles/' + sample + '_'+jetAlgo+'_'+grooming+'_Plots.root', 'RECREATE' )
 
 	######## Extra, send print to file
 	#if couts == False :
@@ -457,7 +463,7 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 	outputFile.Write()
 
 	##### Closing
-	print 'Writing output file: '+ outputDir + sample + '_'+jetAlgo+'_'+grooming+'_Plots_'+dateKey+'.root'
+	#print 'Writing output file: '+ outputDir + sample + '_'+jetAlgo+'_'+grooming+'_Plots_'+dateKey+'.root'
 	outputFile.Close()
 
 	###### Extra: send prints to file
@@ -478,7 +484,9 @@ if __name__ == '__main__':
 	parser.add_option( '-g', '--grooming', action='store', type='string', dest='grooming', default='', help='Jet Algorithm' )
 	parser.add_option( '-d', '--debug', action='store_true', dest='couts', default=False, help='True print couts in screen, False print in a file' )
 	parser.add_option( '-f', '--final', action='store_true', dest='final', default=False, help='If True, final version' )
-	parser.add_option( '-q', '--qcd', action='store_true', dest='QCD', default=False, help='If True, QCD' )
+	parser.add_option( '-q', '--qcd', action='store',  type='string', dest='QCD', default='250To500', help='Binning of QCD' )
+	parser.add_option( '-s', '--sample', action='store',  type='string', dest='samples', default='Signal', help='Type of sample' )
+	parser.add_option( '-n', '--nJob', action='store', type='int', dest='nJob', default=0, help='Number of Job' )
 
 	(options, args) = parser.parse_args()
 
@@ -488,22 +496,32 @@ if __name__ == '__main__':
 	jetAlgo = options.jetAlgo
 	grooming = options.grooming
 	QCD = options.QCD
+	samples = options.samples
+	Job = options.nJob
 
 	if mass == 50: weight = 1
 	elif mass == 100: weight = 19500*559.757/100000
 	elif mass == 200: weight = 19500*18.5245/100000
 
-	if QCD : 
-		sample = 'QCD'
-		list = os.popen('ls -1 /cms/gomez/Stops/st_jj/patTuples/'+sample+'/results/140410/*.root').read().splitlines()
+	if 'QCD' in samples: 
+		sample = 'QCD_HT-'+QCD
+		#list = os.popen('ls -1 /cms/gomez/Stops/st_jj/patTuples/'+sample+'/results/140410/*.root').read().splitlines()
+		list = os.popen('ls -1 /eos/uscms/store/user/algomez/QCD_HT-500To1000_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
+		#filesPerJob = round(len(tmpList)/50)+1
+		#iniList = int(filesPerJob*Job)
+		#finList = int(filesPerJob*(Job+1)-1)
+		#print filesPerJob, iniList, finList
+		#list = tmpList[iniList:finList]
+		inputList = [i if i.startswith('file') else 'file:' + i for i in list]
 	else: 
 		sample = 'stopUDD312_'+str(mass)
 		#list = os.popen('ls -1 /cms/gomez/Substructure/Generation/Simulation/CMSSW_5_3_2_patch4/src/mySimulations/stop_UDD312_50/aodsim/*.root').read().splitlines()
 		list = os.popen('ls -1 /cms/gomez/Stops/st_jj/patTuples/'+sample+'/results/140417/*.root').read().splitlines()
 		#list = [ '/cms/gomez/Stops/st_jj/patTuples/stopUDD312_50_tree_test_grom.root' ]
-	inputList = [i if i.startswith('file') else 'file:' + i for i in list]
+		inputList = [i if i.startswith('file') else 'file:' + i for i in list]
 
-	outputDir = '/cms/gomez/Stops/st_jj/treeResults/'
+	outputDir = '/uscms_data/d3/algomez/files/'
+	print inputList
 
-	if not final : myAnalyzer( inputList[:2], outputDir, sample, couts, final, jetAlgo, grooming, weight )
-	else: myAnalyzer( inputList, outputDir, sample, couts, final, jetAlgo, grooming, weight )
+	if not final : myAnalyzer( inputList[:2], outputDir, sample, couts, final, jetAlgo, grooming, weight, Job )
+	else: myAnalyzer( inputList, outputDir, sample, couts, final, jetAlgo, grooming, weight, Job )
