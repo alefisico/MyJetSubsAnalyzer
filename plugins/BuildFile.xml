@@ -1,4 +1,4 @@
-<library   file="*.cc" name="MySubsPATtupleMyPATtuplizerPlugins">
+<library   file="*.cc" name="jetSubsMyJetSubsAnalyzerPlugins">
 <use   name="root"/> 
 <use   name="rootrflx"/>
 <use   name="rootcore"/>
