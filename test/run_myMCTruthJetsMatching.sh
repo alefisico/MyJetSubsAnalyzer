@@ -2,20 +2,18 @@
 
 MAINDIR=`pwd`
 BASEDIR="/cms/gomez/Substructure/Analyzer/CMSSW_5_3_12/src/"
-run="MyAnalyzer.py"
-condorFile='condor_MyAnalyzer.jdl'
-runFile='runCondor_MyAnalyzer.jdl'
+run="myMCTruthJetsMatching.py"
+condorFile='condor_myMCTruthJetsMatching.jdl'
+runFile='runCondor_myMCTruthJetsMatching.jdl'
 condorLogDir="/cms/gomez/Stops/st_jj/treeResults/rootFiles/condorlog/"
 #jetAlgo=( AK5 AK7 CA8 )
 jetAlgo=( AK4 AK5 AK7 CA4 CA8 KT4 KT8 )
 mass=( 50 100 200 )
 grooming=( _NOJEC Pruned Trimmed Filtered MassDropFiltered)
+#grooming=( Filtered )
 
-#################################################
 cd ${MAINDIR}
 
-############################################
-echo " Creating run file.... "
 if [ -f ${runFile} ]; then
 	rm -rf $runFile
 fi
@@ -46,8 +44,6 @@ python ${run} -f -m \$1 -j \$2 -g \$3
 " >> ${runFile}
 chmod +x ${runFile}
 
-###########################################
-echo " Creating condor file.... "
 if [ -f ${condorFile} ]; then
 	rm -rf $condorFile
 fi
@@ -80,9 +76,7 @@ do
 	done
 done
 
-
-echo " Creating run file for no grooming.... "
-tmpRunFile='runCondor_MyAnalyzer_tmp.jdl'
+tmpRunFile='runCondor_myMCTruthJetsMatching_tmp.jdl'
 if [ -f ${tmpRunFile} ]; then
 	rm -rf $tmpRunFile
 fi
@@ -113,8 +107,7 @@ python ${run} -f -m \$1 -j \$2
 " >> ${tmpRunFile}
 chmod +x ${tmpRunFile}
 
-echo " Creating condor file for no grooming.... "
-tmpCondorFile='condor_MyAnalyzer_tmp.jdl'
+tmpCondorFile='condor_myMCTruthJetsMatching_tmp.jdl'
 if [ -f ${tmpCondorFile} ]; then
 	rm -rf $tmpCondorFile
 fi
@@ -140,7 +133,5 @@ do
 	done
 done
 
-echo " Submitting jobs to condor.... "
 condor_submit $condorFile
 condor_submit $tmpCondorFile
-echo " Have a nice day :D"
