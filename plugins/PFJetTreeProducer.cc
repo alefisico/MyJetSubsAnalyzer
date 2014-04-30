@@ -39,20 +39,20 @@ PFJetTreeProducer::PFJetTreeProducer(edm::ParameterSet const& cfg) {
 	ptMin_              = cfg.getParameter<double>                    ("ptMin");
 	etaMax_             = cfg.getParameter<double>                    ("etaMax");
 	//dEtaMax_            = cfg.getParameter<double>                    ("dEtaMax");
-	/*triggerCache_       = triggerExpression::Data(cfg.getParameterSet("triggerConfiguration"));
+	triggerCache_       = triggerExpression::Data(cfg.getParameterSet("triggerConfiguration"));
 	vtriggerAlias_      = cfg.getParameter<std::vector<std::string> > ("triggerAlias");
-	vtriggerSelection_  = cfg.getParameter<std::vector<std::string> > ("triggerSelection");*/
+	vtriggerSelection_  = cfg.getParameter<std::vector<std::string> > ("triggerSelection");
 	genSrc_             = cfg.getParameter<edm::InputTag>             ("genSrc");
 	stopMass_           = cfg.getParameter<double>                    ("stopMass");
 
-	/*if (vtriggerAlias_.size() != vtriggerSelection_.size()) {
+	if (vtriggerAlias_.size() != vtriggerSelection_.size()) {
 		cout<<"ERROR: the number of trigger aliases does not match the number of trigger names !!!"<<endl;
 		return;
 	}
 
 	for(unsigned i=0;i<vtriggerSelection_.size();i++) {
 		vtriggerSelector_.push_back(triggerExpression::parse(vtriggerSelection_[i]));
-	}*/
+	}
 }
 
 
@@ -60,13 +60,13 @@ PFJetTreeProducer::PFJetTreeProducer(edm::ParameterSet const& cfg) {
 void PFJetTreeProducer::beginJob() {
 
 	//--- book the trigger histograms ---------
-	/*triggerNamesHisto_ = fs_->make<TH1F>("TriggerNames","TriggerNames",1,0,1);
+	triggerNamesHisto_ = fs_->make<TH1F>("TriggerNames","TriggerNames",1,0,1);
 	triggerNamesHisto_->SetBit(TH1::kCanRebin);
 	for(unsigned i=0;i<vtriggerSelection_.size();i++) {
 		triggerNamesHisto_->Fill(vtriggerSelection_[i].c_str(),1);
 	}
 	triggerPassHisto_ = fs_->make<TH1F>("TriggerPass","TriggerPass",1,0,1);
-	triggerPassHisto_->SetBit(TH1::kCanRebin);*/
+	triggerPassHisto_->SetBit(TH1::kCanRebin);
   
 	//--- book the tree -----------------------
 	outTree_ = fs_->make<TTree>("events","events");
@@ -117,6 +117,11 @@ void PFJetTreeProducer::beginJob() {
 	stopBEnergy_	= new std::vector<float>;
 	stopBPhi_	= new std::vector<float>;
 	stopBPartonID_	= new std::vector<float>;
+	partonPt_	= new std::vector<float>;
+	partonEta_	= new std::vector<float>;
+	partonEnergy_	= new std::vector<float>;
+	partonPhi_	= new std::vector<float>;
+	partonID_	= new std::vector<float>;
 	outTree_->Branch("jetPt"                ,"vector<float>"     ,&pt_);
 	outTree_->Branch("jetJec"               ,"vector<float>"     ,&jec_);
 	outTree_->Branch("jetEta"               ,"vector<float>"     ,&eta_);
@@ -137,8 +142,8 @@ void PFJetTreeProducer::beginJob() {
 	outTree_->Branch("numJetConstituent"    ,"vector<float>"     ,&numJetConst_);   
 
 	//------------------------------------------------------------------
-	/*triggerResult_ = new std::vector<bool>;
-	outTree_->Branch("triggerResult","vector<bool>",&triggerResult_);*/
+	triggerResult_ = new std::vector<bool>;
+	outTree_->Branch("triggerResult","vector<bool>",&triggerResult_);
 	//------------------- MC ---------------------------------
 	outTree_->Branch("npu"                  ,&npu_               ,"npu_/I");
 	outTree_->Branch("stopsPt",	"vector<float>", 	&stopsPt_ );
@@ -155,12 +160,17 @@ void PFJetTreeProducer::beginJob() {
 	outTree_->Branch("stopBEnergy",	"vector<float>", 	&stopBEnergy_ );
 	outTree_->Branch("stopBPhi",	"vector<float>", 	&stopBPhi_ );
 	outTree_->Branch("stopBPartonID",	"vector<float>", 	&stopBPartonID_ );
+	outTree_->Branch("partonPt",	"vector<float>", 	&partonPt_ );
+	outTree_->Branch("partonEta",	"vector<float>", 	&partonEta_ );
+	outTree_->Branch("partonEnergy",	"vector<float>",&partonEnergy_ );
+	outTree_->Branch("partonPhi",	"vector<float>", 	&partonPhi_ );
+	outTree_->Branch("partonID",	"vector<float>",&partonID_ );
 }
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
 void PFJetTreeProducer::endJob() {  
-	//delete triggerResult_;
+	delete triggerResult_;
 	delete pt_;
 	delete jec_;
 	delete eta_;
@@ -193,10 +203,15 @@ void PFJetTreeProducer::endJob() {
 	delete stopBEnergy_;
 	delete stopBPhi_;
 	delete stopBPartonID_;
+	delete partonPt_;
+	delete partonEta_;
+	delete partonEnergy_;
+	delete partonPhi_;
+	delete partonID_;
 
-	/*for(unsigned i=0;i<vtriggerSelector_.size();i++) {
+	for(unsigned i=0;i<vtriggerSelector_.size();i++) {
 		delete vtriggerSelector_[i];
-	}*/
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -242,40 +257,49 @@ void PFJetTreeProducer::analyze(edm::Event const& iEvent, edm::EventSetup const&
 			
 			const Candidate * mom = p[i].mother();				// call mother particle
 
-			//////////// MCTruth Stops
-			if( abs( p[i].pdgId() ) == stopId ){
-				//cout<< p[i].pdgId() << " " << p[i].mass() << endl;
-				stopsPt_	->push_back( p[i].pt() );
-				stopsEta_	->push_back( p[i].eta() );
-				stopsMass_	->push_back( p[i].mass() );
-				stopsPhi_	->push_back( p[i].phi() );
-				numStops++;			
-			}
-			
-			//bool partonJet = ( ( abs ( p[i].pdgId() ) == 1 ) || ( abs( p[i].pdgId() == 2 ) ) || ( abs( p[i].pdgId() == 3 ) ) || ( abs( p[i].pdgId() == 4 ) ) || ( abs( p[i].pdgId() == 5 ) ) || ( abs( p[i].pdgId() == 21 ) ) );
-
-			if( mom ){
-
-				if( mom->pdgId() == stopId ){
-					stopAPt_	->push_back( p[i].pt() );
-					stopAEta_	->push_back( p[i].eta() );
-					stopAEnergy_	->push_back( p[i].energy() );
-					stopAPhi_	->push_back( p[i].phi() );
-					stopAPartonID_	->push_back( p[i].pdgId() );
-					numPartonsStopA++;			
+			if( stopMass_ != 0 ){
+				//////////// MCTruth Stops
+				if( abs( p[i].pdgId() ) == stopId ){
+					//cout<< p[i].pdgId() << " " << p[i].mass() << endl;
+					stopsPt_	->push_back( p[i].pt() );
+					stopsEta_	->push_back( p[i].eta() );
+					stopsMass_	->push_back( p[i].mass() );
+					stopsPhi_	->push_back( p[i].phi() );
+					numStops++;			
 				}
+				
+				//bool partonJet = ( ( abs ( p[i].pdgId() ) == 1 ) || ( abs( p[i].pdgId() == 2 ) ) || ( abs( p[i].pdgId() == 3 ) ) || ( abs( p[i].pdgId() == 4 ) ) || ( abs( p[i].pdgId() == 5 ) ) || ( abs( p[i].pdgId() == 21 ) ) );
 
-				if( mom->pdgId() == -stopId ){
-					stopBPt_	->push_back( p[i].pt() );
-					stopBEta_	->push_back( p[i].eta() );
-					stopBEnergy_	->push_back( p[i].energy() );
-					stopBPhi_	->push_back( p[i].phi() );
-					stopBPartonID_	->push_back( p[i].pdgId() );
-					numPartonsStopB++;			
+				if( mom ){
+
+					if( mom->pdgId() == stopId ){
+						stopAPt_	->push_back( p[i].pt() );
+						stopAEta_	->push_back( p[i].eta() );
+						stopAEnergy_	->push_back( p[i].energy() );
+						stopAPhi_	->push_back( p[i].phi() );
+						stopAPartonID_	->push_back( p[i].pdgId() );
+						numPartonsStopA++;			
+					}
+
+					if( mom->pdgId() == -stopId ){
+						stopBPt_	->push_back( p[i].pt() );
+						stopBEta_	->push_back( p[i].eta() );
+						stopBEnergy_	->push_back( p[i].energy() );
+						stopBPhi_	->push_back( p[i].phi() );
+						stopBPartonID_	->push_back( p[i].pdgId() );
+						numPartonsStopB++;			
+					}
+					//std::sort(p4Stop1B.begin(), p4Stop1B.end(), ComparePt);
+					//std::sort(p4Stop1jet.begin(), p4Stop1jet.end(), ComparePt);
+					//std::sort(p4Stop1jetsB.begin(), p4Stop1jetsB.end(), ComparePt);
 				}
-				//std::sort(p4Stop1B.begin(), p4Stop1B.end(), ComparePt);
-				//std::sort(p4Stop1jet.begin(), p4Stop1jet.end(), ComparePt);
-				//std::sort(p4Stop1jetsB.begin(), p4Stop1jetsB.end(), ComparePt);
+			//// end Signal GenParticles
+			} else {		
+				partonPt_	->push_back( p[i].pt() );
+				partonEta_	->push_back( p[i].eta() );
+				partonEnergy_	->push_back( p[i].energy() );
+				partonPhi_	->push_back( p[i].phi() );
+				partonID_	->push_back( p[i].pdgId() );
 			}
 		}  // end GenParticles loop 
 	} // If MC
@@ -294,7 +318,7 @@ void PFJetTreeProducer::analyze(edm::Event const& iEvent, edm::EventSetup const&
 
 
 	//-------------- Trigger Info -----------------------------------
-	/*triggerPassHisto_->Fill("totalEvents",1);
+	triggerPassHisto_->Fill("totalEvents",1);
 	if (triggerCache_.setEvent(iEvent,iSetup)) {
 		for(unsigned itrig=0;itrig<vtriggerSelector_.size();itrig++) {
 			bool result(false);
@@ -309,7 +333,7 @@ void PFJetTreeProducer::analyze(edm::Event const& iEvent, edm::EventSetup const&
 			}
 			triggerResult_->push_back(result);
 		}
-	}*/
+	}
      
 
 	//----- at least one good vertex -----------
@@ -434,7 +458,7 @@ void PFJetTreeProducer::initialize() {
 	numJetConst_    ->clear();
 	muf_            ->clear();
 	jec_            ->clear();
-	//triggerResult_  ->clear();
+	triggerResult_  ->clear();
 	//----- MC -------
 	npu_ = -999;
 	numStops	= -999;
@@ -454,6 +478,11 @@ void PFJetTreeProducer::initialize() {
 	stopBEnergy_ 	-> clear();
 	stopBPhi_ 	-> clear();
 	stopBPartonID_ 	-> clear();
+	partonPt_ 	-> clear();
+	partonEta_ 	-> clear();
+	partonEnergy_ 	-> clear();
+	partonPhi_ 	-> clear();
+	partonID_ -> clear();
 }
 //////////////////////////////////////////////////////////////////////////////////////////
 PFJetTreeProducer::~PFJetTreeProducer() 

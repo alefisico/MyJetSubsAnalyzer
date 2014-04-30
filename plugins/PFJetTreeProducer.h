@@ -45,7 +45,7 @@ class PFJetTreeProducer : public edm::EDAnalyzer {
 		//---- MC variables ---------------
 		int npu_;
 		int numStops, numPartonsStopA, numPartonsStopB;
-		std::vector<float> *stopsPt_, *stopsEta_, *stopsMass_, *stopsPhi_, *stopAPt_, *stopAEta_, *stopAEnergy_, *stopAPhi_, *stopAPartonID_, *stopBPt_, *stopBEta_, *stopBEnergy_, *stopBPhi_, *stopBPartonID_;
+		std::vector<float> *stopsPt_, *stopsEta_, *stopsMass_, *stopsPhi_, *stopAPt_, *stopAEta_, *stopAEnergy_, *stopAPhi_, *stopAPartonID_, *stopBPt_, *stopBEta_, *stopBEnergy_, *stopBPhi_, *stopBPartonID_, *partonPt_, *partonEta_, *partonEnergy_, *partonPhi_, *partonID_;
 };
 
 /*typedef struct {
