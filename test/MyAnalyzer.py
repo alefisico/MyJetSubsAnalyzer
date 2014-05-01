@@ -23,17 +23,20 @@ monthKey   = time.strftime("%y%m%d")
 ######################################
 def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weight, Job ):
 
+	####### for hexfarm
 	#if not final: 
 	#	outputFile = TFile( outputDir + sample + '_'+jetAlgo+'_'+grooming+'_Plots_'+dateKey+'.root', 'RECREATE' )
 	#else:
 	#	if not ( os.path.exists( outputDir + 'rootFiles/' + monthKey ) ): os.makedirs( outputDir + 'rootFiles/' + monthKey )
 	#	outputFile = TFile( outputDir + 'rootFiles/' + monthKey + '/' + sample + '_'+jetAlgo+'_'+grooming+'_Plots.root', 'RECREATE' )
 
-	if not ( os.path.exists( outputDir + sample + '/rootFiles/' ) ): os.makedirs( outputDir + sample +'/rootFiles/' )
+	####### for LPC
+	if not ( os.path.exists( outputDir + sample + '_rootFiles/' ) ): os.makedirs( outputDir + sample +'_rootFiles/' )
 	if 'QCD' in sample:
-		outputFile = TFile( outputDir + sample + '/rootFiles/' + sample + '_'+jetAlgo+'_'+grooming+'_'+str(Job)+'_Plots.root', 'RECREATE' )
+		outputFileName = outputDir + sample + '_rootFiles/' + sample + '_'+jetAlgo+'_'+grooming+'_'+str(Job)+'_Plots.root'
 	else:
-		outputFile = TFile( outputDir + sample + '/rootFiles/' + sample + '_'+jetAlgo+'_'+grooming+'_Plots.root', 'RECREATE' )
+		outputFileName = outputDir + sample + '/rootFiles/' + sample + '_'+jetAlgo+'_'+grooming+'_Plots.root'
+	outputFile = TFile( outputFileName , 'RECREATE' )
 
 	######## Extra, send print to file
 	#if couts == False :
@@ -45,16 +48,16 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 	####################################################################################################################################### Histograms
 	nBinsDeltaR = 50
 	maxDeltaR = 5. 
-	maxMass = 300
-	maxPt = 500
-	nBinsMass = 30  #int(round( maxMass/5 ))
-	nBinsPt = 100  #int(round( maxPt/5 ))
+	maxMass = 500
+	maxPt = 1000
+	nBinsMass = 100  #int(round( maxMass/5 ))
+	nBinsPt = 200  #int(round( maxPt/5 ))
 	nBinsEta = 41
 	maxEta = 4.1
 	nBinsTau = 40
 	maxTau = 1.
-	nBinsHT = 120
-	maxHT = 1200.
+	nBinsHT = 150
+	maxHT = 1500.
 
 	#####################################################
 	#### Only kinematic cuts - (pt > 30, |eta| < 2.5 )
@@ -463,7 +466,7 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 	outputFile.Write()
 
 	##### Closing
-	#print 'Writing output file: '+ outputDir + sample + '_'+jetAlgo+'_'+grooming+'_Plots_'+dateKey+'.root'
+	print 'Writing output file: '+ outputFileName
 	outputFile.Close()
 
 	###### Extra: send prints to file
@@ -499,28 +502,33 @@ if __name__ == '__main__':
 	samples = options.samples
 	Job = options.nJob
 
-	if mass == 50: weight = 1
-	elif mass == 100: weight = 19500*559.757/100000
-	elif mass == 200: weight = 19500*18.5245/100000
-
 	if 'QCD' in samples: 
 		sample = 'QCD_HT-'+QCD
-		#list = os.popen('ls -1 /cms/gomez/Stops/st_jj/patTuples/'+sample+'/results/140410/*.root').read().splitlines()
-		list = os.popen('ls -1 /eos/uscms/store/user/algomez/QCD_HT-500To1000_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
-		#filesPerJob = round(len(tmpList)/50)+1
-		#iniList = int(filesPerJob*Job)
-		#finList = int(filesPerJob*(Job+1)-1)
-		#print filesPerJob, iniList, finList
-		#list = tmpList[iniList:finList]
+		#list = os.popen('ls -1 /eos/uscms/store/user/algomez/'+sample+'_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
+		tmpList = os.popen('ls -1 /eos/uscms/store/user/algomez/'+sample+'_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
+		filesPerJob = round(len(tmpList)/50)+1
+		iniList = int(filesPerJob*Job)
+		finList = int(filesPerJob*(Job+1)-1)
+		print filesPerJob, iniList, finList
+		list = tmpList[iniList:finList]
 		inputList = [i if i.startswith('file') else 'file:' + i for i in list]
-	else: 
+		if '250To500' in QCD: weight = 19500*276000/27043479
+		elif '500To1000' in QCD: weight = 19500*8426/27490179
+		else: weight = 19500*204/2
+	elif 'Signal' in samples: 
 		sample = 'stopUDD312_'+str(mass)
 		#list = os.popen('ls -1 /cms/gomez/Substructure/Generation/Simulation/CMSSW_5_3_2_patch4/src/mySimulations/stop_UDD312_50/aodsim/*.root').read().splitlines()
 		list = os.popen('ls -1 /cms/gomez/Stops/st_jj/patTuples/'+sample+'/results/140417/*.root').read().splitlines()
 		#list = [ '/cms/gomez/Stops/st_jj/patTuples/stopUDD312_50_tree_test_grom.root' ]
 		inputList = [i if i.startswith('file') else 'file:' + i for i in list]
+		if mass == 50: weight = 1
+		elif mass == 100: weight = 19500*559.757/100000
+		elif mass == 200: weight = 19500*18.5245/100000
 
-	outputDir = '/uscms_data/d3/algomez/files/'
+
+	outputDir = '/uscms_data/d3/algomez/files/QCD_8TeV/treeResults/'
+	#outputDir = '/eos/uscms/store/user/algomez/'
+	#outputDir = '/cms/gomez/Stops/st_jj/treeResults/'
 	print inputList
 
 	if not final : myAnalyzer( inputList[:2], outputDir, sample, couts, final, jetAlgo, grooming, weight, Job )
