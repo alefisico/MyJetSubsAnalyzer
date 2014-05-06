@@ -232,6 +232,10 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 	cut_jet3Tau3vsTau2 	= TH2F('h_cut_jet3Tau3vsTau2_'+jetAlgo+'_'+grooming, 'h_cut_jet3Tau3vsTau2_'+jetAlgo, nBinsTau,  0., maxTau, nBinsTau,  0., maxTau)
 	#####################################################################################################################################
 
+	###################################### Get Trigger Histos
+	tmpTriggerNames = TH1F( 'h_TriggerNames', 'h_TriggerNames', 16, 0, 16 )
+	tmpTriggerPass = TH1F( 'h_TriggerPass', 'h_TriggerPass', 16, 0, 16 )
+
 	###################################### Get GenTree 
 	events = TChain( 'PFJet_'+jetAlgo+grooming+'/events' )
 
@@ -239,6 +243,11 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 	for filename in infile:
 		print("Adding file: " + filename)
 		events.Add(filename)
+		f1 = TFile(filename)
+		tmpTN = f1.Get( 'PFJet_'+jetAlgo+grooming+'/TriggerNames') 
+		tmpTP = f1.Get( 'PFJet_'+jetAlgo+grooming+'/TriggerPass') 
+		tmpTriggerNames.Add( tmpTN )
+		tmpTriggerPass.Add( tmpTP )
 
 	##### read the tree & fill histosgrams -
 	numEntries = events.GetEntries()
@@ -362,23 +371,23 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 
 			####### 4th Leading Jet
 			if len( listP4Jets ) > 3 :
-				jet1Pt.Fill( listP4Jets[3][0].Pt(), weight )
-				jet1Eta.Fill( listP4Jets[3][0].Eta(), weight )
-				jet1Phi.Fill( listP4Jets[3][0].Phi(), weight )
-				jet1Mass.Fill( listP4Jets[3][0].M(), weight )
-				jet1PtvsMass.Fill( listP4Jets[3][0].Pt(), listP4Jets[3][0].M() )
-				jet1Area.Fill( listP4Jets[3][4], weight )
-				jet1Tau1.Fill( listP4Jets[3][1], weight )
-				jet1Tau2.Fill( listP4Jets[3][2], weight )
-				jet1Tau3.Fill( listP4Jets[3][3], weight )
-				jet1Tau21.Fill( listP4Jets[3][2] / listP4Jets[3][1] )
-				jet1Tau31.Fill( listP4Jets[3][3] / listP4Jets[3][1] )
-				jet1Tau32.Fill( listP4Jets[3][3] / listP4Jets[3][2] )
-				jet1Tau2vsTau1.Fill( listP4Jets[3][1], listP4Jets[3][2] )
-				jet1Tau3vsTau1.Fill( listP4Jets[3][1], listP4Jets[3][3] )
-				jet1Tau3vsTau2.Fill( listP4Jets[3][2], listP4Jets[3][3] )
+				jet4Pt.Fill( listP4Jets[3][0].Pt(), weight )
+				jet4Eta.Fill( listP4Jets[3][0].Eta(), weight )
+				jet4Phi.Fill( listP4Jets[3][0].Phi(), weight )
+				jet4Mass.Fill( listP4Jets[3][0].M(), weight )
+				jet4PtvsMass.Fill( listP4Jets[3][0].Pt(), listP4Jets[3][0].M() )
+				jet4Area.Fill( listP4Jets[3][4], weight )
+				jet4Tau1.Fill( listP4Jets[3][1], weight )
+				jet4Tau2.Fill( listP4Jets[3][2], weight )
+				jet4Tau3.Fill( listP4Jets[3][3], weight )
+				jet4Tau21.Fill( listP4Jets[3][2] / listP4Jets[3][1] )
+				jet4Tau31.Fill( listP4Jets[3][3] / listP4Jets[3][1] )
+				jet4Tau32.Fill( listP4Jets[3][3] / listP4Jets[3][2] )
+				jet4Tau2vsTau1.Fill( listP4Jets[3][1], listP4Jets[3][2] )
+				jet4Tau3vsTau1.Fill( listP4Jets[3][1], listP4Jets[3][3] )
+				jet4Tau3vsTau2.Fill( listP4Jets[3][2], listP4Jets[3][3] )
 
-			if HT > 900:
+			if HT > 650:
 				for k in range( len( listP4Jets ) ):
 					cut_jetPt.Fill( listP4Jets[k][0].Pt(), weight )
 					cut_jetEta.Fill( listP4Jets[k][0].Eta(), weight )
@@ -505,31 +514,33 @@ if __name__ == '__main__':
 	if 'QCD' in samples: 
 		sample = 'QCD_HT-'+QCD
 		#list = os.popen('ls -1 /eos/uscms/store/user/algomez/'+sample+'_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
-		tmpList = os.popen('ls -1 /eos/uscms/store/user/algomez/'+sample+'_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
-		filesPerJob = round(len(tmpList)/50)+1
+		tmpList = os.popen('ls -1v /eos/uscms/store/user/algomez/'+sample+'_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
+		filesPerJob = round(len(tmpList)/25)+1
 		iniList = int(filesPerJob*Job)
 		finList = int(filesPerJob*(Job+1)-1)
 		print filesPerJob, iniList, finList
 		list = tmpList[iniList:finList]
+		#list = tmpList[0:2]
 		inputList = [i if i.startswith('file') else 'file:' + i for i in list]
-		if '250To500' in QCD: weight = 19500*276000/27043479
-		elif '500To1000' in QCD: weight = 19500*8426/27490179
-		else: weight = 19500*204/2
+		if '250To500' in QCD: weight = 19500*276000/27062078.0
+		elif '500To1000' in QCD: weight = 19500*8426/30599292.0
+		else: weight = 19500*204/13843863.0
 	elif 'Signal' in samples: 
 		sample = 'stopUDD312_'+str(mass)
 		#list = os.popen('ls -1 /cms/gomez/Substructure/Generation/Simulation/CMSSW_5_3_2_patch4/src/mySimulations/stop_UDD312_50/aodsim/*.root').read().splitlines()
-		list = os.popen('ls -1 /cms/gomez/Stops/st_jj/patTuples/'+sample+'/results/140417/*.root').read().splitlines()
+		list = os.popen('ls -1v /cms/gomez/Stops/st_jj/patTuples/'+sample+'/results/140417/*.root').read().splitlines()
 		#list = [ '/cms/gomez/Stops/st_jj/patTuples/stopUDD312_50_tree_test_grom.root' ]
 		inputList = [i if i.startswith('file') else 'file:' + i for i in list]
 		if mass == 50: weight = 1
-		elif mass == 100: weight = 19500*559.757/100000
-		elif mass == 200: weight = 19500*18.5245/100000
+		elif mass == 100: weight = 19500*559.757/100000.0
+		elif mass == 200: weight = 19500*18.5245/100000.0
 
 
 	outputDir = '/uscms_data/d3/algomez/files/QCD_8TeV/treeResults/'
 	#outputDir = '/eos/uscms/store/user/algomez/'
 	#outputDir = '/cms/gomez/Stops/st_jj/treeResults/'
 	print inputList
+	print weight
 
 	if not final : myAnalyzer( inputList[:2], outputDir, sample, couts, final, jetAlgo, grooming, weight, Job )
 	else: myAnalyzer( inputList, outputDir, sample, couts, final, jetAlgo, grooming, weight, Job )
