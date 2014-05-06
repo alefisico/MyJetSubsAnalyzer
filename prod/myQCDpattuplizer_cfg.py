@@ -15,8 +15,8 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.GlobalTag.globaltag = 'START53_V7E::All'
 
 process.TFileService=cms.Service("TFileService",
-		fileName=cms.string( 'QCD_HT1000ToInf_8TeV_tree.root' ),
-		#fileName=cms.string( 'QCD_250To500_8TeV_tree.root' ),
+		#fileName=cms.string( 'QCD_HT1000ToInf_8TeV_tree.root' ),
+		fileName=cms.string( 'QCD_500To1000_8TeV_tree.root' ),
 		)
 
 ##-------------------- Define the source  ----------------------------
@@ -31,6 +31,9 @@ process.source = cms.Source("PoolSource",
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 ########################### Loading PATtuplizers
+#### Jet Corrections
+inputJetCorrLabel = ['L1FastJet', 'L2Relative', 'L3Absolute']
+#### Pat for diff jet algos
 process.load('jetSubs.MyJetSubsAnalyzer.PAT_ak4jets_simple_cff')
 process.load('jetSubs.MyJetSubsAnalyzer.PAT_ak5jets_simple_cff')
 process.load('jetSubs.MyJetSubsAnalyzer.PAT_ak7jets_simple_cff')
