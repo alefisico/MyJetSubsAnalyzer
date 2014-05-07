@@ -307,7 +307,7 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 			cut_simpleKinematic =  events.jetPt[ijet] > 30 and abs( events.jetEta[ijet] ) < 2.5 
 			HT += events.jetPt[ijet]
 		cut_minTwoJets = events.nJets > 1
-		cut_jet1pt = events.jetPt[0] > 200
+		cut_jet1pt = cut_minTwoJets and events.jetPt[0] > 200
 		cut_HT = HT > 850
 
 
@@ -325,12 +325,12 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 				jetTau1.Fill( events.jetTau1[k], weight ) 
 				jetTau2.Fill( events.jetTau2[k], weight ) 
 				jetTau3.Fill( events.jetTau3[k], weight ) 
-				jetTau21.Fill( events.jetTau2[k] / events.jetTau1[k] ) 
-				jetTau31.Fill( events.jetTau3[k] / events.jetTau1[k] ) 
-				jetTau32.Fill( events.jetTau3[k] / events.jetTau2[k] ) 
 				jetTau2vsTau1.Fill( events.jetTau1[k], events.jetTau2[k] )  
 				jetTau3vsTau1.Fill( events.jetTau1[k], events.jetTau3[k] )
 				jetTau3vsTau2.Fill( events.jetTau2[k], events.jetTau3[k] ) 
+				if not ( events.jetTau1[k] == 0 ) : jetTau21.Fill( events.jetTau2[k] / events.jetTau1[k] ) 
+				if not ( events.jetTau1[k] == 0 ) : jetTau31.Fill( events.jetTau3[k] / events.jetTau1[k] ) 
+				if not ( events.jetTau2[k] == 0 ) : jetTau32.Fill( events.jetTau3[k] / events.jetTau2[k] ) 
 
 			numberJets.Fill( events.nJets, weight )
 			ht.Fill( HT, weight )
@@ -344,42 +344,42 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 			jet1Mass.Fill( events.jetMass[0], weight )
 			jet1PtvsMass.Fill( events.jetPt[0], events.jetMass[0] )
 			jet1Area.Fill( events.jetArea[0], weight )
+			jet1Ptvsht.Fill( events.jetPt[0], HT )
+			jet1Massvsht.Fill( events.jetPt[0], HT )
 			jet1Tau1.Fill( events.jetTau1[0], weight )
 			jet1Tau2.Fill( events.jetTau2[0], weight )
 			jet1Tau3.Fill( events.jetTau3[0], weight )
-			jet1Tau21.Fill( events.jetTau2[0] / events.jetTau1[0] )
-			jet1Tau31.Fill( events.jetTau3[0] / events.jetTau1[0] )
-			jet1Tau32.Fill( events.jetTau3[0] / events.jetTau2[0] )
 			jet1Tau2vsTau1.Fill( events.jetTau1[0], events.jetTau2[0] )
 			jet1Tau3vsTau1.Fill( events.jetTau1[0], events.jetTau3[0] )
 			jet1Tau3vsTau2.Fill( events.jetTau2[0], events.jetTau3[0] )
-			jet1Ptvsht.Fill( events.jetPt[0], HT )
-			jet1Massvsht.Fill( events.jetPt[0], HT )
-			jet1MassvsTau21.Fill( events.jetPt[0], events.jetTau2[0] / events.jetTau1[0] )
+			if not ( events.jetTau1[0] == 0 ) : jet1Tau21.Fill( events.jetTau2[0] / events.jetTau1[0] )
+			if not ( events.jetTau1[0] == 0 ) : jet1Tau31.Fill( events.jetTau3[0] / events.jetTau1[0] )
+			if not ( events.jetTau2[0] == 0 ) : jet1Tau32.Fill( events.jetTau3[0] / events.jetTau2[0] )
+			if not ( events.jetTau1[0] == 0 ) : jet1MassvsTau21.Fill( events.jetPt[0], events.jetTau2[0] / events.jetTau1[0] )
 
-#			####### 2nd Leading Jet
+			####### 2nd Leading Jet
 			jet2Pt.Fill( events.jetPt[1], weight )
 			jet2Eta.Fill( events.jetEta[1], weight )
 			jet2Phi.Fill( events.jetPhi[1], weight )
 			jet2Mass.Fill( events.jetMass[1], weight )
 			jet2PtvsMass.Fill( events.jetPt[1], events.jetMass[1] )
 			jet2Area.Fill( events.jetArea[1], weight )
+			jet2Ptvsht.Fill( events.jetPt[1], HT )
+			jet2Massvsht.Fill( events.jetPt[1], HT )
 			jet2Tau1.Fill( events.jetTau1[1], weight )
 			jet2Tau2.Fill( events.jetTau2[1], weight )
 			jet2Tau3.Fill( events.jetTau3[1], weight )
-			jet2Tau21.Fill( events.jetTau2[1] / events.jetTau1[1] )
-			jet2Tau31.Fill( events.jetTau3[1] / events.jetTau1[1] )
-			jet2Tau32.Fill( events.jetTau3[1] / events.jetTau2[1] )
 			jet2Tau2vsTau1.Fill( events.jetTau1[1], events.jetTau2[1] )
 			jet2Tau3vsTau1.Fill( events.jetTau1[1], events.jetTau3[1] )
 			jet2Tau3vsTau2.Fill( events.jetTau2[1], events.jetTau3[1] )
-			jet2Ptvsht.Fill( events.jetPt[1], HT )
-			jet2Massvsht.Fill( events.jetPt[1], HT )
-			jet2MassvsTau21.Fill( events.jetPt[1], events.jetTau2[1] / events.jetTau1[1] )
+			if not ( events.jetTau1[1] == 0 ) : jet2Tau21.Fill( events.jetTau2[1] / events.jetTau1[1] )
+			if not ( events.jetTau1[1] == 0 ) : jet2Tau31.Fill( events.jetTau3[1] / events.jetTau1[1] )
+			if not ( events.jetTau2[1] == 0 ) : jet2Tau32.Fill( events.jetTau3[1] / events.jetTau2[1] )
+			if not ( events.jetTau1[1] == 0 ) : jet2MassvsTau21.Fill( events.jetPt[1], events.jetTau2[1] / events.jetTau1[1] )
 
 			####### Leading and Second Leading
 			jet1vsjet2Mass.Fill( events.jetMass[0], events.jetMass[1] )
-			jet1vsjet2Tau21.Fill(  events.jetTau2[0] / events.jetTau1[0], events.jetTau2[1] / events.jetTau1[1] )
+			if not ( events.jetTau1[1] == 0 and events.jetTau1[0] == 0 ) : jet1vsjet2Tau21.Fill(  events.jetTau2[0] / events.jetTau1[0], events.jetTau2[1] / events.jetTau1[1] )
 
 			####### 3rd Leading Jet
 			if events.nJets > 2:
@@ -389,17 +389,17 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 				jet3Mass.Fill( events.jetMass[2], weight )
 				jet3PtvsMass.Fill( events.jetPt[2], events.jetMass[2] )
 				jet3Area.Fill( events.jetArea[2], weight )
+				jet3Ptvsht.Fill( events.jetPt[2], HT )
+				jet3Massvsht.Fill( events.jetPt[2], HT )
 				jet3Tau1.Fill( events.jetTau1[2], weight )
 				jet3Tau2.Fill( events.jetTau2[2], weight )
 				jet3Tau3.Fill( events.jetTau3[2], weight )
-				jet3Tau21.Fill( events.jetTau2[2] / events.jetTau1[2] )
-				jet3Tau31.Fill( events.jetTau3[2] / events.jetTau1[2] )
-				jet3Tau32.Fill( events.jetTau3[2] / events.jetTau2[2] )
 				jet3Tau2vsTau1.Fill( events.jetTau1[2], events.jetTau2[2] )
 				jet3Tau3vsTau1.Fill( events.jetTau1[2], events.jetTau3[2] )
 				jet3Tau3vsTau2.Fill( events.jetTau2[2], events.jetTau3[2] )
-				jet3Ptvsht.Fill( events.jetPt[2], HT )
-				jet3Massvsht.Fill( events.jetPt[2], HT )
+				if not ( events.jetTau1[2] == 0 ) : jet3Tau21.Fill( events.jetTau2[2] / events.jetTau1[2] )
+				if not ( events.jetTau1[2] == 0 ) : jet3Tau31.Fill( events.jetTau3[2] / events.jetTau1[2] )
+				if not ( events.jetTau2[2] == 0 ) : jet3Tau32.Fill( events.jetTau3[2] / events.jetTau2[2] )
 
 			####### 4th Leading Jet
 			if events.nJets > 3:
@@ -412,14 +412,14 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 				jet4Tau1.Fill( events.jetTau1[3], weight )
 				jet4Tau2.Fill( events.jetTau2[3], weight )
 				jet4Tau3.Fill( events.jetTau3[3], weight )
-				jet4Tau21.Fill( events.jetTau2[3] / events.jetTau1[3] )
-				jet4Tau31.Fill( events.jetTau3[3] / events.jetTau1[3] )
-				jet4Tau32.Fill( events.jetTau3[3] / events.jetTau2[3] )
+				jet4Ptvsht.Fill( events.jetPt[3], HT )
+				jet4Massvsht.Fill( events.jetPt[3], HT )
 				jet4Tau2vsTau1.Fill( events.jetTau1[3], events.jetTau2[3] )
 				jet4Tau3vsTau1.Fill( events.jetTau1[3], events.jetTau3[3] )
 				jet4Tau3vsTau2.Fill( events.jetTau2[3], events.jetTau3[3] )
-				jet4Ptvsht.Fill( events.jetPt[3], HT )
-				jet4Massvsht.Fill( events.jetPt[3], HT )
+				if not ( events.jetTau1[3] == 0 ) : jet4Tau21.Fill( events.jetTau2[3] / events.jetTau1[3] )
+				if not ( events.jetTau1[3] == 0 ) : jet4Tau31.Fill( events.jetTau3[3] / events.jetTau1[3] )
+				if not ( events.jetTau2[3] == 0 ) : jet4Tau32.Fill( events.jetTau3[3] / events.jetTau2[3] )
 
 			if cut_jet1pt and cut_HT:
 
@@ -434,18 +434,18 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 				cut_jet1Mass.Fill( events.jetMass[0], weight )
 				cut_jet1PtvsMass.Fill( events.jetPt[0], events.jetMass[0] )
 				cut_jet1Area.Fill( events.jetArea[0], weight )
+				cut_jet1Ptvsht.Fill( events.jetPt[0], HT )
+				cut_jet1Massvsht.Fill( events.jetPt[0], HT )
 				cut_jet1Tau1.Fill( events.jetTau1[0], weight )
 				cut_jet1Tau2.Fill( events.jetTau2[0], weight )
 				cut_jet1Tau3.Fill( events.jetTau3[0], weight )
-				cut_jet1Tau21.Fill( events.jetTau2[0] / events.jetTau1[0] )
-				cut_jet1Tau31.Fill( events.jetTau3[0] / events.jetTau1[0] )
-				cut_jet1Tau32.Fill( events.jetTau3[0] / events.jetTau2[0] )
 				cut_jet1Tau2vsTau1.Fill( events.jetTau1[0], events.jetTau2[0] )
 				cut_jet1Tau3vsTau1.Fill( events.jetTau1[0], events.jetTau3[0] )
 				cut_jet1Tau3vsTau2.Fill( events.jetTau2[0], events.jetTau3[0] )
-				cut_jet1Ptvsht.Fill( events.jetPt[0], HT )
-				cut_jet1Massvsht.Fill( events.jetPt[0], HT )
-				cut_jet1MassvsTau21.Fill( events.jetPt[0], events.jetTau2[0] / events.jetTau1[0] )
+				if not ( events.jetTau1[0] == 0 ) : cut_jet1Tau21.Fill( events.jetTau2[0] / events.jetTau1[0] )
+				if not ( events.jetTau1[0] == 0 ) : cut_jet1Tau31.Fill( events.jetTau3[0] / events.jetTau1[0] )
+				if not ( events.jetTau2[0] == 0 ) : cut_jet1Tau32.Fill( events.jetTau3[0] / events.jetTau2[0] )
+				if not ( events.jetTau1[0] == 0 ) : cut_jet1MassvsTau21.Fill( events.jetPt[0], events.jetTau2[0] / events.jetTau1[0] )
 
 	#			####### 2nd Leading Jet
 				cut_jet2Pt.Fill( events.jetPt[1], weight )
@@ -454,22 +454,22 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 				cut_jet2Mass.Fill( events.jetMass[1], weight )
 				cut_jet2PtvsMass.Fill( events.jetPt[1], events.jetMass[1] )
 				cut_jet2Area.Fill( events.jetArea[1], weight )
+				cut_jet2Ptvsht.Fill( events.jetPt[1], HT )
+				cut_jet2Massvsht.Fill( events.jetPt[1], HT )
 				cut_jet2Tau1.Fill( events.jetTau1[1], weight )
 				cut_jet2Tau2.Fill( events.jetTau2[1], weight )
 				cut_jet2Tau3.Fill( events.jetTau3[1], weight )
-				cut_jet2Tau21.Fill( events.jetTau2[1] / events.jetTau1[1] )
-				cut_jet2Tau31.Fill( events.jetTau3[1] / events.jetTau1[1] )
-				cut_jet2Tau32.Fill( events.jetTau3[1] / events.jetTau2[1] )
 				cut_jet2Tau2vsTau1.Fill( events.jetTau1[1], events.jetTau2[1] )
 				cut_jet2Tau3vsTau1.Fill( events.jetTau1[1], events.jetTau3[1] )
 				cut_jet2Tau3vsTau2.Fill( events.jetTau2[1], events.jetTau3[1] )
-				cut_jet2Ptvsht.Fill( events.jetPt[1], HT )
-				cut_jet2Massvsht.Fill( events.jetPt[1], HT )
-				cut_jet2MassvsTau21.Fill( events.jetPt[1], events.jetTau2[1] / events.jetTau1[1] )
+				if not ( events.jetTau1[1] == 0 ) : cut_jet2Tau21.Fill( events.jetTau2[1] / events.jetTau1[1] )
+				if not ( events.jetTau1[1] == 0 ) : cut_jet2Tau31.Fill( events.jetTau3[1] / events.jetTau1[1] )
+				if not ( events.jetTau2[1] == 0 ) : cut_jet2Tau32.Fill( events.jetTau3[1] / events.jetTau2[1] )
+				if not ( events.jetTau1[1] == 0 ) : cut_jet2MassvsTau21.Fill( events.jetPt[1], events.jetTau2[1] / events.jetTau1[1] )
 
 				####### Leading and Second Leading
 				cut_jet1vsjet2Mass.Fill( events.jetMass[0], events.jetMass[1] )
-				cut_jet1vsjet2Tau21.Fill(  events.jetTau2[0] / events.jetTau1[0], events.jetTau2[1] / events.jetTau1[1] )
+				if not ( events.jetTau1[1] == 0 and events.jetTau1[0] == 0 ) : cut_jet1vsjet2Tau21.Fill(  events.jetTau2[0] / events.jetTau1[0], events.jetTau2[1] / events.jetTau1[1] )
 
 
 
@@ -521,12 +521,12 @@ if __name__ == '__main__':
 		sample = 'QCD_HT-'+QCD
 		#list = os.popen('ls -1 /eos/uscms/store/user/algomez/'+sample+'_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
 		tmpList = os.popen('ls -1v /eos/uscms/store/user/algomez/'+sample+'_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
-		filesPerJob = round(len(tmpList)/25)+1
+		filesPerJob = round(len(tmpList)/30)+1
 		iniList = int(filesPerJob*Job)
 		finList = int(filesPerJob*(Job+1)-1)
 		print filesPerJob, iniList, finList
-		#list = tmpList[iniList:finList]
-		list = tmpList[0:2]
+		list = tmpList[iniList:finList]
+		#list = tmpList[0:2]
 		inputList = [i if i.startswith('file') else 'file:' + i for i in list]
 		if '250To500' in QCD: weight = 19500*276000/27062078.0
 		elif '500To1000' in QCD: weight = 19500*8426/30599292.0
