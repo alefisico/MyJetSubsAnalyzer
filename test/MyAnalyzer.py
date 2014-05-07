@@ -2,9 +2,9 @@
 
 '''
 File: MyAnalyzer.py --mass 50 (optional) --debug -- final --jetAlgo AK5
-Author: Alejandro Gomez Es5.nosa
+Author: Alejandro Gomez Espinosa
 Email: gomez@physics.rutgers.edu
-Description: 
+Description: My Analyzer 
 '''
 
 import sys,os,time
@@ -20,26 +20,26 @@ dateKey   = time.strftime("%y%m%d%H%M")
 monthKey   = time.strftime("%y%m%d")
 
 ######################################
-def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weight, Job ):
+def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weight, Job, FNAL ):
 
-	####### for hexfarm
-	#if not final: 
-	#	outputFile = TFile( outputDir + sample + '_'+jetAlgo+'_'+grooming+'_Plots_'+dateKey+'.root', 'RECREATE' )
-	#else:
-	#	if not ( os.path.exists( outputDir + 'rootFiles/' + monthKey ) ): os.makedirs( outputDir + 'rootFiles/' + monthKey )
-	#	outputFile = TFile( outputDir + 'rootFiles/' + monthKey + '/' + sample + '_'+jetAlgo+'_'+grooming+'_Plots.root', 'RECREATE' )
-
-	####### for LPC
-	if final:
-		if not ( os.path.exists( outputDir + sample + '_rootFiles/' ) ): os.makedirs( outputDir + sample +'_rootFiles/' )
-		if 'QCD' in sample:
-			outputFileName = outputDir + sample + '_rootFiles/' + sample + '_'+jetAlgo+'_'+grooming+'_'+str(Job)+'_Plots.root'
-		elif 'Data' in sample:
-			outputFileName = outputDir + sample + '_rootFiles/' + sample + '_'+jetAlgo+'_'+grooming+'_'+str(Job)+'_Plots.root'
+	if FNAL:
+		if final:
+			if not ( os.path.exists( outputDir + sample + '_rootFiles/' ) ): os.makedirs( outputDir + sample +'_rootFiles/' )
+			if 'QCD' in sample:
+				outputFileName = outputDir + sample + '_rootFiles/' + sample + '_'+jetAlgo+'_'+grooming+'_'+str(Job)+'_Plots.root'
+			elif 'Data' in sample:
+				outputFileName = outputDir + sample + '_rootFiles/' + sample + '_'+jetAlgo+'_'+grooming+'_'+str(Job)+'_Plots.root'
+			else:
+				outputFileName = outputDir + sample + '/rootFiles/' + sample + '_'+jetAlgo+'_'+grooming+'_Plots.root'
 		else:
-			outputFileName = outputDir + sample + '/rootFiles/' + sample + '_'+jetAlgo+'_'+grooming+'_Plots.root'
+			outputFileName = sample + '_'+jetAlgo+'_'+grooming+'_Plots_TEST.root'
+
 	else:
-		outputFileName = sample + '_'+jetAlgo+'_'+grooming+'_Plots_TEST.root'
+		if not final: 
+			outputFileName = outputDir + sample + '_'+jetAlgo+'_'+grooming+'_Plots_'+dateKey+'.root'
+		else:
+			if not ( os.path.exists( outputDir + 'rootFiles/' + monthKey ) ): os.makedirs( outputDir + 'rootFiles/' + monthKey )
+			outputFileName = outputDir + 'rootFiles/' + monthKey + '/' + sample + '_'+jetAlgo+'_'+grooming+'_Plots.root'
 
 
 	outputFile = TFile( outputFileName , 'RECREATE' )
@@ -306,6 +306,18 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 		for ijet in range( events.nJets ):
 			cut_simpleKinematic =  events.jetPt[ijet] > 30 and abs( events.jetEta[ijet] ) < 2.5 
 			HT += events.jetPt[ijet]
+			if events.nJets > 0:
+				jet1Tau1_NOZero = events.jetTau1[0] != 0
+				jet1Tau2_NOZero = events.jetTau2[0] != 0
+			if events.nJets > 1:
+				jet2Tau2_NOZero = events.jetTau2[1] != 0
+				jet2Tau1_NOZero = events.jetTau1[1] != 0
+			if events.nJets > 2:
+				jet3Tau2_NOZero = events.jetTau2[2] != 0
+				jet3Tau1_NOZero = events.jetTau1[2] != 0
+			if events.nJets > 3:
+				jet4Tau1_NOZero = events.jetTau1[3] != 0
+				jet4Tau2_NOZero = events.jetTau2[3] != 0
 		cut_minTwoJets = events.nJets > 1
 		cut_jet1pt = cut_minTwoJets and events.jetPt[0] > 200
 		cut_HT = HT > 850
@@ -352,10 +364,12 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 			jet1Tau2vsTau1.Fill( events.jetTau1[0], events.jetTau2[0] )
 			jet1Tau3vsTau1.Fill( events.jetTau1[0], events.jetTau3[0] )
 			jet1Tau3vsTau2.Fill( events.jetTau2[0], events.jetTau3[0] )
-			if not ( events.jetTau1[0] == 0 ) : jet1Tau21.Fill( events.jetTau2[0] / events.jetTau1[0] )
-			if not ( events.jetTau1[0] == 0 ) : jet1Tau31.Fill( events.jetTau3[0] / events.jetTau1[0] )
-			if not ( events.jetTau2[0] == 0 ) : jet1Tau32.Fill( events.jetTau3[0] / events.jetTau2[0] )
-			if not ( events.jetTau1[0] == 0 ) : jet1MassvsTau21.Fill( events.jetPt[0], events.jetTau2[0] / events.jetTau1[0] )
+			if jet1Tau1_NOZero: 
+				jet1Tau21.Fill( events.jetTau2[0] / events.jetTau1[0] )
+				jet1Tau31.Fill( events.jetTau3[0] / events.jetTau1[0] )
+				jet1MassvsTau21.Fill( events.jetPt[0], events.jetTau2[0] / events.jetTau1[0] )
+			if jet1Tau2_NOZero: 
+				jet1Tau32.Fill( events.jetTau3[0] / events.jetTau2[0] )
 
 			####### 2nd Leading Jet
 			jet2Pt.Fill( events.jetPt[1], weight )
@@ -372,14 +386,16 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 			jet2Tau2vsTau1.Fill( events.jetTau1[1], events.jetTau2[1] )
 			jet2Tau3vsTau1.Fill( events.jetTau1[1], events.jetTau3[1] )
 			jet2Tau3vsTau2.Fill( events.jetTau2[1], events.jetTau3[1] )
-			if not ( events.jetTau1[1] == 0 ) : jet2Tau21.Fill( events.jetTau2[1] / events.jetTau1[1] )
-			if not ( events.jetTau1[1] == 0 ) : jet2Tau31.Fill( events.jetTau3[1] / events.jetTau1[1] )
-			if not ( events.jetTau2[1] == 0 ) : jet2Tau32.Fill( events.jetTau3[1] / events.jetTau2[1] )
-			if not ( events.jetTau1[1] == 0 ) : jet2MassvsTau21.Fill( events.jetPt[1], events.jetTau2[1] / events.jetTau1[1] )
+			if jet2Tau1_NOZero: 
+				jet2Tau21.Fill( events.jetTau2[1] / events.jetTau1[1] )
+				jet2Tau31.Fill( events.jetTau3[1] / events.jetTau1[1] )
+				jet2MassvsTau21.Fill( events.jetPt[1], events.jetTau2[1] / events.jetTau1[1] )
+			if jet2Tau2_NOZero: 
+				jet2Tau32.Fill( events.jetTau3[1] / events.jetTau2[1] )
 
 			####### Leading and Second Leading
 			jet1vsjet2Mass.Fill( events.jetMass[0], events.jetMass[1] )
-			if not ( events.jetTau1[1] == 0 and events.jetTau1[0] == 0 ) : jet1vsjet2Tau21.Fill(  events.jetTau2[0] / events.jetTau1[0], events.jetTau2[1] / events.jetTau1[1] )
+			if jet1Tau1_NOZero and jet2Tau1 : jet1vsjet2Tau21.Fill(  events.jetTau2[0] / events.jetTau1[0], events.jetTau2[1] / events.jetTau1[1] )
 
 			####### 3rd Leading Jet
 			if events.nJets > 2:
@@ -397,9 +413,11 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 				jet3Tau2vsTau1.Fill( events.jetTau1[2], events.jetTau2[2] )
 				jet3Tau3vsTau1.Fill( events.jetTau1[2], events.jetTau3[2] )
 				jet3Tau3vsTau2.Fill( events.jetTau2[2], events.jetTau3[2] )
-				if not ( events.jetTau1[2] == 0 ) : jet3Tau21.Fill( events.jetTau2[2] / events.jetTau1[2] )
-				if not ( events.jetTau1[2] == 0 ) : jet3Tau31.Fill( events.jetTau3[2] / events.jetTau1[2] )
-				if not ( events.jetTau2[2] == 0 ) : jet3Tau32.Fill( events.jetTau3[2] / events.jetTau2[2] )
+				if jet3Tau1_NOZero: 
+					jet3Tau21.Fill( events.jetTau2[2] / events.jetTau1[2] )
+					jet3Tau31.Fill( events.jetTau3[2] / events.jetTau1[2] )
+				if jet3Tau2_NOZero: 
+					jet3Tau32.Fill( events.jetTau3[2] / events.jetTau2[2] )
 
 			####### 4th Leading Jet
 			if events.nJets > 3:
@@ -417,9 +435,11 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 				jet4Tau2vsTau1.Fill( events.jetTau1[3], events.jetTau2[3] )
 				jet4Tau3vsTau1.Fill( events.jetTau1[3], events.jetTau3[3] )
 				jet4Tau3vsTau2.Fill( events.jetTau2[3], events.jetTau3[3] )
-				if not ( events.jetTau1[3] == 0 ) : jet4Tau21.Fill( events.jetTau2[3] / events.jetTau1[3] )
-				if not ( events.jetTau1[3] == 0 ) : jet4Tau31.Fill( events.jetTau3[3] / events.jetTau1[3] )
-				if not ( events.jetTau2[3] == 0 ) : jet4Tau32.Fill( events.jetTau3[3] / events.jetTau2[3] )
+				if jet4Tau1_NOZero: 
+					jet4Tau21.Fill( events.jetTau2[3] / events.jetTau1[3] )
+					jet4Tau31.Fill( events.jetTau3[3] / events.jetTau1[3] )
+				if jet4Tau2_NOZero: 
+					jet4Tau32.Fill( events.jetTau3[3] / events.jetTau2[3] )
 
 			if cut_jet1pt and cut_HT:
 
@@ -442,10 +462,12 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 				cut_jet1Tau2vsTau1.Fill( events.jetTau1[0], events.jetTau2[0] )
 				cut_jet1Tau3vsTau1.Fill( events.jetTau1[0], events.jetTau3[0] )
 				cut_jet1Tau3vsTau2.Fill( events.jetTau2[0], events.jetTau3[0] )
-				if not ( events.jetTau1[0] == 0 ) : cut_jet1Tau21.Fill( events.jetTau2[0] / events.jetTau1[0] )
-				if not ( events.jetTau1[0] == 0 ) : cut_jet1Tau31.Fill( events.jetTau3[0] / events.jetTau1[0] )
-				if not ( events.jetTau2[0] == 0 ) : cut_jet1Tau32.Fill( events.jetTau3[0] / events.jetTau2[0] )
-				if not ( events.jetTau1[0] == 0 ) : cut_jet1MassvsTau21.Fill( events.jetPt[0], events.jetTau2[0] / events.jetTau1[0] )
+				if jet1Tau1_NOZero: 
+					cut_jet1Tau21.Fill( events.jetTau2[0] / events.jetTau1[0] )
+					cut_jet1Tau31.Fill( events.jetTau3[0] / events.jetTau1[0] )
+					cut_jet1MassvsTau21.Fill( events.jetPt[0], events.jetTau2[0] / events.jetTau1[0] )
+				if jet1Tau2_NOZero: 
+					cut_jet1Tau32.Fill( events.jetTau3[0] / events.jetTau2[0] )
 
 	#			####### 2nd Leading Jet
 				cut_jet2Pt.Fill( events.jetPt[1], weight )
@@ -462,16 +484,16 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 				cut_jet2Tau2vsTau1.Fill( events.jetTau1[1], events.jetTau2[1] )
 				cut_jet2Tau3vsTau1.Fill( events.jetTau1[1], events.jetTau3[1] )
 				cut_jet2Tau3vsTau2.Fill( events.jetTau2[1], events.jetTau3[1] )
-				if not ( events.jetTau1[1] == 0 ) : cut_jet2Tau21.Fill( events.jetTau2[1] / events.jetTau1[1] )
-				if not ( events.jetTau1[1] == 0 ) : cut_jet2Tau31.Fill( events.jetTau3[1] / events.jetTau1[1] )
-				if not ( events.jetTau2[1] == 0 ) : cut_jet2Tau32.Fill( events.jetTau3[1] / events.jetTau2[1] )
-				if not ( events.jetTau1[1] == 0 ) : cut_jet2MassvsTau21.Fill( events.jetPt[1], events.jetTau2[1] / events.jetTau1[1] )
+				if jet2Tau1_NOZero: 
+					cut_jet2Tau21.Fill( events.jetTau2[1] / events.jetTau1[1] )
+					cut_jet2Tau31.Fill( events.jetTau3[1] / events.jetTau1[1] )
+					cut_jet2MassvsTau21.Fill( events.jetPt[1], events.jetTau2[1] / events.jetTau1[1] )
+				if jet2Tau2_NOZero: 
+					cut_jet2Tau32.Fill( events.jetTau3[1] / events.jetTau2[1] )
 
 				####### Leading and Second Leading
 				cut_jet1vsjet2Mass.Fill( events.jetMass[0], events.jetMass[1] )
-				if not ( events.jetTau1[1] == 0 and events.jetTau1[0] == 0 ) : cut_jet1vsjet2Tau21.Fill(  events.jetTau2[0] / events.jetTau1[0], events.jetTau2[1] / events.jetTau1[1] )
-
-
+				if jet1Tau1_NOZero and jet2Tau1 : cut_jet1vsjet2Tau21.Fill(  events.jetTau2[0] / events.jetTau1[0], events.jetTau2[1] / events.jetTau1[1] )
 
 
 	################################################################################################## end event loop
@@ -505,6 +527,7 @@ if __name__ == '__main__':
 	parser.add_option( '-q', '--qcd', action='store',  type='string', dest='QCD', default='250To500', help='Binning of QCD' )
 	parser.add_option( '-s', '--sample', action='store',  type='string', dest='samples', default='Signal', help='Type of sample' )
 	parser.add_option( '-n', '--nJob', action='store', type='int', dest='nJob', default=0, help='Number of Job' )
+	parser.add_option( '-w', '--work', action='store_true', dest='work', default=True, help='True to work on LPC, False Hexfarm' )
 
 	(options, args) = parser.parse_args()
 
@@ -516,11 +539,17 @@ if __name__ == '__main__':
 	QCD = options.QCD
 	samples = options.samples
 	Job = options.nJob
+	FNAL = options.work
 
 	if 'QCD' in samples: 
 		sample = 'QCD_HT-'+QCD
-		#list = os.popen('ls -1 /eos/uscms/store/user/algomez/'+sample+'_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
-		tmpList = os.popen('ls -1v /eos/uscms/store/user/algomez/'+sample+'_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
+		if FNAL:
+			#list = os.popen('ls -1 /eos/uscms/store/user/algomez/'+sample+'_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
+			tmpList = os.popen('ls -1v /eos/uscms/store/user/algomez/'+sample+'_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
+			outputDir = '/uscms_data/d3/algomez/files/QCD_8TeV/treeResults/'
+		else:
+			tmpList = os.popen('ls -1v /cms/gomez/Files/QCD_8TeV/PATtuples/'+sample+'_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
+			outputDir = '/cms/gomez/Files/QCD_8TeV/treeResults/'
 		filesPerJob = round(len(tmpList)/30)+1
 		iniList = int(filesPerJob*Job)
 		finList = int(filesPerJob*(Job+1)-1)
@@ -535,6 +564,7 @@ if __name__ == '__main__':
 		sample = 'stopUDD312_'+str(mass)
 		#list = os.popen('ls -1 /cms/gomez/Substructure/Generation/Simulation/CMSSW_5_3_2_patch4/src/mySimulations/stop_UDD312_50/aodsim/*.root').read().splitlines()
 		list = os.popen('ls -1v /cms/gomez/Stops/st_jj/patTuples/'+sample+'/results/140417/*.root').read().splitlines()
+		outputDir = '/cms/gomez/Stops/st_jj/treeResults/'
 		#list = [ '/cms/gomez/Stops/st_jj/patTuples/stopUDD312_50_tree_test_grom.root' ]
 		inputList = [i if i.startswith('file') else 'file:' + i for i in list]
 		if mass == 50: weight = 1
@@ -542,7 +572,12 @@ if __name__ == '__main__':
 		elif mass == 200: weight = 19500*18.5245/100000.0
 	elif 'Data' in samples:
 		sample = 'Data_'+QCD
-		list = os.popen('ls -1v /eos/uscms/store/user/algomez/'+sample+'/*.root').read().splitlines()
+		if FNAL:
+			list = os.popen('ls -1v /eos/uscms/store/user/algomez/'+sample+'/*.root').read().splitlines()
+			outputDir = '/uscms_data/d3/algomez/files/Data/treeResults/'
+		else:
+			list = os.popen('ls -1v /cms/gomez/Files/DATA/PATtuples/'+sample+'/*.root').read().splitlines()
+			outputDir = '/cms/gomez/Files/DATA/treeResults/'
 		#filesPerJob = round(len(tmpList)/25)+1
 		#iniList = int(filesPerJob*Job)
 		#finList = int(filesPerJob*(Job+1)-1)
@@ -553,12 +588,10 @@ if __name__ == '__main__':
 		weight = 1
 
 
-	outputDir = '/uscms_data/d3/algomez/files/Data/treeResults/'
-	#outputDir = '/uscms_data/d3/algomez/files/QCD_8TeV/treeResults/'
 	#outputDir = '/eos/uscms/store/user/algomez/'
-	#outputDir = '/cms/gomez/Stops/st_jj/treeResults/'
-	print inputList
-	print weight
+	print 'InputFiles: ', inputList
+	print 'Output_Dir: ', outputDir
+	print 'weight: ', weight
 
-	if not final : myAnalyzer( inputList[:2], outputDir, sample, couts, final, jetAlgo, grooming, weight, Job )
-	else: myAnalyzer( inputList, outputDir, sample, couts, final, jetAlgo, grooming, weight, Job )
+	if not final : myAnalyzer( inputList[:2], outputDir, sample, couts, final, jetAlgo, grooming, weight, Job, FNAL )
+	else: myAnalyzer( inputList, outputDir, sample, couts, final, jetAlgo, grooming, weight, Job, FNAL )
