@@ -97,7 +97,6 @@ jetSourcePruned = '${jetalgo[${j}]}${coneSize[${i}]}PFJetsCHSpruned'
 # corrections 
 patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSpruned = patJetCorrFactors.clone()
 patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSpruned.src = jetSourcePruned
-# will need to add L2L3 corrections in the cfg
 patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSpruned.levels = ['L1FastJet', 'L2Relative', 'L3Absolute']
 patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSpruned.payload = '${coneSizeCorr[${i}]}PFchs'
 patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSpruned.useRho = True
@@ -137,7 +136,6 @@ jetSourceTrimmed = '${jetalgo[${j}]}${coneSize[${i}]}PFJetsCHStrimmed'
 # corrections 
 patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHStrimmed = patJetCorrFactors.clone()
 patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHStrimmed.src = jetSourceTrimmed
-# will need to add L2L3 corrections in the cfg
 patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHStrimmed.levels = ['L1FastJet', 'L2Relative', 'L3Absolute']
 patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHStrimmed.payload = '${coneSizeCorr[${i}]}PFchs'
 patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHStrimmed.useRho = True
@@ -222,8 +220,7 @@ jetSourceMassDropFiltered = '${jetalgo[${j}]}${coneSize[${i}]}PFJetsCHSmassDropF
 # corrections 
 patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSmassDropFiltered = patJetCorrFactors.clone()
 patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSmassDropFiltered.src = jetSourceMassDropFiltered
-# will need to add L2L3 corrections in the cfg
-patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSmassDropFiltered.levels = ['L1FastJet', 'L2Relative', 'L3Absolute']
+patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSmassDropFiltered.levels == ['L1FastJet', 'L2Relative', 'L3Absolute']
 patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSmassDropFiltered.payload = '${coneSizeCorr[${i}]}PFchs'
 patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSmassDropFiltered.useRho = True
 
