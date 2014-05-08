@@ -395,7 +395,7 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 
 			####### Leading and Second Leading
 			jet1vsjet2Mass.Fill( events.jetMass[0], events.jetMass[1] )
-			if jet1Tau1_NOZero and jet2Tau1 : jet1vsjet2Tau21.Fill(  events.jetTau2[0] / events.jetTau1[0], events.jetTau2[1] / events.jetTau1[1] )
+			if jet1Tau1_NOZero and jet2Tau1_NOZero : jet1vsjet2Tau21.Fill(  events.jetTau2[0] / events.jetTau1[0], events.jetTau2[1] / events.jetTau1[1] )
 
 			####### 3rd Leading Jet
 			if events.nJets > 2:
@@ -493,7 +493,7 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 
 				####### Leading and Second Leading
 				cut_jet1vsjet2Mass.Fill( events.jetMass[0], events.jetMass[1] )
-				if jet1Tau1_NOZero and jet2Tau1 : cut_jet1vsjet2Tau21.Fill(  events.jetTau2[0] / events.jetTau1[0], events.jetTau2[1] / events.jetTau1[1] )
+				if jet1Tau1_NOZero and jet2Tau1_NOZero : cut_jet1vsjet2Tau21.Fill(  events.jetTau2[0] / events.jetTau1[0], events.jetTau2[1] / events.jetTau1[1] )
 
 
 	################################################################################################## end event loop
@@ -527,7 +527,7 @@ if __name__ == '__main__':
 	parser.add_option( '-q', '--qcd', action='store',  type='string', dest='QCD', default='250To500', help='Binning of QCD' )
 	parser.add_option( '-s', '--sample', action='store',  type='string', dest='samples', default='Signal', help='Type of sample' )
 	parser.add_option( '-n', '--nJob', action='store', type='int', dest='nJob', default=0, help='Number of Job' )
-	parser.add_option( '-w', '--work', action='store_true', dest='work', default=True, help='True to work on LPC, False Hexfarm' )
+	parser.add_option( '-w', '--work', action='store_true', dest='work', default=False, help='True to work on LPC, False Hexfarm' )
 
 	(options, args) = parser.parse_args()
 
