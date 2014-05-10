@@ -643,43 +643,50 @@ process.load('jetSubs.MyJetSubsAnalyzer.PAT_kt8jets_simple_cff')
 process.patJetCorrFactorsAK4CHS.levels.append('L2L3Residual')
 process.patJetCorrFactorsAK4CHSpruned.levels.append('L2L3Residual')
 process.patJetCorrFactorsAK4CHStrimmed.levels.append('L2L3Residual')
-process.patJetCorrFactorsAK4CHSfiltered.levels.append('L2L3Residual')
+process.patJetCorrFactorsAK4CHSfilteredN2.levels.append('L2L3Residual')
+process.patJetCorrFactorsAK4CHSfilteredN3.levels.append('L2L3Residual')
 process.patJetCorrFactorsAK4CHSmassDropFiltered.levels.append('L2L3Residual')
 
 process.patJetCorrFactorsAK5CHS.levels.append('L2L3Residual')
 process.patJetCorrFactorsAK5CHSpruned.levels.append('L2L3Residual')
 process.patJetCorrFactorsAK5CHStrimmed.levels.append('L2L3Residual')
-process.patJetCorrFactorsAK5CHSfiltered.levels.append('L2L3Residual')
+process.patJetCorrFactorsAK5CHSfilteredN2.levels.append('L2L3Residual')
+process.patJetCorrFactorsAK5CHSfilteredN3.levels.append('L2L3Residual')
 process.patJetCorrFactorsAK5CHSmassDropFiltered.levels.append('L2L3Residual')
 
 process.patJetCorrFactorsAK7CHS.levels.append('L2L3Residual')
 process.patJetCorrFactorsAK7CHSpruned.levels.append('L2L3Residual')
 process.patJetCorrFactorsAK7CHStrimmed.levels.append('L2L3Residual')
-process.patJetCorrFactorsAK7CHSfiltered.levels.append('L2L3Residual')
+process.patJetCorrFactorsAK7CHSfilteredN2.levels.append('L2L3Residual')
+process.patJetCorrFactorsAK7CHSfilteredN3.levels.append('L2L3Residual')
 process.patJetCorrFactorsAK7CHSmassDropFiltered.levels.append('L2L3Residual')
 
 process.patJetCorrFactorsCA4CHS.levels.append('L2L3Residual')
 process.patJetCorrFactorsCA4CHSpruned.levels.append('L2L3Residual')
 process.patJetCorrFactorsCA4CHStrimmed.levels.append('L2L3Residual')
-process.patJetCorrFactorsCA4CHSfiltered.levels.append('L2L3Residual')
+process.patJetCorrFactorsCA4CHSfilteredN2.levels.append('L2L3Residual')
+process.patJetCorrFactorsCA4CHSfilteredN3.levels.append('L2L3Residual')
 process.patJetCorrFactorsCA4CHSmassDropFiltered.levels.append('L2L3Residual')
 
 process.patJetCorrFactorsCA8CHS.levels.append('L2L3Residual')
 process.patJetCorrFactorsCA8CHSpruned.levels.append('L2L3Residual')
 process.patJetCorrFactorsCA8CHStrimmed.levels.append('L2L3Residual')
-process.patJetCorrFactorsCA8CHSfiltered.levels.append('L2L3Residual')
+process.patJetCorrFactorsCA8CHSfilteredN2.levels.append('L2L3Residual')
+process.patJetCorrFactorsCA8CHSfilteredN3.levels.append('L2L3Residual')
 process.patJetCorrFactorsCA8CHSmassDropFiltered.levels.append('L2L3Residual')
 
 process.patJetCorrFactorsKT4CHS.levels.append('L2L3Residual')
 process.patJetCorrFactorsKT4CHSpruned.levels.append('L2L3Residual')
 process.patJetCorrFactorsKT4CHStrimmed.levels.append('L2L3Residual')
-process.patJetCorrFactorsKT4CHSfiltered.levels.append('L2L3Residual')
+process.patJetCorrFactorsKT4CHSfilteredN2.levels.append('L2L3Residual')
+process.patJetCorrFactorsKT4CHSfilteredN3.levels.append('L2L3Residual')
 process.patJetCorrFactorsKT4CHSmassDropFiltered.levels.append('L2L3Residual')
 
 process.patJetCorrFactorsKT8CHS.levels.append('L2L3Residual')
 process.patJetCorrFactorsKT8CHSpruned.levels.append('L2L3Residual')
 process.patJetCorrFactorsKT8CHStrimmed.levels.append('L2L3Residual')
-process.patJetCorrFactorsKT8CHSfiltered.levels.append('L2L3Residual')
+process.patJetCorrFactorsKT8CHSfilteredN2.levels.append('L2L3Residual')
+process.patJetCorrFactorsKT8CHSfilteredN3.levels.append('L2L3Residual')
 process.patJetCorrFactorsKT8CHSmassDropFiltered.levels.append('L2L3Residual')
 
 ##-------------------- User analyzer  --------------------------------
@@ -858,8 +865,49 @@ process.PFJet_AK4Trimmed = cms.EDAnalyzer('PFJetTreeProducer',
 )
 
 ##### With Jet Corrections and Filtering
-process.PFJet_AK4Filtered = cms.EDAnalyzer('PFJetTreeProducer',
-		jets             = cms.InputTag('patJetsAK4CHSfilteredwithNsub'),
+process.PFJet_AK4FilteredN2 = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsAK4CHSfilteredN2withNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+		## trigger ###################################
+		triggerAlias     = cms.vstring('HT250','HT300','HT350','HT400','HT450','HT500','HT550','HT650','HT750','PFHT350','PFHT650','PFHT700','PFHT750', 'PFNoPUHT350', 'PFNoPUHT650', 'PFNoPUHT700', 'PFNoPUHT750'),
+		triggerSelection = cms.vstring(
+			'HLT_HT250_v*',
+			'HLT_HT300_v*',
+			'HLT_HT350_v*',
+			'HLT_HT400_v*',
+			'HLT_HT450_v*',
+			'HLT_HT500_v*',
+			'HLT_HT550_v*',
+			'HLT_HT650_v*',  
+			'HLT_HT750_v*',  
+			'HLT_PFHT350_v*',
+			'HLT_PFHT650_v*',
+			'HLT_PFHT700_v*',
+			'HLT_PFHT750_v*',
+      			'HLT_PFNoPUHT350_v*',
+			'HLT_PFNoPUHT650_v*',
+			'HLT_PFNoPUHT700_v*',
+			'HLT_PFNoPUHT750_v*',
+		),
+		triggerConfiguration = cms.PSet(
+			hltResults            = cms.InputTag('TriggerResults','','HLT'),
+			l1tResults            = cms.InputTag(''),
+			daqPartitions         = cms.uint32(1),
+			l1tIgnoreMask         = cms.bool(False),
+			l1techIgnorePrescales = cms.bool(False),
+			throw                 = cms.bool(False)
+		)
+)
+
+process.PFJet_AK4FilteredN3 = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsAK4CHSfilteredN3withNsub'),
 		met              = cms.InputTag('pfMet'),
 		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
 		ptMin            = cms.double(20),
@@ -1112,8 +1160,49 @@ process.PFJet_AK5Trimmed = cms.EDAnalyzer('PFJetTreeProducer',
 )
 
 ##### With Jet Corrections and Filtering
-process.PFJet_AK5Filtered = cms.EDAnalyzer('PFJetTreeProducer',
-		jets             = cms.InputTag('patJetsAK5CHSfilteredwithNsub'),
+process.PFJet_AK5FilteredN2 = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsAK5CHSfilteredN2withNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+		## trigger ###################################
+		triggerAlias     = cms.vstring('HT250','HT300','HT350','HT400','HT450','HT500','HT550','HT650','HT750','PFHT350','PFHT650','PFHT700','PFHT750', 'PFNoPUHT350', 'PFNoPUHT650', 'PFNoPUHT700', 'PFNoPUHT750'),
+		triggerSelection = cms.vstring(
+			'HLT_HT250_v*',
+			'HLT_HT300_v*',
+			'HLT_HT350_v*',
+			'HLT_HT400_v*',
+			'HLT_HT450_v*',
+			'HLT_HT500_v*',
+			'HLT_HT550_v*',
+			'HLT_HT650_v*',  
+			'HLT_HT750_v*',  
+			'HLT_PFHT350_v*',
+			'HLT_PFHT650_v*',
+			'HLT_PFHT700_v*',
+			'HLT_PFHT750_v*',
+      			'HLT_PFNoPUHT350_v*',
+			'HLT_PFNoPUHT650_v*',
+			'HLT_PFNoPUHT700_v*',
+			'HLT_PFNoPUHT750_v*',
+		),
+		triggerConfiguration = cms.PSet(
+			hltResults            = cms.InputTag('TriggerResults','','HLT'),
+			l1tResults            = cms.InputTag(''),
+			daqPartitions         = cms.uint32(1),
+			l1tIgnoreMask         = cms.bool(False),
+			l1techIgnorePrescales = cms.bool(False),
+			throw                 = cms.bool(False)
+		)
+)
+
+process.PFJet_AK5FilteredN3 = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsAK5CHSfilteredN3withNsub'),
 		met              = cms.InputTag('pfMet'),
 		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
 		ptMin            = cms.double(20),
@@ -1367,8 +1456,49 @@ process.PFJet_AK7Trimmed = cms.EDAnalyzer('PFJetTreeProducer',
 )
 
 ##### With Jet Corrections and Filtering
-process.PFJet_AK7Filtered = cms.EDAnalyzer('PFJetTreeProducer',
-		jets             = cms.InputTag('patJetsAK7CHSfilteredwithNsub'),
+process.PFJet_AK7FilteredN2 = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsAK7CHSfilteredN2withNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+		## trigger ###################################
+		triggerAlias     = cms.vstring('HT250','HT300','HT350','HT400','HT450','HT500','HT550','HT650','HT750','PFHT350','PFHT650','PFHT700','PFHT750', 'PFNoPUHT350', 'PFNoPUHT650', 'PFNoPUHT700', 'PFNoPUHT750'),
+		triggerSelection = cms.vstring(
+			'HLT_HT250_v*',
+			'HLT_HT300_v*',
+			'HLT_HT350_v*',
+			'HLT_HT400_v*',
+			'HLT_HT450_v*',
+			'HLT_HT500_v*',
+			'HLT_HT550_v*',
+			'HLT_HT650_v*',  
+			'HLT_HT750_v*',  
+			'HLT_PFHT350_v*',
+			'HLT_PFHT650_v*',
+			'HLT_PFHT700_v*',
+			'HLT_PFHT750_v*',
+      			'HLT_PFNoPUHT350_v*',
+			'HLT_PFNoPUHT650_v*',
+			'HLT_PFNoPUHT700_v*',
+			'HLT_PFNoPUHT750_v*',
+		),
+		triggerConfiguration = cms.PSet(
+			hltResults            = cms.InputTag('TriggerResults','','HLT'),
+			l1tResults            = cms.InputTag(''),
+			daqPartitions         = cms.uint32(1),
+			l1tIgnoreMask         = cms.bool(False),
+			l1techIgnorePrescales = cms.bool(False),
+			throw                 = cms.bool(False)
+		)
+)
+
+process.PFJet_AK7FilteredN3 = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsAK7CHSfilteredN3withNsub'),
 		met              = cms.InputTag('pfMet'),
 		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
 		ptMin            = cms.double(20),
@@ -1621,8 +1751,49 @@ process.PFJet_CA4Trimmed = cms.EDAnalyzer('PFJetTreeProducer',
 )
 
 ##### With Jet Corrections and Filtering
-process.PFJet_CA4Filtered = cms.EDAnalyzer('PFJetTreeProducer',
-		jets             = cms.InputTag('patJetsCA4CHSfilteredwithNsub'),
+process.PFJet_CA4FilteredN2 = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsCA4CHSfilteredN2withNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+		## trigger ###################################
+		triggerAlias     = cms.vstring('HT250','HT300','HT350','HT400','HT450','HT500','HT550','HT650','HT750','PFHT350','PFHT650','PFHT700','PFHT750', 'PFNoPUHT350', 'PFNoPUHT650', 'PFNoPUHT700', 'PFNoPUHT750'),
+		triggerSelection = cms.vstring(
+			'HLT_HT250_v*',
+			'HLT_HT300_v*',
+			'HLT_HT350_v*',
+			'HLT_HT400_v*',
+			'HLT_HT450_v*',
+			'HLT_HT500_v*',
+			'HLT_HT550_v*',
+			'HLT_HT650_v*',  
+			'HLT_HT750_v*',  
+			'HLT_PFHT350_v*',
+			'HLT_PFHT650_v*',
+			'HLT_PFHT700_v*',
+			'HLT_PFHT750_v*',
+      			'HLT_PFNoPUHT350_v*',
+			'HLT_PFNoPUHT650_v*',
+			'HLT_PFNoPUHT700_v*',
+			'HLT_PFNoPUHT750_v*',
+		),
+		triggerConfiguration = cms.PSet(
+			hltResults            = cms.InputTag('TriggerResults','','HLT'),
+			l1tResults            = cms.InputTag(''),
+			daqPartitions         = cms.uint32(1),
+			l1tIgnoreMask         = cms.bool(False),
+			l1techIgnorePrescales = cms.bool(False),
+			throw                 = cms.bool(False)
+		)
+)
+
+process.PFJet_CA4FilteredN3 = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsCA4CHSfilteredN3withNsub'),
 		met              = cms.InputTag('pfMet'),
 		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
 		ptMin            = cms.double(20),
@@ -1875,8 +2046,49 @@ process.PFJet_CA8Trimmed = cms.EDAnalyzer('PFJetTreeProducer',
 )
 
 ##### With Jet Corrections and Filtering
-process.PFJet_CA8Filtered = cms.EDAnalyzer('PFJetTreeProducer',
-		jets             = cms.InputTag('patJetsCA8CHSfilteredwithNsub'),
+process.PFJet_CA8FilteredN2 = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsCA8CHSfilteredN2withNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+		## trigger ###################################
+		triggerAlias     = cms.vstring('HT250','HT300','HT350','HT400','HT450','HT500','HT550','HT650','HT750','PFHT350','PFHT650','PFHT700','PFHT750', 'PFNoPUHT350', 'PFNoPUHT650', 'PFNoPUHT700', 'PFNoPUHT750'),
+		triggerSelection = cms.vstring(
+			'HLT_HT250_v*',
+			'HLT_HT300_v*',
+			'HLT_HT350_v*',
+			'HLT_HT400_v*',
+			'HLT_HT450_v*',
+			'HLT_HT500_v*',
+			'HLT_HT550_v*',
+			'HLT_HT650_v*',  
+			'HLT_HT750_v*',  
+			'HLT_PFHT350_v*',
+			'HLT_PFHT650_v*',
+			'HLT_PFHT700_v*',
+			'HLT_PFHT750_v*',
+      			'HLT_PFNoPUHT350_v*',
+			'HLT_PFNoPUHT650_v*',
+			'HLT_PFNoPUHT700_v*',
+			'HLT_PFNoPUHT750_v*',
+		),
+		triggerConfiguration = cms.PSet(
+			hltResults            = cms.InputTag('TriggerResults','','HLT'),
+			l1tResults            = cms.InputTag(''),
+			daqPartitions         = cms.uint32(1),
+			l1tIgnoreMask         = cms.bool(False),
+			l1techIgnorePrescales = cms.bool(False),
+			throw                 = cms.bool(False)
+		)
+)
+
+process.PFJet_CA8FilteredN3 = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsCA8CHSfilteredN3withNsub'),
 		met              = cms.InputTag('pfMet'),
 		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
 		ptMin            = cms.double(20),
@@ -2129,8 +2341,49 @@ process.PFJet_KT4Trimmed = cms.EDAnalyzer('PFJetTreeProducer',
 )
 
 ##### With Jet Corrections and Filtering
-process.PFJet_KT4Filtered = cms.EDAnalyzer('PFJetTreeProducer',
-		jets             = cms.InputTag('patJetsKT4CHSfilteredwithNsub'),
+process.PFJet_KT4FilteredN2 = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsKT4CHSfilteredN2withNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+		## trigger ###################################
+		triggerAlias     = cms.vstring('HT250','HT300','HT350','HT400','HT450','HT500','HT550','HT650','HT750','PFHT350','PFHT650','PFHT700','PFHT750', 'PFNoPUHT350', 'PFNoPUHT650', 'PFNoPUHT700', 'PFNoPUHT750'),
+		triggerSelection = cms.vstring(
+			'HLT_HT250_v*',
+			'HLT_HT300_v*',
+			'HLT_HT350_v*',
+			'HLT_HT400_v*',
+			'HLT_HT450_v*',
+			'HLT_HT500_v*',
+			'HLT_HT550_v*',
+			'HLT_HT650_v*',  
+			'HLT_HT750_v*',  
+			'HLT_PFHT350_v*',
+			'HLT_PFHT650_v*',
+			'HLT_PFHT700_v*',
+			'HLT_PFHT750_v*',
+      			'HLT_PFNoPUHT350_v*',
+			'HLT_PFNoPUHT650_v*',
+			'HLT_PFNoPUHT700_v*',
+			'HLT_PFNoPUHT750_v*',
+		),
+		triggerConfiguration = cms.PSet(
+			hltResults            = cms.InputTag('TriggerResults','','HLT'),
+			l1tResults            = cms.InputTag(''),
+			daqPartitions         = cms.uint32(1),
+			l1tIgnoreMask         = cms.bool(False),
+			l1techIgnorePrescales = cms.bool(False),
+			throw                 = cms.bool(False)
+		)
+)
+
+process.PFJet_KT4FilteredN3 = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsKT4CHSfilteredN3withNsub'),
 		met              = cms.InputTag('pfMet'),
 		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
 		ptMin            = cms.double(20),
@@ -2383,8 +2636,49 @@ process.PFJet_KT8Trimmed = cms.EDAnalyzer('PFJetTreeProducer',
 )
 
 ##### With Jet Corrections and Filtering
-process.PFJet_KT8Filtered = cms.EDAnalyzer('PFJetTreeProducer',
-		jets             = cms.InputTag('patJetsKT8CHSfilteredwithNsub'),
+process.PFJet_KT8FilteredN2 = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsKT8CHSfilteredN2withNsub'),
+		met              = cms.InputTag('pfMet'),
+		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
+		ptMin            = cms.double(20),
+		etaMax          = cms.double(2.5),
+		## MC ########################################
+		pu               = cms.untracked.InputTag('addPileupInfo'),
+		genSrc 		 = cms.InputTag('genParticles'),
+		stopMass 	 = cms.double( mass ),
+		## trigger ###################################
+		triggerAlias     = cms.vstring('HT250','HT300','HT350','HT400','HT450','HT500','HT550','HT650','HT750','PFHT350','PFHT650','PFHT700','PFHT750', 'PFNoPUHT350', 'PFNoPUHT650', 'PFNoPUHT700', 'PFNoPUHT750'),
+		triggerSelection = cms.vstring(
+			'HLT_HT250_v*',
+			'HLT_HT300_v*',
+			'HLT_HT350_v*',
+			'HLT_HT400_v*',
+			'HLT_HT450_v*',
+			'HLT_HT500_v*',
+			'HLT_HT550_v*',
+			'HLT_HT650_v*',  
+			'HLT_HT750_v*',  
+			'HLT_PFHT350_v*',
+			'HLT_PFHT650_v*',
+			'HLT_PFHT700_v*',
+			'HLT_PFHT750_v*',
+      			'HLT_PFNoPUHT350_v*',
+			'HLT_PFNoPUHT650_v*',
+			'HLT_PFNoPUHT700_v*',
+			'HLT_PFNoPUHT750_v*',
+		),
+		triggerConfiguration = cms.PSet(
+			hltResults            = cms.InputTag('TriggerResults','','HLT'),
+			l1tResults            = cms.InputTag(''),
+			daqPartitions         = cms.uint32(1),
+			l1tIgnoreMask         = cms.bool(False),
+			l1techIgnorePrescales = cms.bool(False),
+			throw                 = cms.bool(False)
+		)
+)
+
+process.PFJet_KT8FilteredN3 = cms.EDAnalyzer('PFJetTreeProducer',
+		jets             = cms.InputTag('patJetsKT8CHSfilteredN3withNsub'),
 		met              = cms.InputTag('pfMet'),
 		vtx              = cms.InputTag('goodOfflinePrimaryVertices'),
 		ptMin            = cms.double(20),
@@ -2482,13 +2776,13 @@ process.filtersSeq = cms.Sequence(
 
 process.p = cms.Path( process.filtersSeq * #process.MCTruthAna *
 #		process.goodOfflinePrimaryVertices *
-		process.ak4Jets * process.PFJet_AK4 * process.PFJet_AK4Pruned * process.PFJet_AK4Trimmed * process.PFJet_AK4Filtered * process.PFJet_AK4MassDropFiltered *  
-		process.ak5Jets * process.PFJet_AK5 * process.PFJet_AK5Pruned * process.PFJet_AK5Trimmed * process.PFJet_AK5Filtered * process.PFJet_AK5MassDropFiltered *  
-		process.ak7Jets * process.PFJet_AK7 * process.PFJet_AK7Pruned * process.PFJet_AK7Trimmed * process.PFJet_AK7Filtered * process.PFJet_AK7MassDropFiltered *  
-		process.ca4Jets * process.PFJet_CA4 * process.PFJet_CA4Pruned * process.PFJet_CA4Trimmed * process.PFJet_CA4Filtered * process.PFJet_CA4MassDropFiltered *  
-		process.ca8Jets * process.PFJet_CA8 * process.PFJet_CA8Pruned * process.PFJet_CA8Trimmed * process.PFJet_CA8Filtered * process.PFJet_CA8MassDropFiltered *  
-		process.kt4Jets * process.PFJet_KT4 * process.PFJet_KT4Pruned * process.PFJet_KT4Trimmed * process.PFJet_KT4Filtered * process.PFJet_KT4MassDropFiltered *  
-		process.kt8Jets * process.PFJet_KT8 * process.PFJet_KT8Pruned * process.PFJet_KT8Trimmed * process.PFJet_KT8Filtered * process.PFJet_KT8MassDropFiltered   
+		process.ak4Jets * process.PFJet_AK4 * process.PFJet_AK4Pruned * process.PFJet_AK4Trimmed * process.PFJet_AK4FilteredN2 * process.PFJet_AK4FilteredN3 * process.PFJet_AK4MassDropFiltered *  
+		process.ak5Jets * process.PFJet_AK5 * process.PFJet_AK5Pruned * process.PFJet_AK5Trimmed * process.PFJet_AK5FilteredN2 * process.PFJet_AK5FilteredN3 * process.PFJet_AK5MassDropFiltered *  
+		process.ak7Jets * process.PFJet_AK7 * process.PFJet_AK7Pruned * process.PFJet_AK7Trimmed * process.PFJet_AK7FilteredN2 * process.PFJet_AK7FilteredN3 * process.PFJet_AK7MassDropFiltered *  
+		process.ca4Jets * process.PFJet_CA4 * process.PFJet_CA4Pruned * process.PFJet_CA4Trimmed * process.PFJet_CA4FilteredN2 * process.PFJet_CA4FilteredN3 * process.PFJet_CA4MassDropFiltered *  
+		process.ca8Jets * process.PFJet_CA8 * process.PFJet_CA8Pruned * process.PFJet_CA8Trimmed * process.PFJet_CA8FilteredN2 * process.PFJet_CA8FilteredN3 * process.PFJet_CA8MassDropFiltered *  
+		process.kt4Jets * process.PFJet_KT4 * process.PFJet_KT4Pruned * process.PFJet_KT4Trimmed * process.PFJet_KT4FilteredN2 * process.PFJet_KT4FilteredN3 * process.PFJet_KT4MassDropFiltered *  
+		process.kt8Jets * process.PFJet_KT8 * process.PFJet_KT8Pruned * process.PFJet_KT8Trimmed * process.PFJet_KT8FilteredN2 * process.PFJet_KT8FilteredN3 * process.PFJet_KT8MassDropFiltered   
 		)
 
 #process.out = cms.OutputModule("PoolOutputModule", 
