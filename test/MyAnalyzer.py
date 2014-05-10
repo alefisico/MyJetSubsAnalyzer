@@ -241,6 +241,7 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 	########################################################### Leading and 2nd Leading Jet
 	cut_jet1vsjet2Mass 	= TH2F('h_cut_jet1vsjet2Mass_'+jetAlgo+'_'+grooming, 'h_cut_jet1vsjet2Mass_'+jetAlgo, nBinsMass,  0., maxMass, nBinsMass,  0., maxMass)
 	cut_jet1vsjet2Tau21 	= TH2F('h_cut_jet1vsjet2Tau21_'+jetAlgo+'_'+grooming, 'h_cut_jet1vsjet2Tau21_'+jetAlgo,   nBinsTau,  0., maxTau,   nBinsTau,  0., maxTau)
+	cut_jet2CosThetaStar 	= TH1F('h_cut_jet2CosThetaStar_'+jetAlgo+'_'+grooming, 'h_cut_jet2CosThetaStar_'+jetAlgo, 20,  -1., 1.)
 
 
 	############################################################ 3rd Leading Jet 
@@ -259,7 +260,6 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 	#cut_jet3Tau2vsTau1 	= TH2F('h_cut_jet3Tau2vsTau1_'+jetAlgo+'_'+grooming, 'h_cut_jet3Tau2vsTau1_'+jetAlgo, nBinsTau,  0., maxTau, nBinsTau,  0., maxTau)
 	#cut_jet3Tau3vsTau1 	= TH2F('h_cut_jet3Tau3vsTau1_'+jetAlgo+'_'+grooming, 'h_cut_jet3Tau3vsTau1_'+jetAlgo, nBinsTau,  0., maxTau, nBinsTau,  0., maxTau)
 	#cut_jet3Tau3vsTau2 	= TH2F('h_cut_jet3Tau3vsTau2_'+jetAlgo+'_'+grooming, 'h_cut_jet3Tau3vsTau2_'+jetAlgo, nBinsTau,  0., maxTau, nBinsTau,  0., maxTau)
-	#cut_jet2CosThetaStar = TH1F('h_cut_jet2CosThetaStar_'+jetAlgo+'_'+grooming, 'h_cut_jet2CosThetaStar_'+jetAlgo, 20,  -1., 1.)
 	#####################################################################################################################################
 
 	###################################### Get Trigger Histos
@@ -579,10 +579,10 @@ if __name__ == '__main__':
 			outputDir = '/cms/gomez/Files/QCD_8TeV/treeResults/'
 		filesPerJob = round(len(tmpList)/30)+1
 		iniList = int(filesPerJob*Job)
-		finList = int(filesPerJob*(Job+1)-1)
+		finList = int((filesPerJob*(Job+1))-1)
 		print filesPerJob, iniList, finList
-		#list = tmpList[iniList:finList]
-		list = tmpList[0:2]
+		list = tmpList[iniList:finList]
+		#list = tmpList[0:2]
 		inputList = [i if i.startswith('file') else 'file:' + i for i in list]
 		if '250To500' in QCD: weight = 19500*276000/27062078.0
 		elif '500To1000' in QCD: weight = 19500*8426/30599292.0
