@@ -25,6 +25,8 @@
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 using namespace std;
 using namespace reco;
@@ -242,9 +244,9 @@ void PFJetTreeProducer::analyze(edm::Event const& iEvent, edm::EventSetup const&
 
 		//cout<< iEvent.id().event() << endl;
 		//check pdgId of stop
-		int stopId;
-		if ( stopMass_ == 50 ){ stopId = 1000002; }
-		else{ stopId = 1000006; }
+		int stopId = 1000002;
+		//if ( stopMass_ == 50 ){ stopId = 1000002; }
+		//else{ stopId = 1000006; }
 
 		// Begin Loop for GenParticles
 		numStops = 0;
@@ -344,14 +346,14 @@ void PFJetTreeProducer::analyze(edm::Event const& iEvent, edm::EventSetup const&
 		float ht(0.0);
 		//vector< jetInfo > jets;
 		for(edm::View<pat::Jet>::const_iterator ijet = pat_jets.begin();ijet != pat_jets.end(); ++ijet) { 
-			/*double chf = ijet->chargedHadronEnergyFraction();
+			double chf = ijet->chargedHadronEnergyFraction();
 			double nhf = ijet->neutralHadronEnergyFraction() + ijet->HFHadronEnergyFraction();
 			double phf = ijet->photonEnergy()/(ijet->jecFactor(0) * ijet->energy());
 			double elf = ijet->electronEnergy()/(ijet->jecFactor(0) * ijet->energy());
 			int chm    = ijet->chargedHadronMultiplicity();
 			int npr    = ijet->chargedMultiplicity() + ijet->neutralMultiplicity(); 
 			double muf = ijet->muonEnergy()/(ijet->jecFactor(0) * ijet->energy());
-			bool idL   = (npr>1 && phf<0.99 && nhf<0.99);
+			/*bool idL   = (npr>1 && phf<0.99 && nhf<0.99);
 			bool idT   = (idL && ((eta<=2.4 && nhf<0.9 && phf<0.9 && elf<0.99 && muf<0.99 && chf>0 && chm>0) || eta>2.4));*/
 			///vector<reco::TrackRefVector> tracksAsocJet = ijet->associatedTracks(); // this is wrong, I have to add it
 			double area = ijet->jetArea();
@@ -363,12 +365,12 @@ void PFJetTreeProducer::analyze(edm::Event const& iEvent, edm::EventSetup const&
 			//if (idT && pt > ptMin_) {
 			if ( eta < etaMax_ && pt > ptMin_) {
 				ht += pt;
-				/*chf_           ->push_back(chf);
+				chf_           ->push_back(chf);
 				nhf_           ->push_back(nhf);
 				phf_           ->push_back(phf);
 				elf_           ->push_back(elf);
 				numJetConst_   ->push_back(numJetConst);
-				muf_           ->push_back(muf);*/
+				muf_           ->push_back(muf);
 				area_          ->push_back(area);
 				jec_           ->push_back(1./ijet->jecFactor(0));
 				pt_            ->push_back(pt);

@@ -164,7 +164,7 @@ patJets${jetAlgo[${j}]}${coneSize[${i}]}CHStrimmedwithNsub = cms.EDProducer(\"Nj
 
 ############################################################### FILTERING
 from RecoJets.JetProducers.ak5PFJetsFiltered_cfi import ak5PFJetsFiltered
-${jetalgo[${j}]}${coneSize[${i}]}PFJetsCHSfiltered = ak5PFJetsFiltered.clone(
+${jetalgo[${j}]}${coneSize[${i}]}PFJetsCHSfilteredN2 = ak5PFJetsFiltered.clone(
   src = 'pfNoPileUp',
   jetPtMin = cms.double(20.0),
   doAreaFastjet = cms.bool(True),
@@ -173,34 +173,74 @@ ${jetalgo[${j}]}${coneSize[${i}]}PFJetsCHSfiltered = ak5PFJetsFiltered.clone(
   jetAlgorithm = cms.string(\"${jetAlgoName[${j}]}\"),
 )
 
-jetSourceFiltered = '${jetalgo[${j}]}${coneSize[${i}]}PFJetsCHSfiltered'
+jetSourceFilteredN2 = '${jetalgo[${j}]}${coneSize[${i}]}PFJetsCHSfilteredN2'
 
 # corrections 
-patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSfiltered = patJetCorrFactors.clone()
-patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSfiltered.src = jetSourceFiltered
+patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN2 = patJetCorrFactors.clone()
+patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN2.src = jetSourceFilteredN2
 # will need to add L2L3 corrections in the cfg
-patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSfiltered.levels = ['L1FastJet', 'L2Relative', 'L3Absolute']
-patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSfiltered.payload = '${coneSizeCorr[${i}]}PFchs'
-patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSfiltered.useRho = True
+patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN2.levels = ['L1FastJet', 'L2Relative', 'L3Absolute']
+patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN2.payload = '${coneSizeCorr[${i}]}PFchs'
+patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN2.useRho = True
 
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfiltered = patJets.clone()
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfiltered.jetSource = jetSourceFiltered
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfiltered.addJetCharge = False
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfiltered.embedCaloTowers = False
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfiltered.embedPFCandidates = False
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfiltered.addAssociatedTracks = False
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfiltered.addBTagInfo = False
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfiltered.addDiscriminators = False
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfiltered.addJetID = False
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfiltered.addGenPartonMatch = False
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfiltered.embedGenPartonMatch = False
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfiltered.addGenJetMatch = False
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfiltered.getJetMCFlavour = False
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfiltered.jetCorrFactorsSource = cms.VInputTag(cms.InputTag('patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSfiltered'))
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN2 = patJets.clone()
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN2.jetSource = jetSourceFilteredN2
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN2.addJetCharge = False
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN2.embedCaloTowers = False
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN2.embedPFCandidates = False
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN2.addAssociatedTracks = False
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN2.addBTagInfo = False
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN2.addDiscriminators = False
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN2.addJetID = False
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN2.addGenPartonMatch = False
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN2.embedGenPartonMatch = False
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN2.addGenJetMatch = False
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN2.getJetMCFlavour = False
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN2.jetCorrFactorsSource = cms.VInputTag(cms.InputTag('patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN2'))
 
 #### Adding Nsubjetiness
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredwithNsub = cms.EDProducer(\"NjettinessAdder\",
-  src=cms.InputTag(\"patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfiltered\"),
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN2withNsub = cms.EDProducer(\"NjettinessAdder\",
+  src=cms.InputTag(\"patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN2\"),
+  cone=cms.double(0.${coneSize[${i}]})
+)
+
+${jetalgo[${j}]}${coneSize[${i}]}PFJetsCHSfilteredN3 = ak5PFJetsFiltered.clone(
+  src = 'pfNoPileUp',
+  jetPtMin = cms.double(20.0),
+  doAreaFastjet = cms.bool(True),
+  nFilt = cms.int32(3),
+  rParam = cms.double(0.${coneSize[${i}]}),
+  jetAlgorithm = cms.string(\"${jetAlgoName[${j}]}\"),
+)
+
+jetSourceFilteredN3 = '${jetalgo[${j}]}${coneSize[${i}]}PFJetsCHSfilteredN3'
+
+# corrections 
+patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN3 = patJetCorrFactors.clone()
+patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN3.src = jetSourceFilteredN3
+# will need to add L2L3 corrections in the cfg
+patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN3.levels = ['L1FastJet', 'L2Relative', 'L3Absolute']
+patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN3.payload = '${coneSizeCorr[${i}]}PFchs'
+patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN3.useRho = True
+
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN3 = patJets.clone()
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN3.jetSource = jetSourceFilteredN3
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN3.addJetCharge = False
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN3.embedCaloTowers = False
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN3.embedPFCandidates = False
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN3.addAssociatedTracks = False
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN3.addBTagInfo = False
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN3.addDiscriminators = False
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN3.addJetID = False
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN3.addGenPartonMatch = False
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN3.embedGenPartonMatch = False
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN3.addGenJetMatch = False
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN3.getJetMCFlavour = False
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN3.jetCorrFactorsSource = cms.VInputTag(cms.InputTag('patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN3'))
+
+#### Adding Nsubjetiness
+patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN3withNsub = cms.EDProducer(\"NjettinessAdder\",
+  src=cms.InputTag(\"patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN3\"),
   cone=cms.double(0.${coneSize[${i}]})
 )
 
@@ -268,10 +308,14 @@ ${jetalgo[${j}]}${coneSize[${i}]}Jets = cms.Sequence(
   patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHStrimmed +
   patJets${jetAlgo[${j}]}${coneSize[${i}]}CHStrimmed +
   patJets${jetAlgo[${j}]}${coneSize[${i}]}CHStrimmedwithNsub +
-  ${jetalgo[${j}]}${coneSize[${i}]}PFJetsCHSfiltered +
-  patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSfiltered +
-  patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfiltered +
-  patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredwithNsub + 
+  ${jetalgo[${j}]}${coneSize[${i}]}PFJetsCHSfilteredN2 +
+  patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN2 +
+  patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN2 +
+  patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN2withNsub + 
+  ${jetalgo[${j}]}${coneSize[${i}]}PFJetsCHSfilteredN3 +
+  patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN3 +
+  patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN3 +
+  patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSfilteredN3withNsub + 
   ${jetalgo[${j}]}${coneSize[${i}]}PFJetsCHSmassDropFiltered +
   patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSmassDropFiltered +
   patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSmassDropFiltered +
