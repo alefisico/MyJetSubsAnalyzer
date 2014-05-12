@@ -1,6 +1,96 @@
 #!/usr/bin/env python
 from ROOT import *
 
+def setSelectionTitleCuts( signal ):
+
+	textBox=TLatex()
+	textBox.SetNDC()
+	textBox.SetTextSize(0.05) 
+	textBox.SetTextColor(kBlue)
+	#textBox.DrawText(0.16,0.95,"CMS Preliminary Simulation")
+	textBox.DrawText(0.16,0.95,"CMS Preliminary ")
+
+	textBox1=TLatex()
+	textBox1.SetNDC()
+	textBox1.SetTextSize(0.04) 
+	textBox1.DrawText(0.70,0.65, signal)
+	
+	textBox3=TLatex()
+	textBox3.SetNDC()
+	textBox3.SetTextSize(0.04) 
+	textBox3.DrawLatex(0.70,0.60,"jet p_{T} > 40 GeV ")
+		
+	textBox4=TLatex()
+	textBox4.SetNDC()
+	textBox4.SetTextSize(0.04) 
+	textBox4.DrawLatex(0.70,0.55,"|jet #eta| < 2.5")
+	
+	textBox5=TLatex()
+	textBox5.SetNDC()
+	textBox5.SetTextSize(0.04) 
+	textBox5.DrawLatex(0.70,0.50,"Number of Jets #geq 2 ")
+	
+	textBox6=TLatex()
+	textBox6.SetNDC()
+	textBox6.SetTextSize(0.04) 
+	textBox6.DrawLatex(0.70,0.45,"H_{T} > 850 GeV")
+	
+	textBox7=TLatex()
+	textBox7.SetNDC()
+	textBox7.SetTextSize(0.04) 
+	textBox7.DrawLatex(0.70,0.40,"1st jet p_{T} > 200 GeV")
+	
+	textBox8=TLatex()
+	textBox8.SetNDC()
+	textBox8.SetTextSize(0.04) 
+	#textBox8.DrawLatex(0.70,0.35,"Scale to 19.5 fb^{-1}")
+	textBox8.DrawLatex(0.70,0.35,"Scale to 0.79 fb^{-1}")
+	
+def setSelectionTitleCuts2D( signal ):
+
+	textBox=TLatex()
+	textBox.SetNDC()
+	textBox.SetTextSize(0.05) 
+	textBox.SetTextColor(kBlue)
+	textBox.DrawText(0.16,0.95,"CMS Preliminary Simulation")
+	#textBox.DrawText(0.16,0.95,"CMS Preliminary")
+
+	textBox1=TLatex()
+	textBox1.SetNDC()
+	textBox1.SetTextSize(0.04) 
+	textBox1.DrawText(0.70,0.50, signal)
+	
+	textBox3=TLatex()
+	textBox3.SetNDC()
+	textBox3.SetTextSize(0.04) 
+	textBox3.DrawLatex(0.70,0.45,"jet p_{T} > 40 GeV ")
+		
+	textBox4=TLatex()
+	textBox4.SetNDC()
+	textBox4.SetTextSize(0.04) 
+	textBox4.DrawLatex(0.70,0.40,"|jet #eta| < 2.5")
+	
+	textBox5=TLatex()
+	textBox5.SetNDC()
+	textBox5.SetTextSize(0.04) 
+	textBox5.DrawLatex(0.70,0.35,"Number of Jets #geq 2 ")
+	
+	textBox6=TLatex()
+	textBox6.SetNDC()
+	textBox6.SetTextSize(0.04) 
+	textBox6.DrawLatex(0.70,0.30,"H_{T} > 850 GeV")
+	
+	textBox7=TLatex()
+	textBox7.SetNDC()
+	textBox7.SetTextSize(0.04) 
+	textBox7.DrawLatex(0.70,0.25,"1st jet p_{T} > 200 GeV")
+	
+	textBox8=TLatex()
+	textBox8.SetNDC()
+	textBox8.SetTextSize(0.04) 
+	textBox8.DrawLatex(0.70,0.20,"Scale to 19.5 fb^{-1}")
+	#textBox8.DrawLatex(0.70,0.20,"0.79 fb^{-1}")
+	
 def setSelectionTitle( signal ):
 
 	textBox=TLatex()
