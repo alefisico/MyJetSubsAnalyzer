@@ -588,14 +588,17 @@ if __name__ == '__main__':
 		elif '500To1000' in QCD: weight = 19500*8426/30599292.0
 		else: weight = 19500*204/13843863.0
 	elif 'Signal' in samples: 
-		sample = 'stopUDD312_'+str(mass)
+		sample = 'RPVSt'+str(mass)+'tojj_8TeV_HT500_'+str(Job)
 		#list = os.popen('ls -1 /cms/gomez/Substructure/Generation/Simulation/CMSSW_5_3_2_patch4/src/mySimulations/stop_UDD312_50/aodsim/*.root').read().splitlines()
-		list = os.popen('ls -1v /cms/gomez/Stops/st_jj/patTuples/'+sample+'/results/140418/*.root').read().splitlines()
-		outputDir = '/cms/gomez/Stops/st_jj/treeResults/'
+		#list = os.popen('ls -1v /cms/gomez/Stops/st_jj/patTuples/'+sample+'/results/140418/*.root').read().splitlines()
+		list = os.popen('ls -1v /cms/gomez/Files/RPVSttojj_8TeV/'+sample+'/PATtuples/*.root').read().splitlines()
+		#outputDir = '/cms/gomez/Stops/st_jj/treeResults/'
+		outputDir = '/cms/gomez/Files/RPVSttojj_8TeV/treeResults/'
 		#list = [ '/cms/gomez/Stops/st_jj/patTuples/stopUDD312_50_tree_test_grom.root' ]
 		inputList = [i if i.startswith('file') else 'file:' + i for i in list]
 		if mass == 50: weight = 1
-		elif mass == 100: weight = 19500*559.757/100000.0
+		#elif mass == 100: weight = 19500*559.757/100000.0
+		elif mass == 100: weight = 19500*443293086.50/100000.0
 		elif mass == 200: weight = 19500*18.5245/100000.0
 	elif 'Data' in samples:
 		sample = 'Data_'+QCD
