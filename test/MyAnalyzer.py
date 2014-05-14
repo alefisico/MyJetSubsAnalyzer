@@ -24,13 +24,11 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 
 	if FNAL:
 		if final:
-			if not ( os.path.exists( outputDir + sample + '_rootFiles/' ) ): os.makedirs( outputDir + sample +'_rootFiles/' )
+			if not ( os.path.exists( outputDir ) ): os.makedirs( outputDir )
 			if 'QCD' in sample:
-				outputFileName = outputDir + sample + '_rootFiles/' + sample + '_'+jetAlgo+'_'+grooming+'_'+str(Job)+'_Plots.root'
-			elif 'Data' in sample:
-				outputFileName = outputDir + sample + '_rootFiles/' + sample + '_'+jetAlgo+'_'+grooming+'_'+str(Job)+'_Plots.root'
+				outputFileName = outputDir + sample + '_'+jetAlgo+'_'+grooming+'_'+str(Job)+'_Plots.root'
 			else:
-				outputFileName = outputDir + sample + '/rootFiles/' + sample + '_'+jetAlgo+'_'+grooming+'_Plots.root'
+				outputFileName = outputDir + sample + '_'+jetAlgo+'_'+grooming+'_Plots.root'
 		else:
 			outputFileName = sample + '_'+jetAlgo+'_'+grooming+'_Plots_TEST.root'
 
@@ -67,13 +65,15 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 	maxTau = 1.
 	nBinsHT = 200
 	maxHT = 2000.
+	nBinsMET = 15
+	maxMET = 150.
 
 	#####################################################
 	#### Only kinematic cuts - (pt > 30, |eta| < 2.5 )
 	################################################################################################### Event Variables
 	ht 		= TH1F('h_ht_'+jetAlgo+'_'+grooming, 	'h_ht_'+jetAlgo, 	nBinsHT,  	0, 	maxHT)
 	numberPV 	= TH1F('h_numberPV_'+jetAlgo+'_'+grooming, 	'h_numberPV_'+jetAlgo, 	50,  	0., 	50.)
-	MET 		= TH1F('h_MET_'+jetAlgo+'_'+grooming, 	'h_MET_'+jetAlgo, 	24,  	0, 	120.)
+	MET 		= TH1F('h_MET_'+jetAlgo+'_'+grooming, 	'h_MET_'+jetAlgo, 	nBinsMET,  	0, 	maxMET)
 	numberJets 	= TH1F('h_numberJets_'+jetAlgo+'_'+grooming, 'h_numberJets_'+jetAlgo, 15,  0., 15.)
 	jetPt	 	= TH1F('h_jetPt_'+jetAlgo+'_'+grooming, 'h_jetPt_'+jetAlgo, nBinsPt,  0., maxPt)
 	jetEta	 	= TH1F('h_jetEta_'+jetAlgo+'_'+grooming, 'h_jetEta_'+jetAlgo, nBinsEta,  -maxEta, maxEta)
@@ -110,6 +110,7 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 	jet1Ptvsht 	= TH2F('h_jet1Ptvsht_'+jetAlgo+'_'+grooming, 'h_jet1Ptvsht_'+jetAlgo, nBinsPt,  0., maxPt, nBinsHT,  	0, 	maxHT)
 	jet1Massvsht 	= TH2F('h_jet1Massvsht_'+jetAlgo+'_'+grooming, 'h_jet1Massvsht_'+jetAlgo, nBinsMass,  0., maxMass, nBinsHT,  	0, 	maxHT)
 	jet1MassvsTau21 	= TH2F('h_jet1MassvsTau21_'+jetAlgo+'_'+grooming, 'h_jet1MassvsTau21_'+jetAlgo, nBinsMass,  0., maxMass, nBinsTau,  0., maxTau)
+	jet1MassvsMET 	= TH2F('h_jet1MassvsMET_'+jetAlgo+'_'+grooming, 'h_jet1MassvsMET_'+jetAlgo, nBinsMass,  0., maxMass, nBinsMET,  	0, 	maxMET)
 
 	############################################################ 2nd Leading Jet 
 	jet2Pt	 	= TH1F('h_jet2Pt_'+jetAlgo+'_'+grooming, 'h_jet2Pt_'+jetAlgo, nBinsPt,  0., maxPt)
@@ -130,11 +131,13 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 	jet2Ptvsht 	= TH2F('h_jet2Ptvsht_'+jetAlgo+'_'+grooming, 'h_jet2Ptvsht_'+jetAlgo, nBinsPt,  0., maxPt, nBinsHT,  	0, 	maxHT)
 	jet2Massvsht 	= TH2F('h_jet2Massvsht_'+jetAlgo+'_'+grooming, 'h_jet2Massvsht_'+jetAlgo, nBinsMass,  0., maxMass, nBinsHT,  	0, 	maxHT)
 	jet2MassvsTau21 	= TH2F('h_jet2MassvsTau21_'+jetAlgo+'_'+grooming, 'h_jet2MassvsTau21_'+jetAlgo, nBinsMass,  0., maxMass, nBinsTau,  0., maxTau)
+	jet2MassvsMET 	= TH2F('h_jet2MassvsMET_'+jetAlgo+'_'+grooming, 'h_jet2MassvsMET_'+jetAlgo, nBinsMass,  0., maxMass, nBinsMET,  	0, 	maxMET)
 
 	########################################################### Leading and 2nd Leading Jet
 	jet1vsjet2Mass 	= TH2F('h_jet1vsjet2Mass_'+jetAlgo+'_'+grooming, 'h_jet1vsjet2Mass_'+jetAlgo, nBinsMass,  0., maxMass, nBinsMass,  0., maxMass)
 	jet1vsjet2Tau21 	= TH2F('h_jet1vsjet2Tau21_'+jetAlgo+'_'+grooming, 'h_jet1vsjet2Tau21_'+jetAlgo,   nBinsTau,  0., maxTau,   nBinsTau,  0., maxTau)
 	jet2CosThetaStar = TH1F('h_jet2CosThetaStar_'+jetAlgo+'_'+grooming, 'h_jet2CosThetaStar_'+jetAlgo, 20,  -1., 1.)
+	jet1CosThetaStar = TH1F('h_jet1CosThetaStar_'+jetAlgo+'_'+grooming, 'h_jet1CosThetaStar_'+jetAlgo, 20,  -1., 1.)
 
 	############################################################ 3rd Leading Jet 
 	jet3Pt	 	= TH1F('h_jet3Pt_'+jetAlgo+'_'+grooming, 'h_jet3Pt_'+jetAlgo, nBinsPt,  0., maxPt)
@@ -217,6 +220,7 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 	cut_jet1Ptvsht 	= TH2F('h_cut_jet1Ptvsht_'+jetAlgo+'_'+grooming, 'h_cut_jet1Ptvsht_'+jetAlgo, nBinsPt,  0., maxPt, nBinsHT,  	0, 	maxHT)
 	cut_jet1Massvsht 	= TH2F('h_cut_jet1Massvsht_'+jetAlgo+'_'+grooming, 'h_cut_jet1Massvsht_'+jetAlgo, nBinsMass,  0., maxMass, nBinsHT,  	0, 	maxHT)
 	cut_jet1MassvsTau21 	= TH2F('h_cut_jet1MassvsTau21_'+jetAlgo+'_'+grooming, 'h_cut_jet1MassvsTau21_'+jetAlgo, nBinsMass,  0., maxMass, nBinsTau,  0., maxTau)
+	cut_jet1MassvsMET 	= TH2F('h_cut_jet1MassvsMET_'+jetAlgo+'_'+grooming, 'h_cut_jet1MassvsMET_'+jetAlgo, nBinsMass,  0., maxMass, nBinsMET, 	0, 	maxMET)
 
 	############################################################ 2nd Leading Jet 
 	cut_jet2Pt	 	= TH1F('h_cut_jet2Pt_'+jetAlgo+'_'+grooming, 'h_cut_jet2Pt_'+jetAlgo, nBinsPt,  0., maxPt)
@@ -237,11 +241,13 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 	cut_jet2Ptvsht 	= TH2F('h_cut_jet2Ptvsht_'+jetAlgo+'_'+grooming, 'h_cut_jet2Ptvsht_'+jetAlgo, nBinsPt,  0., maxPt, nBinsHT,  	0, 	maxHT)
 	cut_jet2Massvsht 	= TH2F('h_cut_jet2Massvsht_'+jetAlgo+'_'+grooming, 'h_cut_jet2Massvsht_'+jetAlgo, nBinsMass,  0., maxMass, nBinsHT,  	0, 	maxHT)
 	cut_jet2MassvsTau21 	= TH2F('h_cut_jet2MassvsTau21_'+jetAlgo+'_'+grooming, 'h_cut_jet2MassvsTau21_'+jetAlgo, nBinsMass,  0., maxMass,  nBinsTau,  0., maxTau)
+	cut_jet2MassvsMET 	= TH2F('h_cut_jet2MassvsMET_'+jetAlgo+'_'+grooming, 'h_cut_jet2MassvsMET_'+jetAlgo, nBinsMass,  0., maxMass, nBinsMET, 	0, 	maxMET)
 
 	########################################################### Leading and 2nd Leading Jet
 	cut_jet1vsjet2Mass 	= TH2F('h_cut_jet1vsjet2Mass_'+jetAlgo+'_'+grooming, 'h_cut_jet1vsjet2Mass_'+jetAlgo, nBinsMass,  0., maxMass, nBinsMass,  0., maxMass)
 	cut_jet1vsjet2Tau21 	= TH2F('h_cut_jet1vsjet2Tau21_'+jetAlgo+'_'+grooming, 'h_cut_jet1vsjet2Tau21_'+jetAlgo,   nBinsTau,  0., maxTau,   nBinsTau,  0., maxTau)
 	cut_jet2CosThetaStar 	= TH1F('h_cut_jet2CosThetaStar_'+jetAlgo+'_'+grooming, 'h_cut_jet2CosThetaStar_'+jetAlgo, 20,  -1., 1.)
+	cut_jet1CosThetaStar 	= TH1F('h_cut_jet1CosThetaStar_'+jetAlgo+'_'+grooming, 'h_cut_jet1CosThetaStar_'+jetAlgo, 20,  -1., 1.)
 
 
 	############################################################ 3rd Leading Jet 
@@ -311,18 +317,6 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 		for ijet in range( events.nJets ):
 			cut_simpleKinematic =  events.jetPt[ijet] > 30 and abs( events.jetEta[ijet] ) < 2.5 
 			HT += events.jetPt[ijet]
-			if events.nJets > 0:
-				jet1Tau1_NOZero = events.jetTau1[0] != 0
-				jet1Tau2_NOZero = events.jetTau2[0] != 0
-			if events.nJets > 1:
-				jet2Tau2_NOZero = events.jetTau2[1] != 0
-				jet2Tau1_NOZero = events.jetTau1[1] != 0
-			if events.nJets > 2:
-				jet3Tau2_NOZero = events.jetTau2[2] != 0
-				jet3Tau1_NOZero = events.jetTau1[2] != 0
-			if events.nJets > 3:
-				jet4Tau1_NOZero = events.jetTau1[3] != 0
-				jet4Tau2_NOZero = events.jetTau2[3] != 0
 		cut_minTwoJets = events.nJets > 1
 		cut_jet1pt = cut_minTwoJets and events.jetPt[0] > 200
 		cut_HT = HT > 850
@@ -341,9 +335,9 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 				jetTau1.Fill( events.jetTau1[k], weight ) 
 				jetTau2.Fill( events.jetTau2[k], weight ) 
 				jetTau3.Fill( events.jetTau3[k], weight ) 
-				if not ( events.jetTau1[k] == 0 ) : jetTau21.Fill( events.jetTau2[k] / events.jetTau1[k] ) 
-				if not ( events.jetTau1[k] == 0 ) : jetTau31.Fill( events.jetTau3[k] / events.jetTau1[k] ) 
-				if not ( events.jetTau2[k] == 0 ) : jetTau32.Fill( events.jetTau3[k] / events.jetTau2[k] ) 
+				#jetTau21.Fill( events.jetTau2[k] / events.jetTau1[k] ) 
+				#jetTau31.Fill( events.jetTau3[k] / events.jetTau1[k] ) 
+				#jetTau32.Fill( events.jetTau3[k] / events.jetTau2[k] ) 
 				jetTau2vsTau1.Fill( events.jetTau1[k], events.jetTau2[k] )  
 				jetTau3vsTau1.Fill( events.jetTau1[k], events.jetTau3[k] )
 				jetTau3vsTau2.Fill( events.jetTau2[k], events.jetTau3[k] ) 
@@ -369,12 +363,25 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 			jet1PtvsMass.Fill( events.jetPt[0], events.jetMass[0] )
 			jet1Ptvsht.Fill( events.jetPt[0], HT )
 			jet1Massvsht.Fill( events.jetMass[0], HT )
-			if jet1Tau1_NOZero: 
-				jet1Tau21.Fill( events.jetTau2[0] / events.jetTau1[0] )
-				jet1Tau31.Fill( events.jetTau3[0] / events.jetTau1[0] )
-				jet1MassvsTau21.Fill( events.jetMass[0], events.jetTau2[0] / events.jetTau1[0] )
-			if jet1Tau2_NOZero: 
-				jet1Tau32.Fill( events.jetTau3[0] / events.jetTau2[0] )
+			jet1MassvsMET.Fill( events.jetMass[0], events.met )
+			
+			try: 
+				valJet1Tau21 = events.jetTau2[0] / events.jetTau1[0]
+			except ZeroDivisionError: 
+				valJet1Tau21 = 0
+			try: 
+				valJet1Tau31 = events.jetTau3[0] / events.jetTau1[0]
+			except ZeroDivisionError: 
+				valJet1Tau31 = 0
+			try: 
+				valJet1Tau32 = events.jetTau3[0] / events.jetTau2[0]
+			except ZeroDivisionError: 
+				valJet1Tau32 = 0
+
+			jet1Tau21.Fill( valJet1Tau21 )
+			jet1Tau31.Fill( valJet1Tau31 )
+			jet1MassvsTau21.Fill( events.jetMass[0], valJet1Tau21 )
+			jet1Tau32.Fill( valJet1Tau32 )
 
 			####### 2nd Leading Jet
 			jet2Pt.Fill( events.jetPt[1], weight )
@@ -391,16 +398,29 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 			jet2PtvsMass.Fill( events.jetPt[1], events.jetMass[1] )
 			jet2Ptvsht.Fill( events.jetPt[1], HT )
 			jet2Massvsht.Fill( events.jetMass[1], HT )
-			if jet2Tau1_NOZero: 
-				jet2Tau21.Fill( events.jetTau2[1] / events.jetTau1[1] )
-				jet2Tau31.Fill( events.jetTau3[1] / events.jetTau1[1] )
-				jet2MassvsTau21.Fill( events.jetMass[1], events.jetTau2[1] / events.jetTau1[1] )
-			if jet2Tau2_NOZero: 
-				jet2Tau32.Fill( events.jetTau3[1] / events.jetTau2[1] )
+			jet2MassvsMET.Fill( events.jetMass[1], events.met )
+
+			try: 
+				valJet2Tau21 = events.jetTau2[1] / events.jetTau1[1]
+			except ZeroDivisionError: 
+				valJet2Tau21 = 0
+			try: 
+				valJet2Tau31 = events.jetTau3[1] / events.jetTau1[1]
+			except ZeroDivisionError: 
+				valJet2Tau31 = 0
+			try: 
+				valJet2Tau32 = events.jetTau3[1] / events.jetTau2[1]
+			except ZeroDivisionError: 
+				valJet2Tau32 = 0
+
+			jet2Tau21.Fill( valJet2Tau21 )
+			jet2Tau31.Fill( valJet2Tau31 )
+			jet2MassvsTau21.Fill( events.jetMass[1], valJet2Tau21 )
+			jet2Tau32.Fill( valJet2Tau32 )
 
 			########## Leading and Second Leading
 			jet1vsjet2Mass.Fill( events.jetMass[0], events.jetMass[1] )
-			if jet1Tau1_NOZero and jet2Tau1_NOZero : jet1vsjet2Tau21.Fill(  events.jetTau2[0] / events.jetTau1[0], events.jetTau2[1] / events.jetTau1[1] )
+			jet1vsjet2Tau21.Fill( valJet1Tau21, valJet2Tau21 )
 
 			### To calculate the direction of the second jet in the leading jet rest frame
 			jet1P4 = TLorentzVector()
@@ -421,6 +441,9 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 			#print 'jet1 Pt Boosted', events.jetPt[0], jet1P4.Pt(), jet1P4.Theta()
 			#jet2CosThetaStar.Fill( cosThetaStarjet1, weight )
 			jet2CosThetaStar.Fill( cosThetaStar, weight )
+			DeltaEta = abs( jet1P4.Eta() - jet2P4.Eta() )
+			tmpCosThetaStar = TMath.TanH( DeltaEta / 2.0  )
+			jet1CosThetaStar.Fill( tmpCosThetaStar, weight )
 
 
 			####### 3rd Leading Jet
@@ -439,11 +462,9 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 				jet3PtvsMass.Fill( events.jetPt[2], events.jetMass[2] )
 				jet3Ptvsht.Fill( events.jetPt[2], HT )
 				jet3Massvsht.Fill( events.jetMass[2], HT )
-				if jet3Tau1_NOZero: 
-					jet3Tau21.Fill( events.jetTau2[2] / events.jetTau1[2] )
-					jet3Tau31.Fill( events.jetTau3[2] / events.jetTau1[2] )
-				if jet3Tau2_NOZero: 
-					jet3Tau32.Fill( events.jetTau3[2] / events.jetTau2[2] )
+				#jet3Tau21.Fill( events.jetTau2[2] / events.jetTau1[2] )
+				#jet3Tau31.Fill( events.jetTau3[2] / events.jetTau1[2] )
+				#jet3Tau32.Fill( events.jetTau3[2] / events.jetTau2[2] )
 
 			####### 4th Leading Jet
 			if events.nJets > 3:
@@ -461,11 +482,9 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 				jet4PtvsMass.Fill( events.jetPt[3], events.jetMass[3] )
 				jet4Ptvsht.Fill( events.jetPt[3], HT )
 				jet4Massvsht.Fill( events.jetMass[3], HT )
-				if jet4Tau1_NOZero: 
-					jet4Tau21.Fill( events.jetTau2[3] / events.jetTau1[3] )
-					jet4Tau31.Fill( events.jetTau3[3] / events.jetTau1[3] )
-				if jet4Tau2_NOZero: 
-					jet4Tau32.Fill( events.jetTau3[3] / events.jetTau2[3] )
+				#jet4Tau21.Fill( events.jetTau2[3] / events.jetTau1[3] )
+				#jet4Tau31.Fill( events.jetTau3[3] / events.jetTau1[3] )
+				#jet4Tau32.Fill( events.jetTau3[3] / events.jetTau2[3] )
 
 			if cut_jet1pt and cut_HT:
 
@@ -488,12 +507,11 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 				cut_jet1PtvsMass.Fill( events.jetPt[0], events.jetMass[0] )
 				cut_jet1Ptvsht.Fill( events.jetPt[0], HT )
 				cut_jet1Massvsht.Fill( events.jetMass[0], HT )
-				if jet1Tau1_NOZero: 
-					cut_jet1Tau21.Fill( events.jetTau2[0] / events.jetTau1[0] )
-					cut_jet1Tau31.Fill( events.jetTau3[0] / events.jetTau1[0] )
-					cut_jet1MassvsTau21.Fill( events.jetMass[0], events.jetTau2[0] / events.jetTau1[0] )
-				if jet1Tau2_NOZero: 
-					cut_jet1Tau32.Fill( events.jetTau3[0] / events.jetTau2[0] )
+				cut_jet1MassvsMET.Fill( events.jetMass[0], events.met )
+				cut_jet1Tau21.Fill( valJet1Tau21 )
+				cut_jet1Tau31.Fill( valJet1Tau31 )
+				cut_jet1MassvsTau21.Fill( events.jetMass[0], valJet1Tau21 )
+				cut_jet1Tau32.Fill( valJet1Tau32 )
 
 				####### 2nd Leading Jet
 				cut_jet2Pt.Fill( events.jetPt[1], weight )
@@ -510,17 +528,17 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 				cut_jet2PtvsMass.Fill( events.jetPt[1], events.jetMass[1] )
 				cut_jet2Ptvsht.Fill( events.jetPt[1], HT )
 				cut_jet2Massvsht.Fill( events.jetMass[1], HT )
-				if jet2Tau1_NOZero: 
-					cut_jet2Tau21.Fill( events.jetTau2[1] / events.jetTau1[1] )
-					cut_jet2Tau31.Fill( events.jetTau3[1] / events.jetTau1[1] )
-					cut_jet2MassvsTau21.Fill( events.jetMass[1], events.jetTau2[1] / events.jetTau1[1] )
-				if jet2Tau2_NOZero: 
-					cut_jet2Tau32.Fill( events.jetTau3[1] / events.jetTau2[1] )
+				cut_jet2MassvsMET.Fill( events.jetMass[1], events.met )
+				cut_jet2Tau21.Fill( valJet2Tau21 )
+				cut_jet2Tau31.Fill( valJet2Tau31 )
+				cut_jet2MassvsTau21.Fill( events.jetMass[1], valJet2Tau21 )
+				cut_jet2Tau32.Fill( valJet2Tau32 )
 
 				####### Leading and Second Leading
 				cut_jet1vsjet2Mass.Fill( events.jetMass[0], events.jetMass[1] )
-				if jet1Tau1_NOZero and jet2Tau1_NOZero : cut_jet1vsjet2Tau21.Fill(  events.jetTau2[0] / events.jetTau1[0], events.jetTau2[1] / events.jetTau1[1] )
+				cut_jet1vsjet2Tau21.Fill(  valJet1Tau21, valJet2Tau21 )
 				cut_jet2CosThetaStar.Fill( cosThetaStar, weight )
+				cut_jet1CosThetaStar.Fill( tmpCosThetaStar, weight )
 
 
 	################################################################################################## end event loop
@@ -573,7 +591,7 @@ if __name__ == '__main__':
 		if FNAL:
 			#list = os.popen('ls -1 /eos/uscms/store/user/algomez/'+sample+'_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
 			tmpList = os.popen('ls -1v /eos/uscms/store/user/algomez/'+sample+'_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
-			outputDir = '/uscms_data/d3/algomez/files/QCD_8TeV/treeResults/'
+			outputDir = '/eos/uscms/store/user/algomez/QCD_8TeV/treeResults/'
 		else:
 			tmpList = os.popen('ls -1v /cms/gomez/Files/QCD_8TeV/PATtuples/'+sample+'_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
 			outputDir = '/cms/gomez/Files/QCD_8TeV/treeResults/'
@@ -589,27 +607,53 @@ if __name__ == '__main__':
 		else: weight = 19500*204/13843863.0
 	elif 'Signal' in samples: 
 		sample = 'RPVSt'+str(mass)+'tojj_8TeV_HT500_'+str(Job)
-		#list = os.popen('ls -1 /cms/gomez/Substructure/Generation/Simulation/CMSSW_5_3_2_patch4/src/mySimulations/stop_UDD312_50/aodsim/*.root').read().splitlines()
-		#list = os.popen('ls -1v /cms/gomez/Stops/st_jj/patTuples/'+sample+'/results/140418/*.root').read().splitlines()
-		list = os.popen('ls -1v /cms/gomez/Files/RPVSttojj_8TeV/'+sample+'/PATtuples/*.root').read().splitlines()
-		#outputDir = '/cms/gomez/Stops/st_jj/treeResults/'
-		outputDir = '/cms/gomez/Files/RPVSttojj_8TeV/treeResults/'
-		#list = [ '/cms/gomez/Stops/st_jj/patTuples/stopUDD312_50_tree_test_grom.root' ]
+		if FNAL:
+			list = os.popen('ls -1v /eos/uscms/store/user/algomez/RPVSt100tojj_8TeV_HT500/'+sample+'/PATtuples/*.root').read().splitlines()
+			outputDir = '/eos/uscms/store/user/algomez/RPVSt100tojj_8TeV_HT500/'+sample+'/treeResults/'
+		else:
+			#list = os.popen('ls -1 /cms/gomez/Substructure/Generation/Simulation/CMSSW_5_3_2_patch4/src/mySimulations/stop_UDD312_50/aodsim/*.root').read().splitlines()
+			#list = os.popen('ls -1v /cms/gomez/Stops/st_jj/patTuples/'+sample+'/results/140418/*.root').read().splitlines()
+			list = os.popen('ls -1v /cms/gomez/Files/RPVSttojj_8TeV/'+sample+'/PATtuples/*.root').read().splitlines()
+			#outputDir = '/cms/gomez/Stops/st_jj/treeResults/'
+			outputDir = '/cms/gomez/Files/RPVSttojj_8TeV/treeResults/'
+			#list = [ '/cms/gomez/Stops/st_jj/patTuples/stopUDD312_50_tree_test_grom.root' ]
 		inputList = [i if i.startswith('file') else 'file:' + i for i in list]
 		if mass == 50: weight = 1
 		#elif mass == 100: weight = 19500*559.757/100000.0
-		elif mass == 100: weight = 19500*443293086.50/100000.0
+		elif mass == 100: weight = 19500*559.757/555880845.74
 		elif mass == 200: weight = 19500*18.5245/100000.0
 	elif 'Data' in samples:
 		sample = 'Data_'+QCD
 		if FNAL:
 			list = os.popen('ls -1v /eos/uscms/store/user/algomez/'+sample+'/*.root').read().splitlines()
-			outputDir = '/uscms_data/d3/algomez/files/Data/treeResults/'
+			outputDir = '/eos/uscms/store/user/algomez/Data/treeResults/'
+			#outputDir = '/uscms_data/d3/algomez/files/Data/treeResults/'
 		else:
 			list = os.popen('ls -1v /cms/gomez/Files/DATA/PATtuples/'+sample+'/*.root').read().splitlines()
 			outputDir = '/cms/gomez/Files/DATA/treeResults/'
 		inputList = [i if i.startswith('file') else 'file:' + i for i in list]
 		weight = 1
+	elif 'WJets' in samples:
+		sample = 'WJets'
+		if FNAL:
+			list = os.popen('ls -1v /eos/uscms/store/user/algomez/'+sample+'ToLNu_HT-400ToInf_8TeV-madgraph_v2_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
+			#outputDir = '/uscms_data/d3/algomez/files/WJets/treeResults/'
+			outputDir = '/eos/uscms/store/user/algomez/WJets/treeResults/'
+		else:
+			list = os.popen('ls -1v /cms/gomez/Files/'+sample+'/PATtuples/*.root').read().splitlines()
+			outputDir = '/cms/gomez/Files/'+sample+'/treeResults/'
+		inputList = [i if i.startswith('file') else 'file:' + i for i in list]
+		weight = 19500*0.215/196046.0
+	elif 'ZJets' in samples:
+		sample = 'ZJets'
+		if FNAL:
+			list = os.popen('ls -1v /eos/uscms/store/user/algomez/'+sample+'ToNuNu_400_HT_inf_TuneZ2Star_8TeV_madgraph_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
+			outputDir = '/eos/uscms/store/user/algomez/ZJets/treeResults/'
+		else:
+			list = os.popen('ls -1v /cms/gomez/Files/'+sample+'/PATtuples/*.root').read().splitlines()
+			outputDir = '/cms/gomez/Files/'+sample+'/treeResults/'
+		inputList = [i if i.startswith('file') else 'file:' + i for i in list]
+		weight = 19500*0.172/210160.0
 
 
 	#outputDir = '/eos/uscms/store/user/algomez/'
@@ -617,5 +661,5 @@ if __name__ == '__main__':
 	print 'Output_Dir: ', outputDir
 	print 'weight: ', weight
 
-	if not final : myAnalyzer( inputList[:2], outputDir, sample, couts, final, jetAlgo, grooming, weight, Job, FNAL )
+	if not final : myAnalyzer( inputList[:10], outputDir, sample, couts, final, jetAlgo, grooming, weight, Job, FNAL )
 	else: myAnalyzer( inputList, outputDir, sample, couts, final, jetAlgo, grooming, weight, Job, FNAL )
