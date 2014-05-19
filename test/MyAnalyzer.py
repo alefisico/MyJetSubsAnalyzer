@@ -327,7 +327,8 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 
 			############  Event Variables
 			for k in range( events.nJets ):
-				jetPt.Fill( events.jetPt[k], weight )
+				test='jetPt'
+				jetPt.Fill( getattr( events, test)[k], weight )
 				jetEta.Fill( events.jetEta[k], weight )
 				jetPhi.Fill( events.jetPhi[k], weight )
 				jetMass.Fill( events.jetMass[k], weight )
@@ -626,6 +627,7 @@ if __name__ == '__main__':
 		sample = 'Data_'+QCD
 		if FNAL:
 			list = os.popen('ls -1v /eos/uscms/store/user/algomez/'+sample+'/*.root').read().splitlines()
+			#list = os.popen('ls -1v /uscmst1b_scratch/lpc1/3DayLifetime/algomez/'+sample+'/*.root').read().splitlines()
 			outputDir = '/eos/uscms/store/user/algomez/Data/treeResults/'
 			#outputDir = '/uscms_data/d3/algomez/files/Data/treeResults/'
 		else:
@@ -634,9 +636,10 @@ if __name__ == '__main__':
 		inputList = [i if i.startswith('file') else 'file:' + i for i in list]
 		weight = 1
 	elif 'WJets' in samples:
-		sample = 'WJets'
+		sample = 'WJetsFullyHadronic'
 		if FNAL:
-			list = os.popen('ls -1v /eos/uscms/store/user/algomez/'+sample+'ToLNu_HT-400ToInf_8TeV-madgraph_v2_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
+			#list = os.popen('ls -1v /eos/uscms/store/user/algomez/'+sample+'ToLNu_HT-400ToInf_8TeV-madgraph_v2_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
+			list = os.popen('ls -1v /eos/uscms/store/user/algomez/'+sample+'_Ht100_Pt50_Pt30_deta22_Mqq200_8TeV-madgraph_Summer12_DR53X-PU_S10_START53_V7C-v1/*.root').read().splitlines()
 			#outputDir = '/uscms_data/d3/algomez/files/WJets/treeResults/'
 			outputDir = '/eos/uscms/store/user/algomez/WJets/treeResults/'
 		else:
