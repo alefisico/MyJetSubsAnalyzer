@@ -32,20 +32,23 @@ using namespace std;
 using namespace reco;
 
 PFJetTreeProducer::PFJetTreeProducer(edm::ParameterSet const& cfg) {
-	srcJets_            = cfg.getParameter<edm::InputTag>             ("jets");
-	//srcJetsPruned_      = cfg.getParameter<edm::InputTag>             ("jetsPruned");
-	srcMET_             = cfg.getParameter<edm::InputTag>             ("met");
-	srcVrtx_            = cfg.getParameter<edm::InputTag>             ("vtx");
-	srcPU_              = cfg.getUntrackedParameter<edm::InputTag>    ("pu",edm::InputTag(""));
-	//mjjMin_             = cfg.getParameter<double>                    ("mjjMin");
-	ptMin_              = cfg.getParameter<double>                    ("ptMin");
-	etaMax_             = cfg.getParameter<double>                    ("etaMax");
-	//dEtaMax_            = cfg.getParameter<double>                    ("dEtaMax");
-	triggerCache_       = triggerExpression::Data(cfg.getParameterSet("triggerConfiguration"));
-	vtriggerAlias_      = cfg.getParameter<std::vector<std::string> > ("triggerAlias");
-	vtriggerSelection_  = cfg.getParameter<std::vector<std::string> > ("triggerSelection");
-	genSrc_             = cfg.getParameter<edm::InputTag>             ("genSrc");
-	stopMass_           = cfg.getParameter<double>                    ("stopMass");
+	srcJets_                 = cfg.getParameter<edm::InputTag>             ("jets");
+	srcJetsPruned_           = cfg.getParameter<edm::InputTag> 	       ("jetsPruned");
+	srcJetsTrimmed_          = cfg.getParameter<edm::InputTag> 	       ("jetsTrimmed");
+	srcJetsFilteredN2_         = cfg.getParameter<edm::InputTag> 	       ("jetsFilteredN2");
+	srcJetsFilteredN3_         = cfg.getParameter<edm::InputTag> 	       ("jetsFilteredN3");
+	srcJetsMassDropFiltered_ = cfg.getParameter<edm::InputTag> 	       ("jetsMassDropFiltered");
+	srcMET_                  = cfg.getParameter<edm::InputTag>             ("met");
+	srcVrtx_                 = cfg.getParameter<edm::InputTag>             ("vtx");
+	srcPU_                   = cfg.getUntrackedParameter<edm::InputTag>    ("pu",edm::InputTag(""));
+	//htMin_                   = cfg.getParameter<double>                    ("htMin");
+	ptMin_                   = cfg.getParameter<double>                    ("ptMin");
+	etaMax_                  = cfg.getParameter<double>                    ("etaMax");
+	triggerCache_ 	         = triggerExpression::Data(cfg.getParameterSet("triggerConfiguration"));
+	vtriggerAlias_     	 = cfg.getParameter<std::vector<std::string> > ("triggerAlias");
+	vtriggerSelection_  	 = cfg.getParameter<std::vector<std::string> > ("triggerSelection");
+	genSrc_          	 = cfg.getParameter<edm::InputTag>             ("genSrc");
+	stopMass_       	 = cfg.getParameter<double>                    ("stopMass");
 
 	if (vtriggerAlias_.size() != vtriggerSelection_.size()) {
 		cout<<"ERROR: the number of trigger aliases does not match the number of trigger names !!!"<<endl;
@@ -77,34 +80,90 @@ void PFJetTreeProducer::beginJob() {
 	outTree_->Branch("lumi"                 ,&lumi_              ,"lumi_/I");
 	outTree_->Branch("nvtx"                 ,&nVtx_              ,"nVtx_/I");
 	outTree_->Branch("nJets"                ,&nJets_             ,"nJets_/I");
+	outTree_->Branch("nJetsPruned"                ,&nJetsPruned_             ,"nJetsPruned_/I");
+	outTree_->Branch("nJetsTrimmed"                ,&nJetsTrimmed_             ,"nJetsTrimmed_/I");
+	outTree_->Branch("nJetsFilteredN2"                ,&nJetsFilteredN2_             ,"nJetsFilteredN2_/I");
+	outTree_->Branch("nJetsFilteredN3"                ,&nJetsFilteredN3_             ,"nJetsFilteredN3_/I");
+	outTree_->Branch("nJetsMassDropFiltered"                ,&nJetsMassDropFiltered_             ,"nJetsMassDropFiltered_/I");
 	outTree_->Branch("ht"                   ,&ht_                ,"ht_/F");
 	outTree_->Branch("met"                  ,&met_               ,"met_/F");
 	outTree_->Branch("metSig"               ,&metSig_            ,"metSig_/F");
-	/*outTree_->Branch("mjj"                  ,&mjj_               ,"mjj_/F");
-	outTree_->Branch("dEtajj"               ,&dEtajj_            ,"dEtajj_/F");
-	outTree_->Branch("dPhijj"               ,&dPhijj_            ,"dPhijj_/F"); */
 	outTree_->Branch("numStops",		&numStops,		"numStops/I" );
 	outTree_->Branch("numPartonsStopA",		&numPartonsStopA,		"numPartonsStopA/I" );
 	outTree_->Branch("numPartonsStopB",		&numPartonsStopB,		"numPartonsStopB/I" );
 	//------------------------------------------------------------------
-	pt_             = new std::vector<float>;
-	jec_            = new std::vector<float>;
-	eta_            = new std::vector<float>;
-	phi_            = new std::vector<float>;
-	mass_           = new std::vector<float>;
-	//massPruned_     = new std::vector<float>;
-	tau1_           = new std::vector<float>;
-	tau2_           = new std::vector<float>;
-	tau3_           = new std::vector<float>;
-	dR_             = new std::vector<float>;
-	energy_         = new std::vector<float>;
 	chf_            = new std::vector<float>;
 	nhf_            = new std::vector<float>;
 	phf_            = new std::vector<float>;
 	muf_            = new std::vector<float>;
 	elf_            = new std::vector<float>;
+	pt_             = new std::vector<float>;
+	jec_            = new std::vector<float>;
+	eta_            = new std::vector<float>;
+	phi_            = new std::vector<float>;
+	mass_           = new std::vector<float>;
+	energy_         = new std::vector<float>;
 	area_           = new std::vector<float>;
 	numJetConst_    = new std::vector<float>;
+	tau1_           = new std::vector<float>;
+	tau2_           = new std::vector<float>;
+	tau3_           = new std::vector<float>;
+	ptPruned_             = new std::vector<float>;
+	jecPruned_            = new std::vector<float>;
+	etaPruned_            = new std::vector<float>;
+	phiPruned_            = new std::vector<float>;
+	massPruned_           = new std::vector<float>;
+	energyPruned_         = new std::vector<float>;
+	areaPruned_           = new std::vector<float>;
+	numJetConstPruned_    = new std::vector<float>;
+	tau1Pruned_           = new std::vector<float>;
+	tau2Pruned_           = new std::vector<float>;
+	tau3Pruned_           = new std::vector<float>;
+	ptTrimmed_             = new std::vector<float>;
+	jecTrimmed_            = new std::vector<float>;
+	etaTrimmed_            = new std::vector<float>;
+	phiTrimmed_            = new std::vector<float>;
+	massTrimmed_           = new std::vector<float>;
+	energyTrimmed_         = new std::vector<float>;
+	areaTrimmed_           = new std::vector<float>;
+	numJetConstTrimmed_    = new std::vector<float>;
+	tau1Trimmed_           = new std::vector<float>;
+	tau2Trimmed_           = new std::vector<float>;
+	tau3Trimmed_           = new std::vector<float>;
+	ptFilteredN2_             = new std::vector<float>;
+	jecFilteredN2_            = new std::vector<float>;
+	etaFilteredN2_            = new std::vector<float>;
+	phiFilteredN2_            = new std::vector<float>;
+	massFilteredN2_           = new std::vector<float>;
+	energyFilteredN2_         = new std::vector<float>;
+	areaFilteredN2_           = new std::vector<float>;
+	numJetConstFilteredN2_    = new std::vector<float>;
+	tau1FilteredN2_           = new std::vector<float>;
+	tau2FilteredN2_           = new std::vector<float>;
+	tau3FilteredN2_           = new std::vector<float>;
+	ptFilteredN3_             = new std::vector<float>;
+	jecFilteredN3_            = new std::vector<float>;
+	etaFilteredN3_            = new std::vector<float>;
+	phiFilteredN3_            = new std::vector<float>;
+	massFilteredN3_           = new std::vector<float>;
+	energyFilteredN3_         = new std::vector<float>;
+	areaFilteredN3_           = new std::vector<float>;
+	numJetConstFilteredN3_    = new std::vector<float>;
+	tau1FilteredN3_           = new std::vector<float>;
+	tau2FilteredN3_           = new std::vector<float>;
+	tau3FilteredN3_           = new std::vector<float>;
+	ptMassDropFiltered_             = new std::vector<float>;
+	jecMassDropFiltered_            = new std::vector<float>;
+	etaMassDropFiltered_            = new std::vector<float>;
+	phiMassDropFiltered_            = new std::vector<float>;
+	massMassDropFiltered_           = new std::vector<float>;
+	energyMassDropFiltered_         = new std::vector<float>;
+	areaMassDropFiltered_           = new std::vector<float>;
+	numJetConstMassDropFiltered_    = new std::vector<float>;
+	tau1MassDropFiltered_           = new std::vector<float>;
+	tau2MassDropFiltered_           = new std::vector<float>;
+	tau3MassDropFiltered_           = new std::vector<float>;
+	dR_             = new std::vector<float>;
 	stopsPt_	= new std::vector<float>;
 	stopsEta_	= new std::vector<float>;
 	stopsMass_	= new std::vector<float>;
@@ -124,24 +183,79 @@ void PFJetTreeProducer::beginJob() {
 	partonEnergy_	= new std::vector<float>;
 	partonPhi_	= new std::vector<float>;
 	partonID_	= new std::vector<float>;
-	outTree_->Branch("jetPt"                ,"vector<float>"     ,&pt_);
-	outTree_->Branch("jetJec"               ,"vector<float>"     ,&jec_);
-	outTree_->Branch("jetEta"               ,"vector<float>"     ,&eta_);
-	outTree_->Branch("jetPhi"               ,"vector<float>"     ,&phi_);
-	outTree_->Branch("jetMass"              ,"vector<float>"     ,&mass_);
-	//outTree_->Branch("jetMassPruned"        ,"vector<float>"     ,&massPruned_);
-	outTree_->Branch("jetTau1"              ,"vector<float>"     ,&tau1_);
-	outTree_->Branch("jetTau2"              ,"vector<float>"     ,&tau2_);
-	outTree_->Branch("jetTau3"              ,"vector<float>"     ,&tau3_);
-	outTree_->Branch("jetDR"                ,"vector<float>"     ,&dR_); 
-	outTree_->Branch("jetEnergy"            ,"vector<float>"     ,&energy_);
+
 	outTree_->Branch("jetChf"               ,"vector<float>"     ,&chf_);
 	outTree_->Branch("jetNhf"               ,"vector<float>"     ,&nhf_);
 	outTree_->Branch("jetPhf"               ,"vector<float>"     ,&phf_);
 	outTree_->Branch("jetMuf"               ,"vector<float>"     ,&muf_);
 	outTree_->Branch("jetElf"               ,"vector<float>"     ,&elf_);   
+	outTree_->Branch("jetPt"                ,"vector<float>"     ,&pt_);
+	outTree_->Branch("jetJec"               ,"vector<float>"     ,&jec_);
+	outTree_->Branch("jetEta"               ,"vector<float>"     ,&eta_);
+	outTree_->Branch("jetPhi"               ,"vector<float>"     ,&phi_);
+	outTree_->Branch("jetEnergy"            ,"vector<float>"     ,&energy_);
+	outTree_->Branch("jetMass"              ,"vector<float>"     ,&mass_);
+	outTree_->Branch("jetTau1"              ,"vector<float>"     ,&tau1_);
+	outTree_->Branch("jetTau2"              ,"vector<float>"     ,&tau2_);
+	outTree_->Branch("jetTau3"              ,"vector<float>"     ,&tau3_);
 	outTree_->Branch("jetArea"              ,"vector<float>"     ,&area_);   
 	outTree_->Branch("numJetConstituent"    ,"vector<float>"     ,&numJetConst_);   
+	outTree_->Branch("jetPrunedPt"                ,"vector<float>"     ,&ptPruned_);
+	outTree_->Branch("jetPrunedJec"               ,"vector<float>"     ,&jecPruned_);
+	outTree_->Branch("jetPrunedEta"               ,"vector<float>"     ,&etaPruned_);
+	outTree_->Branch("jetPrunedPhi"               ,"vector<float>"     ,&phiPruned_);
+	outTree_->Branch("jetPrunedEnergy"            ,"vector<float>"     ,&energyPruned_);
+	outTree_->Branch("jetPrunedMass"              ,"vector<float>"     ,&massPruned_);
+	outTree_->Branch("jetPrunedTau1"              ,"vector<float>"     ,&tau1Pruned_);
+	outTree_->Branch("jetPrunedTau2"              ,"vector<float>"     ,&tau2Pruned_);
+	outTree_->Branch("jetPrunedTau3"              ,"vector<float>"     ,&tau3Pruned_);
+	outTree_->Branch("jetPrunedArea"              ,"vector<float>"     ,&areaPruned_);   
+	outTree_->Branch("numJetPrunedConstituent"    ,"vector<float>"     ,&numJetConstPruned_);   
+	outTree_->Branch("jetTrimmedPt"                ,"vector<float>"     ,&ptTrimmed_);
+	outTree_->Branch("jetTrimmedJec"               ,"vector<float>"     ,&jecTrimmed_);
+	outTree_->Branch("jetTrimmedEta"               ,"vector<float>"     ,&etaTrimmed_);
+	outTree_->Branch("jetTrimmedPhi"               ,"vector<float>"     ,&phiTrimmed_);
+	outTree_->Branch("jetTrimmedEnergy"            ,"vector<float>"     ,&energyTrimmed_);
+	outTree_->Branch("jetTrimmedMass"              ,"vector<float>"     ,&massTrimmed_);
+	outTree_->Branch("jetTrimmedTau1"              ,"vector<float>"     ,&tau1Trimmed_);
+	outTree_->Branch("jetTrimmedTau2"              ,"vector<float>"     ,&tau2Trimmed_);
+	outTree_->Branch("jetTrimmedTau3"              ,"vector<float>"     ,&tau3Trimmed_);
+	outTree_->Branch("jetTrimmedArea"              ,"vector<float>"     ,&areaTrimmed_);   
+	outTree_->Branch("numJetTrimmedConstituent"    ,"vector<float>"     ,&numJetConstTrimmed_);   
+	outTree_->Branch("jetFilteredN2Pt"                ,"vector<float>"     ,&ptFilteredN2_);
+	outTree_->Branch("jetFilteredN2Jec"               ,"vector<float>"     ,&jecFilteredN2_);
+	outTree_->Branch("jetFilteredN2Eta"               ,"vector<float>"     ,&etaFilteredN2_);
+	outTree_->Branch("jetFilteredN2Phi"               ,"vector<float>"     ,&phiFilteredN2_);
+	outTree_->Branch("jetFilteredN2Energy"            ,"vector<float>"     ,&energyFilteredN2_);
+	outTree_->Branch("jetFilteredN2Mass"              ,"vector<float>"     ,&massFilteredN2_);
+	outTree_->Branch("jetFilteredN2Tau1"              ,"vector<float>"     ,&tau1FilteredN2_);
+	outTree_->Branch("jetFilteredN2Tau2"              ,"vector<float>"     ,&tau2FilteredN2_);
+	outTree_->Branch("jetFilteredN2Tau3"              ,"vector<float>"     ,&tau3FilteredN2_);
+	outTree_->Branch("jetFilteredN2Area"              ,"vector<float>"     ,&areaFilteredN2_);   
+	outTree_->Branch("numJetFilteredN2Constituent"    ,"vector<float>"     ,&numJetConstFilteredN2_);   
+	outTree_->Branch("jetFilteredN3Pt"                ,"vector<float>"     ,&ptFilteredN3_);
+	outTree_->Branch("jetFilteredN3Jec"               ,"vector<float>"     ,&jecFilteredN3_);
+	outTree_->Branch("jetFilteredN3Eta"               ,"vector<float>"     ,&etaFilteredN3_);
+	outTree_->Branch("jetFilteredN3Phi"               ,"vector<float>"     ,&phiFilteredN3_);
+	outTree_->Branch("jetFilteredN3Energy"            ,"vector<float>"     ,&energyFilteredN3_);
+	outTree_->Branch("jetFilteredN3Mass"              ,"vector<float>"     ,&massFilteredN3_);
+	outTree_->Branch("jetFilteredN3Tau1"              ,"vector<float>"     ,&tau1FilteredN3_);
+	outTree_->Branch("jetFilteredN3Tau2"              ,"vector<float>"     ,&tau2FilteredN3_);
+	outTree_->Branch("jetFilteredN3Tau3"              ,"vector<float>"     ,&tau3FilteredN3_);
+	outTree_->Branch("jetFilteredN3Area"              ,"vector<float>"     ,&areaFilteredN3_);   
+	outTree_->Branch("numJetFilteredN3Constituent"    ,"vector<float>"     ,&numJetConstFilteredN3_);   
+	outTree_->Branch("jetMassDropFilteredPt"                ,"vector<float>"     ,&ptMassDropFiltered_);
+	outTree_->Branch("jetMassDropFilteredJec"               ,"vector<float>"     ,&jecMassDropFiltered_);
+	outTree_->Branch("jetMassDropFilteredEta"               ,"vector<float>"     ,&etaMassDropFiltered_);
+	outTree_->Branch("jetMassDropFilteredPhi"               ,"vector<float>"     ,&phiMassDropFiltered_);
+	outTree_->Branch("jetMassDropFilteredEnergy"            ,"vector<float>"     ,&energyMassDropFiltered_);
+	outTree_->Branch("jetMassDropFilteredMass"              ,"vector<float>"     ,&massMassDropFiltered_);
+	outTree_->Branch("jetMassDropFilteredTau1"              ,"vector<float>"     ,&tau1MassDropFiltered_);
+	outTree_->Branch("jetMassDropFilteredTau2"              ,"vector<float>"     ,&tau2MassDropFiltered_);
+	outTree_->Branch("jetMassDropFilteredTau3"              ,"vector<float>"     ,&tau3MassDropFiltered_);
+	outTree_->Branch("jetMassDropFilteredArea"              ,"vector<float>"     ,&areaMassDropFiltered_);   
+	outTree_->Branch("numJetMassDropFilteredConstituent"    ,"vector<float>"     ,&numJetConstMassDropFiltered_);   
+	outTree_->Branch("jetDR"                ,"vector<float>"     ,&dR_); 
 
 	//------------------------------------------------------------------
 	triggerResult_ = new std::vector<bool>;
@@ -173,24 +287,78 @@ void PFJetTreeProducer::beginJob() {
 //////////////////////////////////////////////////////////////////////////////////////////
 void PFJetTreeProducer::endJob() {  
 	delete triggerResult_;
-	delete pt_;
-	delete jec_;
-	delete eta_;
-	delete phi_;
-	delete mass_;
-	//delete massPruned_;
-	delete tau1_;
-	delete tau2_;
-	delete tau3_;
-	delete dR_;
-	delete energy_;
 	delete chf_;
 	delete nhf_;
 	delete phf_;
 	delete muf_;
 	delete elf_;
+	delete pt_;
+	delete jec_;
+	delete eta_;
+	delete phi_;
+	delete mass_;
+	delete tau1_;
+	delete tau2_;
+	delete tau3_;
+	delete energy_;
 	delete area_;
 	delete numJetConst_;
+	delete ptPruned_;
+	delete jecPruned_;
+	delete etaPruned_;
+	delete phiPruned_;
+	delete massPruned_;
+	delete tau1Pruned_;
+	delete tau2Pruned_;
+	delete tau3Pruned_;
+	delete energyPruned_;
+	delete areaPruned_;
+	delete numJetConstPruned_;
+	delete ptTrimmed_;
+	delete jecTrimmed_;
+	delete etaTrimmed_;
+	delete phiTrimmed_;
+	delete massTrimmed_;
+	delete tau1Trimmed_;
+	delete tau2Trimmed_;
+	delete tau3Trimmed_;
+	delete energyTrimmed_;
+	delete areaTrimmed_;
+	delete numJetConstTrimmed_;
+	delete ptFilteredN2_;
+	delete jecFilteredN2_;
+	delete etaFilteredN2_;
+	delete phiFilteredN2_;
+	delete massFilteredN2_;
+	delete tau1FilteredN2_;
+	delete tau2FilteredN2_;
+	delete tau3FilteredN2_;
+	delete energyFilteredN2_;
+	delete areaFilteredN2_;
+	delete numJetConstFilteredN2_;
+	delete ptFilteredN3_;
+	delete jecFilteredN3_;
+	delete etaFilteredN3_;
+	delete phiFilteredN3_;
+	delete massFilteredN3_;
+	delete tau1FilteredN3_;
+	delete tau2FilteredN3_;
+	delete tau3FilteredN3_;
+	delete energyFilteredN3_;
+	delete areaFilteredN3_;
+	delete numJetConstFilteredN3_;
+	delete ptMassDropFiltered_;
+	delete jecMassDropFiltered_;
+	delete etaMassDropFiltered_;
+	delete phiMassDropFiltered_;
+	delete massMassDropFiltered_;
+	delete tau1MassDropFiltered_;
+	delete tau2MassDropFiltered_;
+	delete tau3MassDropFiltered_;
+	delete energyMassDropFiltered_;
+	delete areaMassDropFiltered_;
+	delete numJetConstMassDropFiltered_;
+	delete dR_;
 	delete stopsPt_;
 	delete stopsEta_;
 	delete stopsMass_;
@@ -225,9 +393,25 @@ void PFJetTreeProducer::analyze(edm::Event const& iEvent, edm::EventSetup const&
 	iEvent.getByLabel(srcJets_,jets);
 	edm::View<pat::Jet> pat_jets = *jets;
 
-	/*edm::Handle<edm::View<pat::Jet> > jetsPruned;
+	edm::Handle<edm::View<pat::Jet> > jetsPruned;
 	iEvent.getByLabel(srcJetsPruned_,jetsPruned);
-	edm::View<pat::Jet> pat_jets_pruned = *jetsPruned;*/
+	edm::View<pat::Jet> pat_jets_pruned = *jetsPruned;
+
+	edm::Handle<edm::View<pat::Jet> > jetsTrimmed;
+	iEvent.getByLabel(srcJetsTrimmed_,jetsTrimmed);
+	edm::View<pat::Jet> pat_jets_trimmed = *jetsTrimmed;
+
+	edm::Handle<edm::View<pat::Jet> > jetsFilteredN2;
+	iEvent.getByLabel(srcJetsFilteredN2_,jetsFilteredN2);
+	edm::View<pat::Jet> pat_jets_filteredN2 = *jetsFilteredN2;
+
+	edm::Handle<edm::View<pat::Jet> > jetsFilteredN3;
+	iEvent.getByLabel(srcJetsFilteredN3_,jetsFilteredN3);
+	edm::View<pat::Jet> pat_jets_filteredN3 = *jetsFilteredN3;
+
+	edm::Handle<edm::View<pat::Jet> > jetsMassDropFiltered;
+	iEvent.getByLabel(srcJetsMassDropFiltered_,jetsMassDropFiltered);
+	edm::View<pat::Jet> pat_jets_massDropFiltered = *jetsMassDropFiltered;
 
 	edm::Handle<edm::View<MET> >  met;
 	iEvent.getByLabel(srcMET_,met);
@@ -334,17 +518,24 @@ void PFJetTreeProducer::analyze(edm::Event const& iEvent, edm::EventSetup const&
 				triggerPassHisto_->Fill(vtriggerAlias_[itrig].c_str(),1);
 			}
 			triggerResult_->push_back(result);
+			//cout<< vtriggerAlias_[itrig].c_str() << " " << result << endl;
 		}
 	}
      
 
 	//----- at least one good vertex -----------
 	bool cut_vtx = (recVtxs->size() > 0);
-  
+
 	if (cut_vtx) {
 		nJets_ = 0;
+		nJetsPruned_ = 0;
+		nJetsTrimmed_ = 0;
+		nJetsFilteredN2_ = 0;
+		nJetsFilteredN3_ = 0;
+		nJetsMassDropFiltered_ = 0;
 		float ht(0.0);
 		//vector< jetInfo > jets;
+
 		for(edm::View<pat::Jet>::const_iterator ijet = pat_jets.begin();ijet != pat_jets.end(); ++ijet) { 
 			double chf = ijet->chargedHadronEnergyFraction();
 			double nhf = ijet->neutralHadronEnergyFraction() + ijet->HFHadronEnergyFraction();
@@ -353,34 +544,34 @@ void PFJetTreeProducer::analyze(edm::Event const& iEvent, edm::EventSetup const&
 			int chm    = ijet->chargedHadronMultiplicity();
 			int npr    = ijet->chargedMultiplicity() + ijet->neutralMultiplicity(); 
 			double muf = ijet->muonEnergy()/(ijet->jecFactor(0) * ijet->energy());
-			/*bool idL   = (npr>1 && phf<0.99 && nhf<0.99);
-			bool idT   = (idL && ((eta<=2.4 && nhf<0.9 && phf<0.9 && elf<0.99 && muf<0.99 && chf>0 && chm>0) || eta>2.4));*/
-			///vector<reco::TrackRefVector> tracksAsocJet = ijet->associatedTracks(); // this is wrong, I have to add it
-			double area = ijet->jetArea();
-			//double numJetConst = ijet->getPFConstituents().size();
 			float eta  = fabs(ijet->eta());
 			float pt   = ijet->pt();
+			double area = ijet->jetArea();
+			double numJetConst = ijet->getPFConstituents().size();
+			bool idL   = (npr>1 && phf<0.99 && nhf<0.99);
+			bool idT   = (idL && ((eta<=2.5 && nhf<0.9 && phf<0.9 && elf<0.99 && muf<0.99 && chf>0 && chm>0) || eta>2.5));
+			///vector<reco::TrackRefVector> tracksAsocJet = ijet->associatedTracks(); // this is wrong, I have to add it
 			//jetInfo kjet;
 
-			//if (idT && pt > ptMin_) {
-			if ( eta < etaMax_ && pt > ptMin_) {
-				ht += pt;
-				chf_           ->push_back(chf);
-				nhf_           ->push_back(nhf);
-				phf_           ->push_back(phf);
-				elf_           ->push_back(elf);
-				numJetConst_   ->push_back(numJetConst);
-				muf_           ->push_back(muf);
-				area_          ->push_back(area);
-				jec_           ->push_back(1./ijet->jecFactor(0));
-				pt_            ->push_back(pt);
-				phi_           ->push_back(ijet->phi());
-				eta_           ->push_back(ijet->eta());
-				mass_          ->push_back(ijet->mass());
-				energy_        ->push_back(ijet->energy());
-				tau1_          ->push_back(ijet->userFloat("tau1"));
-				tau2_          ->push_back(ijet->userFloat("tau2"));
-				tau3_          ->push_back(ijet->userFloat("tau3"));
+			//if (idT && pt > ptMin_ && eta < etaMax_ && pt > ptMin_) {
+			ht += pt;
+			chf_           ->push_back(chf);
+			nhf_           ->push_back(nhf);
+			phf_           ->push_back(phf);
+			elf_           ->push_back(elf);
+			muf_           ->push_back(muf);
+			numJetConst_   ->push_back(numJetConst);
+			area_          ->push_back(area);
+			jec_           ->push_back(1./ijet->jecFactor(0));
+			pt_            ->push_back(pt);
+			phi_           ->push_back(ijet->phi());
+			eta_           ->push_back(ijet->eta());
+			mass_          ->push_back(ijet->mass());
+			energy_        ->push_back(ijet->energy());
+			tau1_          ->push_back(ijet->userFloat("tau1"));
+			tau2_          ->push_back(ijet->userFloat("tau2"));
+			tau3_          ->push_back(ijet->userFloat("tau3"));
+			nJets_++;
 
 				/*kjet.TL = TLorentzVector(ijet->px(),ijet->py(),ijet->pz(),ijet->energy());
 				kjet.tau1 = ijet->userFloat("tau1");
@@ -398,11 +589,89 @@ void PFJetTreeProducer::analyze(edm::Event const& iEvent, edm::EventSetup const&
 						dRmin = dR;
 					} 
 				} 
-				massPruned_->push_back(auxm);
 				dR_->push_back(dRmin);*/
-				nJets_++;
-			}// matching with pruned jets
+			//} 
 		}// jet loop  
+
+		for(edm::View<pat::Jet>::const_iterator ijetpr = pat_jets_pruned.begin();ijetpr != pat_jets_pruned.end(); ++ijetpr) { 
+			double areaPruned = ijetpr->jetArea();
+
+			areaPruned_          ->push_back(areaPruned);
+			jecPruned_           ->push_back(1./ijetpr->jecFactor(0));
+			ptPruned_            ->push_back(ijetpr->pt());
+			phiPruned_           ->push_back(ijetpr->phi());
+			etaPruned_           ->push_back(ijetpr->eta());
+			massPruned_          ->push_back(ijetpr->mass());
+			energyPruned_        ->push_back(ijetpr->energy());
+			tau1Pruned_          ->push_back(ijetpr->userFloat("tau1"));
+			tau2Pruned_          ->push_back(ijetpr->userFloat("tau2"));
+			tau3Pruned_          ->push_back(ijetpr->userFloat("tau3"));
+			nJetsPruned_++;
+		}
+
+		for(edm::View<pat::Jet>::const_iterator ijettr = pat_jets_trimmed.begin();ijettr != pat_jets_trimmed.end(); ++ijettr) { 
+			double areaTrimmed = ijettr->jetArea();
+
+			areaTrimmed_          ->push_back(areaTrimmed);
+			jecTrimmed_           ->push_back(1./ijettr->jecFactor(0));
+			ptTrimmed_            ->push_back(ijettr->pt());
+			phiTrimmed_           ->push_back(ijettr->phi());
+			etaTrimmed_           ->push_back(ijettr->eta());
+			massTrimmed_          ->push_back(ijettr->mass());
+			energyTrimmed_        ->push_back(ijettr->energy());
+			tau1Trimmed_          ->push_back(ijettr->userFloat("tau1"));
+			tau2Trimmed_          ->push_back(ijettr->userFloat("tau2"));
+			tau3Trimmed_          ->push_back(ijettr->userFloat("tau3"));
+			nJetsTrimmed_++;
+		}
+
+		for(edm::View<pat::Jet>::const_iterator ijetfilN2 = pat_jets_filteredN2.begin();ijetfilN2 != pat_jets_filteredN2.end(); ++ijetfilN2) { 
+			double areaFilteredN2 = ijetfilN2->jetArea();
+
+			areaFilteredN2_          ->push_back(areaFilteredN2);
+			jecFilteredN2_           ->push_back(1./ijetfilN2->jecFactor(0));
+			ptFilteredN2_            ->push_back(ijetfilN2->pt());
+			phiFilteredN2_           ->push_back(ijetfilN2->phi());
+			etaFilteredN2_           ->push_back(ijetfilN2->eta());
+			massFilteredN2_          ->push_back(ijetfilN2->mass());
+			energyFilteredN2_        ->push_back(ijetfilN2->energy());
+			tau1FilteredN2_          ->push_back(ijetfilN2->userFloat("tau1"));
+			tau2FilteredN2_          ->push_back(ijetfilN2->userFloat("tau2"));
+			tau3FilteredN2_          ->push_back(ijetfilN2->userFloat("tau3"));
+			nJetsFilteredN2_++;
+		}
+
+		for(edm::View<pat::Jet>::const_iterator ijetfilN3 = pat_jets_filteredN3.begin();ijetfilN3 != pat_jets_filteredN3.end(); ++ijetfilN3) { 
+			double areaFilteredN3 = ijetfilN3->jetArea();
+
+			areaFilteredN3_          ->push_back(areaFilteredN3);
+			jecFilteredN3_           ->push_back(1./ijetfilN3->jecFactor(0));
+			ptFilteredN3_            ->push_back(ijetfilN3->pt());
+			phiFilteredN3_           ->push_back(ijetfilN3->phi());
+			etaFilteredN3_           ->push_back(ijetfilN3->eta());
+			massFilteredN3_          ->push_back(ijetfilN3->mass());
+			energyFilteredN3_        ->push_back(ijetfilN3->energy());
+			tau1FilteredN3_          ->push_back(ijetfilN3->userFloat("tau1"));
+			tau2FilteredN3_          ->push_back(ijetfilN3->userFloat("tau2"));
+			tau3FilteredN3_          ->push_back(ijetfilN3->userFloat("tau3"));
+			nJetsFilteredN3_++;
+		}
+
+		for(edm::View<pat::Jet>::const_iterator ijetmdfil = pat_jets_massDropFiltered.begin();ijetmdfil != pat_jets_massDropFiltered.end(); ++ijetmdfil) { 
+			double areaMassDropFiltered = ijetmdfil->jetArea();
+
+			areaMassDropFiltered_          ->push_back(areaMassDropFiltered);
+			jecMassDropFiltered_           ->push_back(1./ijetmdfil->jecFactor(0));
+			ptMassDropFiltered_            ->push_back(ijetmdfil->pt());
+			phiMassDropFiltered_           ->push_back(ijetmdfil->phi());
+			etaMassDropFiltered_           ->push_back(ijetmdfil->eta());
+			massMassDropFiltered_          ->push_back(ijetmdfil->mass());
+			energyMassDropFiltered_        ->push_back(ijetmdfil->energy());
+			tau1MassDropFiltered_          ->push_back(ijetmdfil->userFloat("tau1"));
+			tau2MassDropFiltered_          ->push_back(ijetmdfil->userFloat("tau2"));
+			tau3MassDropFiltered_          ->push_back(ijetmdfil->userFloat("tau3"));
+			nJetsMassDropFiltered_++;
+		}
 
 
 		ht_     = ht;
@@ -439,27 +708,78 @@ void PFJetTreeProducer::initialize() {
 	met_            = -999;
 	metSig_         = -999;
 	ht_             = -999;
-	/*mjj_            = -999; 
-	dEtajj_         = -999; 
-	dPhijj_         = -999;*/
-	pt_             ->clear();
-	eta_            ->clear();
-	phi_            ->clear();
-	mass_           ->clear();
-	//massPruned_     ->clear();
-	tau1_           ->clear();
-	tau2_           ->clear();
-	tau3_           ->clear();
-	dR_             ->clear();
-	energy_         ->clear();
 	chf_            ->clear();
 	nhf_            ->clear();
 	phf_            ->clear();
 	elf_            ->clear();
+	muf_            ->clear();
+	pt_             ->clear();
+	eta_            ->clear();
+	phi_            ->clear();
+	mass_           ->clear();
+	tau1_           ->clear();
+	tau2_           ->clear();
+	tau3_           ->clear();
+	energy_         ->clear();
 	area_           ->clear();
 	numJetConst_    ->clear();
-	muf_            ->clear();
 	jec_            ->clear();
+	ptPruned_             ->clear();
+	etaPruned_            ->clear();
+	phiPruned_            ->clear();
+	massPruned_           ->clear();
+	tau1Pruned_           ->clear();
+	tau2Pruned_           ->clear();
+	tau3Pruned_           ->clear();
+	energyPruned_         ->clear();
+	areaPruned_           ->clear();
+	numJetConstPruned_    ->clear();
+	jecPruned_            ->clear();
+	ptTrimmed_             ->clear();
+	etaTrimmed_            ->clear();
+	phiTrimmed_            ->clear();
+	massTrimmed_           ->clear();
+	tau1Trimmed_           ->clear();
+	tau2Trimmed_           ->clear();
+	tau3Trimmed_           ->clear();
+	energyTrimmed_         ->clear();
+	areaTrimmed_           ->clear();
+	numJetConstTrimmed_    ->clear();
+	jecTrimmed_            ->clear();
+	ptFilteredN2_             ->clear();
+	etaFilteredN2_            ->clear();
+	phiFilteredN2_            ->clear();
+	massFilteredN2_           ->clear();
+	tau1FilteredN2_           ->clear();
+	tau2FilteredN2_           ->clear();
+	tau3FilteredN2_           ->clear();
+	energyFilteredN2_         ->clear();
+	areaFilteredN2_           ->clear();
+	numJetConstFilteredN2_    ->clear();
+	jecFilteredN2_            ->clear();
+	ptFilteredN3_             ->clear();
+	etaFilteredN3_            ->clear();
+	phiFilteredN3_            ->clear();
+	massFilteredN3_           ->clear();
+	tau1FilteredN3_           ->clear();
+	tau2FilteredN3_           ->clear();
+	tau3FilteredN3_           ->clear();
+	energyFilteredN3_         ->clear();
+	areaFilteredN3_           ->clear();
+	numJetConstFilteredN3_    ->clear();
+	jecFilteredN3_            ->clear();
+	ptMassDropFiltered_             ->clear();
+	etaMassDropFiltered_            ->clear();
+	phiMassDropFiltered_            ->clear();
+	massMassDropFiltered_           ->clear();
+	tau1MassDropFiltered_           ->clear();
+	tau2MassDropFiltered_           ->clear();
+	tau3MassDropFiltered_           ->clear();
+	energyMassDropFiltered_         ->clear();
+	areaMassDropFiltered_           ->clear();
+	numJetConstMassDropFiltered_    ->clear();
+	jecMassDropFiltered_            ->clear();
+	dR_             ->clear();
 	triggerResult_  ->clear();
 	//----- MC -------
 	npu_ = -999;
