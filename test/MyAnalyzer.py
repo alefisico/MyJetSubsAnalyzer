@@ -25,6 +25,7 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 	if FNAL:
 		if final:
 			if not ( os.path.exists( outputDir ) ): os.makedirs( outputDir )
+			#if not ( os.path.exists( '/eos/uscms/'+outputDir ) ): os.makedirs( '/eos/uscms/'+outputDir )
 			if 'QCD' in sample:
 				outputFileName = outputDir + sample + '_'+jetAlgo+'_'+grooming+'_'+str(Job)+'_Plots.root'
 			else:
@@ -44,6 +45,8 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 
 
 	outputFile = TFile( outputFileName , 'RECREATE' )
+	#outputFile = TFile( 'root://xrootd.unl.edu/'+outputFileName , 'RECREATE' )
+	#outputFile = TFile( 'root://cmssrv32.fnal.gov/'+outputFileName , 'RECREATE' )
 
 	######## Extra, send print to file
 	#if couts == False :
@@ -99,10 +102,12 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 	jetTau2vsTau1 	= TH2F('h_jetTau2vsTau1_'+jetAlgo+'_'+grooming, 'h_jetTau2vsTau1_'+jetAlgo, nBinsTau,  0., maxTau, nBinsTau,  0., maxTau)
 	jetTau3vsTau1 	= TH2F('h_jetTau3vsTau1_'+jetAlgo+'_'+grooming, 'h_jetTau3vsTau1_'+jetAlgo, nBinsTau,  0., maxTau, nBinsTau,  0., maxTau)
 	jetTau3vsTau2 	= TH2F('h_jetTau3vsTau2_'+jetAlgo+'_'+grooming, 'h_jetTau3vsTau2_'+jetAlgo, nBinsTau,  0., maxTau, nBinsTau,  0., maxTau)
+	HTvsNPV 	= TH2F('h_HTvsNPV_'+jetAlgo+'_'+grooming, 'h_HTvsNPV_'+jetAlgo, nBinsHT,  0., maxHT, 50,  0., 50.)
 
 	############################################################ Leading Jet 
 	jet1Pt	 	= TH1F('h_jet1Pt_'+jetAlgo+'_'+grooming, 'h_jet1Pt_'+jetAlgo, nBinsPt,  0., maxPt)
 	jet1Mass 	= TH1F('h_jet1Mass_'+jetAlgo+'_'+grooming, 'h_jet1Mass_'+jetAlgo, nBinsMass,  0., maxMass)
+	jet1MassOverPt 	= TH1F('h_jet1MassOverPt_'+jetAlgo+'_'+grooming, 'h_jet1MassOverPt_'+jetAlgo, 20,  0., 2)
 	jet1Eta	 	= TH1F('h_jet1Eta_'+jetAlgo+'_'+grooming, 'h_jet1Eta_'+jetAlgo, nBinsEta,  -maxEta, maxEta)
 	jet1Phi	 	= TH1F('h_jet1Phi_'+jetAlgo+'_'+grooming, 'h_jet1Phi_'+jetAlgo, nBinsEta,  -maxEta, maxEta)
 	jet1PtvsMass	= TH2F('h_jet1PtvsMass_'+jetAlgo+'_'+grooming, 'h_jet1PtvsMass_'+jetAlgo, nBinsPt,  0., maxPt, nBinsMass,  0., maxMass)
@@ -120,10 +125,12 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 	jet1Massvsht 	= TH2F('h_jet1Massvsht_'+jetAlgo+'_'+grooming, 'h_jet1Massvsht_'+jetAlgo, nBinsMass,  0., maxMass, nBinsHT,  	0, 	maxHT)
 	jet1MassvsTau21 	= TH2F('h_jet1MassvsTau21_'+jetAlgo+'_'+grooming, 'h_jet1MassvsTau21_'+jetAlgo, nBinsMass,  0., maxMass, nBinsTau,  0., maxTau)
 	jet1MassvsMET 	= TH2F('h_jet1MassvsMET_'+jetAlgo+'_'+grooming, 'h_jet1MassvsMET_'+jetAlgo, nBinsMass,  0., maxMass, nBinsMET,  	0, 	maxMET)
+	jet1MassvsNPV 	= TH2F('h_jet1MassvsNPV_'+jetAlgo+'_'+grooming, 'h_jet1MassvsNPV_'+jetAlgo, nBinsMass,  0., maxMass, 50,  	0, 	50)
 
 	############################################################ 2nd Leading Jet 
 	jet2Pt	 	= TH1F('h_jet2Pt_'+jetAlgo+'_'+grooming, 'h_jet2Pt_'+jetAlgo, nBinsPt,  0., maxPt)
 	jet2Mass 	= TH1F('h_jet2Mass_'+jetAlgo+'_'+grooming, 'h_jet2Mass_'+jetAlgo, nBinsMass,  0., maxMass)
+	jet2MassOverPt 	= TH1F('h_jet2MassOverPt_'+jetAlgo+'_'+grooming, 'h_jet2MassOverPt_'+jetAlgo, 20,  0., 2)
 	jet2Eta	 	= TH1F('h_jet2Eta_'+jetAlgo+'_'+grooming, 'h_jet2Eta_'+jetAlgo, nBinsEta,  -maxEta, maxEta)
 	jet2Phi	 	= TH1F('h_jet2Phi_'+jetAlgo+'_'+grooming, 'h_jet2Phi_'+jetAlgo, nBinsEta,  -maxEta, maxEta)
 	jet2PtvsMass	= TH2F('h_jet2PtvsMass_'+jetAlgo+'_'+grooming, 'h_jet2PtvsMass_'+jetAlgo, nBinsPt,  0., maxPt, nBinsMass,  0., maxMass)
@@ -141,6 +148,7 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 	jet2Massvsht 	= TH2F('h_jet2Massvsht_'+jetAlgo+'_'+grooming, 'h_jet2Massvsht_'+jetAlgo, nBinsMass,  0., maxMass, nBinsHT,  	0, 	maxHT)
 	jet2MassvsTau21 	= TH2F('h_jet2MassvsTau21_'+jetAlgo+'_'+grooming, 'h_jet2MassvsTau21_'+jetAlgo, nBinsMass,  0., maxMass, nBinsTau,  0., maxTau)
 	jet2MassvsMET 	= TH2F('h_jet2MassvsMET_'+jetAlgo+'_'+grooming, 'h_jet2MassvsMET_'+jetAlgo, nBinsMass,  0., maxMass, nBinsMET,  	0, 	maxMET)
+	jet2MassvsNPV 	= TH2F('h_jet2MassvsNPV_'+jetAlgo+'_'+grooming, 'h_jet2MassvsNPV_'+jetAlgo, nBinsMass,  0., maxMass, 50,  	0, 	50)
 
 	########################################################### Leading and 2nd Leading Jet
 	jet1vsjet2Mass 	= TH2F('h_jet1vsjet2Mass_'+jetAlgo+'_'+grooming, 'h_jet1vsjet2Mass_'+jetAlgo, nBinsMass,  0., maxMass, nBinsMass,  0., maxMass)
@@ -192,8 +200,9 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 	################################################################################################### Event Variables
 	cut_ht 		= TH1F('h_cut_ht_'+jetAlgo+'_'+grooming, 	'h_cut_ht_'+jetAlgo, 	nBinsHT,  	0, 	maxHT)
 	cut_numberJets 	= TH1F('h_cut_numberJets_'+jetAlgo+'_'+grooming, 'h_cut_numberJets_'+jetAlgo, 15,  0., 15.)
-	#cut_numberPV 	= TH1F('h_cut_numberPV_'+jetAlgo+'_'+grooming, 	'h_cut_numberPV_'+jetAlgo, 	50,  	0., 	50.)
-	#cut_MET 		= TH1F('h_cut_MET_'+jetAlgo+'_'+grooming, 	'h_cut_MET_'+jetAlgo, 	24,  	0, 	120.)
+	cut_HTvsNPV 	= TH2F('h_cut_HTvsNPV_'+jetAlgo+'_'+grooming, 'h_cut_HTvsNPV_'+jetAlgo, nBinsHT,  0., maxHT, 50,  0., 50.)
+	cut_numberPV 	= TH1F('h_cut_numberPV_'+jetAlgo+'_'+grooming, 	'h_cut_numberPV_'+jetAlgo, 	50,  	0., 	50.)
+	cut_MET 		= TH1F('h_cut_MET_'+jetAlgo+'_'+grooming, 	'h_cut_MET_'+jetAlgo, 	24,  	0, 	120.)
 	#cut_jetPt	 	= TH1F('h_cut_jetPt_'+jetAlgo+'_'+grooming, 'h_cut_jetPt_'+jetAlgo, nBinsPt,  0., maxPt)
 	#cut_jetEta	 	= TH1F('h_cut_jetEta_'+jetAlgo+'_'+grooming, 'h_cut_jetEta_'+jetAlgo, nBinsEta,  -maxEta, maxEta)
 	#cut_jetPhi	 	= TH1F('h_cut_jetPhi_'+jetAlgo+'_'+grooming, 'h_cut_jetPhi_'+jetAlgo, nBinsEta,  -maxEta, maxEta)
@@ -213,6 +222,7 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 	############################################################ Leading Jet 
 	cut_jet1Pt	 	= TH1F('h_cut_jet1Pt_'+jetAlgo+'_'+grooming, 'h_cut_jet1Pt_'+jetAlgo, nBinsPt,  0., maxPt)
 	cut_jet1Mass 	= TH1F('h_cut_jet1Mass_'+jetAlgo+'_'+grooming, 'h_cut_jet1Mass_'+jetAlgo, nBinsMass,  0., maxMass)
+	cut_jet1MassOverPt 	= TH1F('h_cut_jet1MassOverPt_'+jetAlgo+'_'+grooming, 'h_cut_jet1MassOverPt_'+jetAlgo, 20,  0., 2)
 	cut_jet1Eta	 	= TH1F('h_cut_jet1Eta_'+jetAlgo+'_'+grooming, 'h_cut_jet1Eta_'+jetAlgo, nBinsEta,  -maxEta, maxEta)
 	cut_jet1Phi	 	= TH1F('h_cut_jet1Phi_'+jetAlgo+'_'+grooming, 'h_cut_jet1Phi_'+jetAlgo, nBinsEta,  -maxEta, maxEta)
 	cut_jet1PtvsMass	= TH2F('h_cut_jet1PtvsMass_'+jetAlgo+'_'+grooming, 'h_cut_jet1PtvsMass_'+jetAlgo, nBinsPt,  0., maxPt, nBinsMass,  0., maxMass)
@@ -230,10 +240,12 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 	cut_jet1Massvsht 	= TH2F('h_cut_jet1Massvsht_'+jetAlgo+'_'+grooming, 'h_cut_jet1Massvsht_'+jetAlgo, nBinsMass,  0., maxMass, nBinsHT,  	0, 	maxHT)
 	cut_jet1MassvsTau21 	= TH2F('h_cut_jet1MassvsTau21_'+jetAlgo+'_'+grooming, 'h_cut_jet1MassvsTau21_'+jetAlgo, nBinsMass,  0., maxMass, nBinsTau,  0., maxTau)
 	cut_jet1MassvsMET 	= TH2F('h_cut_jet1MassvsMET_'+jetAlgo+'_'+grooming, 'h_cut_jet1MassvsMET_'+jetAlgo, nBinsMass,  0., maxMass, nBinsMET, 	0, 	maxMET)
+	cut_jet1MassvsNPV 	= TH2F('h_cut_jet1MassvsNPV_'+jetAlgo+'_'+grooming, 'h_cut_jet1MassvsNPV_'+jetAlgo, nBinsMass,  0., maxMass, 50,  	0, 	50)
 
 	############################################################ 2nd Leading Jet 
 	cut_jet2Pt	 	= TH1F('h_cut_jet2Pt_'+jetAlgo+'_'+grooming, 'h_cut_jet2Pt_'+jetAlgo, nBinsPt,  0., maxPt)
 	cut_jet2Mass 	= TH1F('h_cut_jet2Mass_'+jetAlgo+'_'+grooming, 'h_cut_jet2Mass_'+jetAlgo, nBinsMass,  0., maxMass)
+	cut_jet2MassOverPt 	= TH1F('h_cut_jet2MassOverPt_'+jetAlgo+'_'+grooming, 'h_cut_jet2MassOverPt_'+jetAlgo, 20,  0., 2)
 	cut_jet2Eta	 	= TH1F('h_cut_jet2Eta_'+jetAlgo+'_'+grooming, 'h_cut_jet2Eta_'+jetAlgo, nBinsEta,  -maxEta, maxEta)
 	cut_jet2Phi	 	= TH1F('h_cut_jet2Phi_'+jetAlgo+'_'+grooming, 'h_cut_jet2Phi_'+jetAlgo, nBinsEta,  -maxEta, maxEta)
 	cut_jet2PtvsMass	= TH2F('h_cut_jet2PtvsMass_'+jetAlgo+'_'+grooming, 'h_cut_jet2PtvsMass_'+jetAlgo, nBinsPt,  0., maxPt, nBinsMass,  0., maxMass)
@@ -251,6 +263,7 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 	cut_jet2Massvsht 	= TH2F('h_cut_jet2Massvsht_'+jetAlgo+'_'+grooming, 'h_cut_jet2Massvsht_'+jetAlgo, nBinsMass,  0., maxMass, nBinsHT,  	0, 	maxHT)
 	cut_jet2MassvsTau21 	= TH2F('h_cut_jet2MassvsTau21_'+jetAlgo+'_'+grooming, 'h_cut_jet2MassvsTau21_'+jetAlgo, nBinsMass,  0., maxMass,  nBinsTau,  0., maxTau)
 	cut_jet2MassvsMET 	= TH2F('h_cut_jet2MassvsMET_'+jetAlgo+'_'+grooming, 'h_cut_jet2MassvsMET_'+jetAlgo, nBinsMass,  0., maxMass, nBinsMET, 	0, 	maxMET)
+	cut_jet2MassvsNPV 	= TH2F('h_cut_jet2MassvsNPV_'+jetAlgo+'_'+grooming, 'h_cut_jet2MassvsNPV_'+jetAlgo, nBinsMass,  0., maxMass, 50,  	0, 	50)
 
 	########################################################### Leading and 2nd Leading Jet
 	cut_jet1vsjet2Mass 	= TH2F('h_cut_jet1vsjet2Mass_'+jetAlgo+'_'+grooming, 'h_cut_jet1vsjet2Mass_'+jetAlgo, nBinsMass,  0., maxMass, nBinsMass,  0., maxMass)
@@ -278,6 +291,130 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 	#####################################################################################################################################
 
 
+	#####################################################
+	#### kinematic cuts plus others and ONLY 2 jets
+	################################################################################################### Event Variables
+	cut2Jets_ht 		= TH1F('h_cut2Jets_ht_'+jetAlgo+'_'+grooming, 	'h_cut2Jets_ht_'+jetAlgo, 	nBinsHT,  	0, 	maxHT)
+	cut2Jets_numberJets 	= TH1F('h_cut2Jets_numberJets_'+jetAlgo+'_'+grooming, 'h_cut2Jets_numberJets_'+jetAlgo, 15,  0., 15.)
+	cut2Jets_HTvsNPV 	= TH2F('h_cut2Jets_HTvsNPV_'+jetAlgo+'_'+grooming, 'h_cut2Jets_HTvsNPV_'+jetAlgo, nBinsHT,  0., maxHT, 50,  0., 50.)
+	cut2Jets_numberPV 	= TH1F('h_cut2Jets_numberPV_'+jetAlgo+'_'+grooming, 	'h_cut2Jets_numberPV_'+jetAlgo, 	50,  	0., 	50.)
+	cut2Jets_MET 		= TH1F('h_cut2Jets_MET_'+jetAlgo+'_'+grooming, 	'h_cut2Jets_MET_'+jetAlgo, 	24,  	0, 	120.)
+
+	############################################################ Leading Jet 
+	cut2Jets_jet1Pt	 	= TH1F('h_cut2Jets_jet1Pt_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet1Pt_'+jetAlgo, nBinsPt,  0., maxPt)
+	cut2Jets_jet1Mass 	= TH1F('h_cut2Jets_jet1Mass_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet1Mass_'+jetAlgo, nBinsMass,  0., maxMass)
+	cut2Jets_jet1MassOverPt 	= TH1F('h_cut2Jets_jet1MassOverPt_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet1MassOverPt_'+jetAlgo, 20,  0., 2)
+	cut2Jets_jet1Eta	 	= TH1F('h_cut2Jets_jet1Eta_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet1Eta_'+jetAlgo, nBinsEta,  -maxEta, maxEta)
+	cut2Jets_jet1Phi	 	= TH1F('h_cut2Jets_jet1Phi_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet1Phi_'+jetAlgo, nBinsEta,  -maxEta, maxEta)
+	cut2Jets_jet1PtvsMass	= TH2F('h_cut2Jets_jet1PtvsMass_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet1PtvsMass_'+jetAlgo, nBinsPt,  0., maxPt, nBinsMass,  0., maxMass)
+	cut2Jets_jet1Area 	= TH1F('h_cut2Jets_jet1Area_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet1Area_'+jetAlgo, 50,  0., 5.)
+	cut2Jets_jet1Tau1 	= TH1F('h_cut2Jets_jet1Tau1_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet1Tau1_'+jetAlgo, nBinsTau,  0., maxTau)
+	cut2Jets_jet1Tau2 	= TH1F('h_cut2Jets_jet1Tau2_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet1Tau2_'+jetAlgo, nBinsTau,  0., maxTau)
+	cut2Jets_jet1Tau3 	= TH1F('h_cut2Jets_jet1Tau3_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet1Tau3_'+jetAlgo, nBinsTau,  0., maxTau)
+	cut2Jets_jet1Tau21 	= TH1F('h_cut2Jets_jet1Tau21_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet1Tau21_'+jetAlgo, nBinsTau,  0., maxTau)
+	cut2Jets_jet1Tau31 	= TH1F('h_cut2Jets_jet1Tau31_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet1Tau31_'+jetAlgo, nBinsTau,  0., maxTau)
+	cut2Jets_jet1Tau32 	= TH1F('h_cut2Jets_jet1Tau32_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet1Tau32_'+jetAlgo, nBinsTau,  0., maxTau)
+	cut2Jets_jet1Tau2vsTau1 	= TH2F('h_cut2Jets_jet1Tau2vsTau1_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet1Tau2vsTau1_'+jetAlgo, nBinsTau,  0., maxTau, nBinsTau,  0., maxTau)
+	cut2Jets_jet1Tau3vsTau1 	= TH2F('h_cut2Jets_jet1Tau3vsTau1_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet1Tau3vsTau1_'+jetAlgo, nBinsTau,  0., maxTau, nBinsTau,  0., maxTau)
+	cut2Jets_jet1Tau3vsTau2 	= TH2F('h_cut2Jets_jet1Tau3vsTau2_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet1Tau3vsTau2_'+jetAlgo, nBinsTau,  0., maxTau, nBinsTau,  0., maxTau)
+	cut2Jets_jet1Ptvsht 	= TH2F('h_cut2Jets_jet1Ptvsht_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet1Ptvsht_'+jetAlgo, nBinsPt,  0., maxPt, nBinsHT,  	0, 	maxHT)
+	cut2Jets_jet1Massvsht 	= TH2F('h_cut2Jets_jet1Massvsht_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet1Massvsht_'+jetAlgo, nBinsMass,  0., maxMass, nBinsHT,  	0, 	maxHT)
+	cut2Jets_jet1MassvsTau21 	= TH2F('h_cut2Jets_jet1MassvsTau21_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet1MassvsTau21_'+jetAlgo, nBinsMass,  0., maxMass, nBinsTau,  0., maxTau)
+	cut2Jets_jet1MassvsMET 	= TH2F('h_cut2Jets_jet1MassvsMET_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet1MassvsMET_'+jetAlgo, nBinsMass,  0., maxMass, nBinsMET, 	0, 	maxMET)
+	cut2Jets_jet1MassvsNPV 	= TH2F('h_cut2Jets_jet1MassvsNPV_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet1MassvsNPV_'+jetAlgo, nBinsMass,  0., maxMass, 50,  	0, 	50)
+
+	############################################################ 2nd Leading Jet 
+	cut2Jets_jet2Pt	 	= TH1F('h_cut2Jets_jet2Pt_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet2Pt_'+jetAlgo, nBinsPt,  0., maxPt)
+	cut2Jets_jet2Mass 	= TH1F('h_cut2Jets_jet2Mass_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet2Mass_'+jetAlgo, nBinsMass,  0., maxMass)
+	cut2Jets_jet2MassOverPt 	= TH1F('h_cut2Jets_jet2MassOverPt_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet2MassOverPt_'+jetAlgo, 20,  0., 2)
+	cut2Jets_jet2Eta	 	= TH1F('h_cut2Jets_jet2Eta_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet2Eta_'+jetAlgo, nBinsEta,  -maxEta, maxEta)
+	cut2Jets_jet2Phi	 	= TH1F('h_cut2Jets_jet2Phi_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet2Phi_'+jetAlgo, nBinsEta,  -maxEta, maxEta)
+	cut2Jets_jet2PtvsMass	= TH2F('h_cut2Jets_jet2PtvsMass_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet2PtvsMass_'+jetAlgo, nBinsPt,  0., maxPt, nBinsMass,  0., maxMass)
+	cut2Jets_jet2Area 	= TH1F('h_cut2Jets_jet2Area_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet2Area_'+jetAlgo, 50,  0., 5.)
+	cut2Jets_jet2Tau1 	= TH1F('h_cut2Jets_jet2Tau1_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet2Tau1_'+jetAlgo, nBinsTau,  0., maxTau)
+	cut2Jets_jet2Tau2 	= TH1F('h_cut2Jets_jet2Tau2_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet2Tau2_'+jetAlgo, nBinsTau,  0., maxTau)
+	cut2Jets_jet2Tau3 	= TH1F('h_cut2Jets_jet2Tau3_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet2Tau3_'+jetAlgo, nBinsTau,  0., maxTau)
+	cut2Jets_jet2Tau21 	= TH1F('h_cut2Jets_jet2Tau21_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet2Tau21_'+jetAlgo, nBinsTau,  0., maxTau)
+	cut2Jets_jet2Tau31 	= TH1F('h_cut2Jets_jet2Tau31_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet2Tau31_'+jetAlgo, nBinsTau,  0., maxTau)
+	cut2Jets_jet2Tau32 	= TH1F('h_cut2Jets_jet2Tau32_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet2Tau32_'+jetAlgo, nBinsTau,  0., maxTau)
+	cut2Jets_jet2Tau2vsTau1 	= TH2F('h_cut2Jets_jet2Tau2vsTau1_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet2Tau2vsTau1_'+jetAlgo, nBinsTau,  0., maxTau, nBinsTau,  0., maxTau)
+	cut2Jets_jet2Tau3vsTau1 	= TH2F('h_cut2Jets_jet2Tau3vsTau1_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet2Tau3vsTau1_'+jetAlgo, nBinsTau,  0., maxTau, nBinsTau,  0., maxTau)
+	cut2Jets_jet2Tau3vsTau2 	= TH2F('h_cut2Jets_jet2Tau3vsTau2_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet2Tau3vsTau2_'+jetAlgo, nBinsTau,  0., maxTau, nBinsTau,  0., maxTau)
+	cut2Jets_jet2Ptvsht 	= TH2F('h_cut2Jets_jet2Ptvsht_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet2Ptvsht_'+jetAlgo, nBinsPt,  0., maxPt, nBinsHT,  	0, 	maxHT)
+	cut2Jets_jet2Massvsht 	= TH2F('h_cut2Jets_jet2Massvsht_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet2Massvsht_'+jetAlgo, nBinsMass,  0., maxMass, nBinsHT,  	0, 	maxHT)
+	cut2Jets_jet2MassvsTau21 	= TH2F('h_cut2Jets_jet2MassvsTau21_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet2MassvsTau21_'+jetAlgo, nBinsMass,  0., maxMass,  nBinsTau,  0., maxTau)
+	cut2Jets_jet2MassvsMET 	= TH2F('h_cut2Jets_jet2MassvsMET_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet2MassvsMET_'+jetAlgo, nBinsMass,  0., maxMass, nBinsMET, 	0, 	maxMET)
+	cut2Jets_jet2MassvsNPV 	= TH2F('h_cut2Jets_jet2MassvsNPV_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet2MassvsNPV_'+jetAlgo, nBinsMass,  0., maxMass, 50,  	0, 	50)
+
+	########################################################### Leading and 2nd Leading Jet
+	cut2Jets_jet1vsjet2Mass 	= TH2F('h_cut2Jets_jet1vsjet2Mass_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet1vsjet2Mass_'+jetAlgo, nBinsMass,  0., maxMass, nBinsMass,  0., maxMass)
+	cut2Jets_jet1vsjet2Tau21 	= TH2F('h_cut2Jets_jet1vsjet2Tau21_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet1vsjet2Tau21_'+jetAlgo,   nBinsTau,  0., maxTau,   nBinsTau,  0., maxTau)
+	cut2Jets_jet2CosThetaStar 	= TH1F('h_cut2Jets_jet2CosThetaStar_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet2CosThetaStar_'+jetAlgo, 20,  -1., 1.)
+	cut2Jets_jet1CosThetaStar 	= TH1F('h_cut2Jets_jet1CosThetaStar_'+jetAlgo+'_'+grooming, 'h_cut2Jets_jet1CosThetaStar_'+jetAlgo, 20,  -1., 1.)
+
+
+	#####################################################
+	#### kinematic cuts plus other, remove lead pt cut
+	################################################################################################### Event Variables
+	cutWO1jetpt_ht 		= TH1F('h_cutWO1jetpt_ht_'+jetAlgo+'_'+grooming, 	'h_cutWO1jetpt_ht_'+jetAlgo, 	nBinsHT,  	0, 	maxHT)
+	cutWO1jetpt_numberJets 	= TH1F('h_cutWO1jetpt_numberJets_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_numberJets_'+jetAlgo, 15,  0., 15.)
+	cutWO1jetpt_HTvsNPV 	= TH2F('h_cutWO1jetpt_HTvsNPV_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_HTvsNPV_'+jetAlgo, nBinsHT,  0., maxHT, 50,  0., 50.)
+	cutWO1jetpt_numberPV 	= TH1F('h_cutWO1jetpt_numberPV_'+jetAlgo+'_'+grooming, 	'h_cutWO1jetpt_numberPV_'+jetAlgo, 	50,  	0., 	50.)
+	cutWO1jetpt_MET 		= TH1F('h_cutWO1jetpt_MET_'+jetAlgo+'_'+grooming, 	'h_cutWO1jetpt_MET_'+jetAlgo, 	24,  	0, 	120.)
+
+	############################################################ Leading Jet 
+	cutWO1jetpt_jet1Pt	 	= TH1F('h_cutWO1jetpt_jet1Pt_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet1Pt_'+jetAlgo, nBinsPt,  0., maxPt)
+	cutWO1jetpt_jet1Mass 	= TH1F('h_cutWO1jetpt_jet1Mass_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet1Mass_'+jetAlgo, nBinsMass,  0., maxMass)
+	cutWO1jetpt_jet1MassOverPt 	= TH1F('h_cutWO1jetpt_jet1MassOverPt_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet1MassOverPt_'+jetAlgo, 20,  0., 2)
+	cutWO1jetpt_jet1Eta	 	= TH1F('h_cutWO1jetpt_jet1Eta_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet1Eta_'+jetAlgo, nBinsEta,  -maxEta, maxEta)
+	cutWO1jetpt_jet1Phi	 	= TH1F('h_cutWO1jetpt_jet1Phi_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet1Phi_'+jetAlgo, nBinsEta,  -maxEta, maxEta)
+	cutWO1jetpt_jet1PtvsMass	= TH2F('h_cutWO1jetpt_jet1PtvsMass_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet1PtvsMass_'+jetAlgo, nBinsPt,  0., maxPt, nBinsMass,  0., maxMass)
+	cutWO1jetpt_jet1Area 	= TH1F('h_cutWO1jetpt_jet1Area_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet1Area_'+jetAlgo, 50,  0., 5.)
+	cutWO1jetpt_jet1Tau1 	= TH1F('h_cutWO1jetpt_jet1Tau1_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet1Tau1_'+jetAlgo, nBinsTau,  0., maxTau)
+	cutWO1jetpt_jet1Tau2 	= TH1F('h_cutWO1jetpt_jet1Tau2_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet1Tau2_'+jetAlgo, nBinsTau,  0., maxTau)
+	cutWO1jetpt_jet1Tau3 	= TH1F('h_cutWO1jetpt_jet1Tau3_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet1Tau3_'+jetAlgo, nBinsTau,  0., maxTau)
+	cutWO1jetpt_jet1Tau21 	= TH1F('h_cutWO1jetpt_jet1Tau21_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet1Tau21_'+jetAlgo, nBinsTau,  0., maxTau)
+	cutWO1jetpt_jet1Tau31 	= TH1F('h_cutWO1jetpt_jet1Tau31_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet1Tau31_'+jetAlgo, nBinsTau,  0., maxTau)
+	cutWO1jetpt_jet1Tau32 	= TH1F('h_cutWO1jetpt_jet1Tau32_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet1Tau32_'+jetAlgo, nBinsTau,  0., maxTau)
+	cutWO1jetpt_jet1Tau2vsTau1 	= TH2F('h_cutWO1jetpt_jet1Tau2vsTau1_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet1Tau2vsTau1_'+jetAlgo, nBinsTau,  0., maxTau, nBinsTau,  0., maxTau)
+	cutWO1jetpt_jet1Tau3vsTau1 	= TH2F('h_cutWO1jetpt_jet1Tau3vsTau1_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet1Tau3vsTau1_'+jetAlgo, nBinsTau,  0., maxTau, nBinsTau,  0., maxTau)
+	cutWO1jetpt_jet1Tau3vsTau2 	= TH2F('h_cutWO1jetpt_jet1Tau3vsTau2_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet1Tau3vsTau2_'+jetAlgo, nBinsTau,  0., maxTau, nBinsTau,  0., maxTau)
+	cutWO1jetpt_jet1Ptvsht 	= TH2F('h_cutWO1jetpt_jet1Ptvsht_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet1Ptvsht_'+jetAlgo, nBinsPt,  0., maxPt, nBinsHT,  	0, 	maxHT)
+	cutWO1jetpt_jet1Massvsht 	= TH2F('h_cutWO1jetpt_jet1Massvsht_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet1Massvsht_'+jetAlgo, nBinsMass,  0., maxMass, nBinsHT,  	0, 	maxHT)
+	cutWO1jetpt_jet1MassvsTau21 	= TH2F('h_cutWO1jetpt_jet1MassvsTau21_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet1MassvsTau21_'+jetAlgo, nBinsMass,  0., maxMass, nBinsTau,  0., maxTau)
+	cutWO1jetpt_jet1MassvsMET 	= TH2F('h_cutWO1jetpt_jet1MassvsMET_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet1MassvsMET_'+jetAlgo, nBinsMass,  0., maxMass, nBinsMET, 	0, 	maxMET)
+	cutWO1jetpt_jet1MassvsNPV 	= TH2F('h_cutWO1jetpt_jet1MassvsNPV_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet1MassvsNPV_'+jetAlgo, nBinsMass,  0., maxMass, 50,  	0, 	50)
+
+	############################################################ 2nd Leading Jet 
+	cutWO1jetpt_jet2Pt	 	= TH1F('h_cutWO1jetpt_jet2Pt_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet2Pt_'+jetAlgo, nBinsPt,  0., maxPt)
+	cutWO1jetpt_jet2Mass 	= TH1F('h_cutWO1jetpt_jet2Mass_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet2Mass_'+jetAlgo, nBinsMass,  0., maxMass)
+	cutWO1jetpt_jet2MassOverPt 	= TH1F('h_cutWO1jetpt_jet2MassOverPt_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet2MassOverPt_'+jetAlgo, 20,  0., 2)
+	cutWO1jetpt_jet2Eta	 	= TH1F('h_cutWO1jetpt_jet2Eta_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet2Eta_'+jetAlgo, nBinsEta,  -maxEta, maxEta)
+	cutWO1jetpt_jet2Phi	 	= TH1F('h_cutWO1jetpt_jet2Phi_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet2Phi_'+jetAlgo, nBinsEta,  -maxEta, maxEta)
+	cutWO1jetpt_jet2PtvsMass	= TH2F('h_cutWO1jetpt_jet2PtvsMass_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet2PtvsMass_'+jetAlgo, nBinsPt,  0., maxPt, nBinsMass,  0., maxMass)
+	cutWO1jetpt_jet2Area 	= TH1F('h_cutWO1jetpt_jet2Area_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet2Area_'+jetAlgo, 50,  0., 5.)
+	cutWO1jetpt_jet2Tau1 	= TH1F('h_cutWO1jetpt_jet2Tau1_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet2Tau1_'+jetAlgo, nBinsTau,  0., maxTau)
+	cutWO1jetpt_jet2Tau2 	= TH1F('h_cutWO1jetpt_jet2Tau2_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet2Tau2_'+jetAlgo, nBinsTau,  0., maxTau)
+	cutWO1jetpt_jet2Tau3 	= TH1F('h_cutWO1jetpt_jet2Tau3_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet2Tau3_'+jetAlgo, nBinsTau,  0., maxTau)
+	cutWO1jetpt_jet2Tau21 	= TH1F('h_cutWO1jetpt_jet2Tau21_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet2Tau21_'+jetAlgo, nBinsTau,  0., maxTau)
+	cutWO1jetpt_jet2Tau31 	= TH1F('h_cutWO1jetpt_jet2Tau31_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet2Tau31_'+jetAlgo, nBinsTau,  0., maxTau)
+	cutWO1jetpt_jet2Tau32 	= TH1F('h_cutWO1jetpt_jet2Tau32_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet2Tau32_'+jetAlgo, nBinsTau,  0., maxTau)
+	cutWO1jetpt_jet2Tau2vsTau1 	= TH2F('h_cutWO1jetpt_jet2Tau2vsTau1_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet2Tau2vsTau1_'+jetAlgo, nBinsTau,  0., maxTau, nBinsTau,  0., maxTau)
+	cutWO1jetpt_jet2Tau3vsTau1 	= TH2F('h_cutWO1jetpt_jet2Tau3vsTau1_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet2Tau3vsTau1_'+jetAlgo, nBinsTau,  0., maxTau, nBinsTau,  0., maxTau)
+	cutWO1jetpt_jet2Tau3vsTau2 	= TH2F('h_cutWO1jetpt_jet2Tau3vsTau2_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet2Tau3vsTau2_'+jetAlgo, nBinsTau,  0., maxTau, nBinsTau,  0., maxTau)
+	cutWO1jetpt_jet2Ptvsht 	= TH2F('h_cutWO1jetpt_jet2Ptvsht_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet2Ptvsht_'+jetAlgo, nBinsPt,  0., maxPt, nBinsHT,  	0, 	maxHT)
+	cutWO1jetpt_jet2Massvsht 	= TH2F('h_cutWO1jetpt_jet2Massvsht_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet2Massvsht_'+jetAlgo, nBinsMass,  0., maxMass, nBinsHT,  	0, 	maxHT)
+	cutWO1jetpt_jet2MassvsTau21 	= TH2F('h_cutWO1jetpt_jet2MassvsTau21_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet2MassvsTau21_'+jetAlgo, nBinsMass,  0., maxMass,  nBinsTau,  0., maxTau)
+	cutWO1jetpt_jet2MassvsMET 	= TH2F('h_cutWO1jetpt_jet2MassvsMET_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet2MassvsMET_'+jetAlgo, nBinsMass,  0., maxMass, nBinsMET, 	0, 	maxMET)
+	cutWO1jetpt_jet2MassvsNPV 	= TH2F('h_cutWO1jetpt_jet2MassvsNPV_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet2MassvsNPV_'+jetAlgo, nBinsMass,  0., maxMass, 50,  	0, 	50)
+
+	########################################################### Leading and 2nd Leading Jet
+	cutWO1jetpt_jet1vsjet2Mass 	= TH2F('h_cutWO1jetpt_jet1vsjet2Mass_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet1vsjet2Mass_'+jetAlgo, nBinsMass,  0., maxMass, nBinsMass,  0., maxMass)
+	cutWO1jetpt_jet1vsjet2Tau21 	= TH2F('h_cutWO1jetpt_jet1vsjet2Tau21_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet1vsjet2Tau21_'+jetAlgo,   nBinsTau,  0., maxTau,   nBinsTau,  0., maxTau)
+	cutWO1jetpt_jet2CosThetaStar 	= TH1F('h_cutWO1jetpt_jet2CosThetaStar_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet2CosThetaStar_'+jetAlgo, 20,  -1., 1.)
+	cutWO1jetpt_jet1CosThetaStar 	= TH1F('h_cutWO1jetpt_jet1CosThetaStar_'+jetAlgo+'_'+grooming, 'h_cutWO1jetpt_jet1CosThetaStar_'+jetAlgo, 20,  -1., 1.)
+
+
 	###################################### Get GenTree 
 	#events = TChain( 'PFJet_'+jetAlgo+grooming+'/events' )
 	events = TChain( 'PFJet_'+jetAlgo+'/events' )
@@ -286,11 +423,11 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 	for filename in infile:
 		print("Adding file: " + filename)
 		events.Add(filename)
-		f1 = TFile(filename)
-		tmpTN = f1.Get( 'PFJet_'+jetAlgo+'/TriggerNames') 
-		tmpTP = f1.Get( 'PFJet_'+jetAlgo+'/TriggerPass') 
-		TriggerNames.Add( tmpTN )
-		TriggerPass.Add( tmpTP )
+		#f1 = TFile(filename)
+		#tmpTN = f1.Get( 'PFJet_'+jetAlgo+'/TriggerNames') 
+		#tmpTP = f1.Get( 'PFJet_'+jetAlgo+'/TriggerPass') 
+		#TriggerNames.Add( tmpTN )
+		#TriggerPass.Add( tmpTP )
 
 	##### read the tree & fill histosgrams 
 	numEntries = events.GetEntries()
@@ -317,12 +454,13 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 			cut_simpleKinematic =  getattr( events, 'jet'+grooming+'Pt')[ijet] > 30 and abs( getattr( events, 'jet'+grooming+'Eta')[ijet] ) < 2.5 
 			HT += getattr( events, 'jet'+grooming+'Pt')[ijet]
 		cut_minTwoJets = getattr( events, 'nJets'+grooming ) > 1
-		cut_jet1pt = cut_minTwoJets and getattr( events, 'jet'+grooming+'Pt')[0] > 200
+		cut_TwoJets = getattr( events, 'nJets'+grooming ) == 2
+		cut_jet1pt = getattr( events, 'nJets'+grooming ) > 0 and getattr( events, 'jet'+grooming+'Pt')[0] > 200 
 		cut_HT = HT > 850
 
 
 		###################################################################### Filling Histograms
-		if cut_simpleKinematic and cut_minTwoJets:
+		if cut_simpleKinematic:
 
 			############# Trigger Info
 			###### Just for reference order of triggers in 
@@ -374,105 +512,112 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 
 			numberJets.Fill( getattr( events, 'nJets'+grooming ), weight )
 			ht.Fill( HT, weight )
+			HTvsNPV.Fill( HT, events.nvtx )
 			numberPV.Fill( events.nvtx, weight )
 			MET.Fill( events.met, weight )
 
 			############ Leading Jet
-			jet1Pt.Fill( getattr( events, 'jet'+grooming+'Pt')[0], weight )
-			jet1Eta.Fill( getattr( events, 'jet'+grooming+'Eta')[0], weight )
-			jet1Phi.Fill( getattr( events, 'jet'+grooming+'Phi')[0], weight )
-			jet1Mass.Fill( getattr( events, 'jet'+grooming+'Mass')[0], weight )
-			jet1Area.Fill( getattr( events, 'jet'+grooming+'Area')[0], weight )
-			jet1Tau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[0], weight )
-			jet1Tau2.Fill( getattr( events, 'jet'+grooming+'Tau2')[0], weight )
-			jet1Tau3.Fill( getattr( events, 'jet'+grooming+'Tau3')[0], weight )
-			jet1Tau2vsTau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[0], getattr( events, 'jet'+grooming+'Tau2')[0] )
-			jet1Tau3vsTau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[0], getattr( events, 'jet'+grooming+'Tau3')[0] )
-			jet1Tau3vsTau2.Fill( getattr( events, 'jet'+grooming+'Tau2')[0], getattr( events, 'jet'+grooming+'Tau3')[0] )
-			jet1PtvsMass.Fill( getattr( events, 'jet'+grooming+'Pt')[0], getattr( events, 'jet'+grooming+'Mass')[0] )
-			jet1Ptvsht.Fill( getattr( events, 'jet'+grooming+'Pt')[0], HT )
-			jet1Massvsht.Fill( getattr( events, 'jet'+grooming+'Mass')[0], HT )
-			jet1MassvsMET.Fill( getattr( events, 'jet'+grooming+'Mass')[0], events.met )
-			
-			try: 
-				valJet1Tau21 = getattr( events, 'jet'+grooming+'Tau2')[0] / getattr( events, 'jet'+grooming+'Tau1')[0]
-			except ZeroDivisionError: 
-				valJet1Tau21 = 0
-			try: 
-				valJet1Tau31 = getattr( events, 'jet'+grooming+'Tau3')[0] / getattr( events, 'jet'+grooming+'Tau1')[0]
-			except ZeroDivisionError: 
-				valJet1Tau31 = 0
-			try: 
-				valJet1Tau32 = getattr( events, 'jet'+grooming+'Tau3')[0] / getattr( events, 'jet'+grooming+'Tau2')[0]
-			except ZeroDivisionError: 
-				valJet1Tau32 = 0
+			if getattr( events, 'nJets'+grooming ) > 0:
+				jet1Pt.Fill( getattr( events, 'jet'+grooming+'Pt')[0], weight )
+				jet1Eta.Fill( getattr( events, 'jet'+grooming+'Eta')[0], weight )
+				jet1Phi.Fill( getattr( events, 'jet'+grooming+'Phi')[0], weight )
+				jet1Mass.Fill( getattr( events, 'jet'+grooming+'Mass')[0], weight )
+				jet1MassOverPt.Fill( ( getattr( events, 'jet'+grooming+'Mass')[0] ) / ( getattr( events, 'jet'+grooming+'Pt')[0] ) , weight )
+				jet1Area.Fill( getattr( events, 'jet'+grooming+'Area')[0], weight )
+				jet1Tau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[0], weight )
+				jet1Tau2.Fill( getattr( events, 'jet'+grooming+'Tau2')[0], weight )
+				jet1Tau3.Fill( getattr( events, 'jet'+grooming+'Tau3')[0], weight )
+				jet1Tau2vsTau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[0], getattr( events, 'jet'+grooming+'Tau2')[0] )
+				jet1Tau3vsTau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[0], getattr( events, 'jet'+grooming+'Tau3')[0] )
+				jet1Tau3vsTau2.Fill( getattr( events, 'jet'+grooming+'Tau2')[0], getattr( events, 'jet'+grooming+'Tau3')[0] )
+				jet1PtvsMass.Fill( getattr( events, 'jet'+grooming+'Pt')[0], getattr( events, 'jet'+grooming+'Mass')[0] )
+				jet1Ptvsht.Fill( getattr( events, 'jet'+grooming+'Pt')[0], HT )
+				jet1Massvsht.Fill( getattr( events, 'jet'+grooming+'Mass')[0], HT )
+				jet1MassvsMET.Fill( getattr( events, 'jet'+grooming+'Mass')[0], events.met )
+				jet1MassvsNPV.Fill( getattr( events, 'jet'+grooming+'Mass')[0], events.nvtx )
+				
+				try: 
+					valJet1Tau21 = getattr( events, 'jet'+grooming+'Tau2')[0] / getattr( events, 'jet'+grooming+'Tau1')[0]
+				except ZeroDivisionError: 
+					valJet1Tau21 = 0
+				try: 
+					valJet1Tau31 = getattr( events, 'jet'+grooming+'Tau3')[0] / getattr( events, 'jet'+grooming+'Tau1')[0]
+				except ZeroDivisionError: 
+					valJet1Tau31 = 0
+				try: 
+					valJet1Tau32 = getattr( events, 'jet'+grooming+'Tau3')[0] / getattr( events, 'jet'+grooming+'Tau2')[0]
+				except ZeroDivisionError: 
+					valJet1Tau32 = 0
 
-			jet1Tau21.Fill( valJet1Tau21 )
-			jet1Tau31.Fill( valJet1Tau31 )
-			jet1MassvsTau21.Fill( getattr( events, 'jet'+grooming+'Mass')[0], valJet1Tau21 )
-			jet1Tau32.Fill( valJet1Tau32 )
+				jet1Tau21.Fill( valJet1Tau21 )
+				jet1Tau31.Fill( valJet1Tau31 )
+				jet1MassvsTau21.Fill( getattr( events, 'jet'+grooming+'Mass')[0], valJet1Tau21 )
+				jet1Tau32.Fill( valJet1Tau32 )
 
 			####### 2nd Leading Jet
-			jet2Pt.Fill( getattr( events, 'jet'+grooming+'Pt')[1], weight )
-			jet2Eta.Fill( getattr( events, 'jet'+grooming+'Eta')[1], weight )
-			jet2Phi.Fill( getattr( events, 'jet'+grooming+'Phi')[1], weight )
-			jet2Mass.Fill( getattr( events, 'jet'+grooming+'Mass')[1], weight )
-			jet2Area.Fill( getattr( events, 'jet'+grooming+'Area')[1], weight )
-			jet2Tau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[1], weight )
-			jet2Tau2.Fill( getattr( events, 'jet'+grooming+'Tau2')[1], weight )
-			jet2Tau3.Fill( getattr( events, 'jet'+grooming+'Tau3')[1], weight )
-			jet2Tau2vsTau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[1], getattr( events, 'jet'+grooming+'Tau2')[1] )
-			jet2Tau3vsTau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[1], getattr( events, 'jet'+grooming+'Tau3')[1] )
-			jet2Tau3vsTau2.Fill( getattr( events, 'jet'+grooming+'Tau2')[1], getattr( events, 'jet'+grooming+'Tau3')[1] )
-			jet2PtvsMass.Fill( getattr( events, 'jet'+grooming+'Pt')[1], getattr( events, 'jet'+grooming+'Mass')[1] )
-			jet2Ptvsht.Fill( getattr( events, 'jet'+grooming+'Pt')[1], HT )
-			jet2Massvsht.Fill( getattr( events, 'jet'+grooming+'Mass')[1], HT )
-			jet2MassvsMET.Fill( getattr( events, 'jet'+grooming+'Mass')[1], events.met )
+			if getattr( events, 'nJets'+grooming ) > 1:
+				jet2Pt.Fill( getattr( events, 'jet'+grooming+'Pt')[1], weight )
+				jet2Eta.Fill( getattr( events, 'jet'+grooming+'Eta')[1], weight )
+				jet2Phi.Fill( getattr( events, 'jet'+grooming+'Phi')[1], weight )
+				jet2Mass.Fill( getattr( events, 'jet'+grooming+'Mass')[1], weight )
+				jet2MassOverPt.Fill( ( getattr( events, 'jet'+grooming+'Mass')[1] ) / ( getattr( events, 'jet'+grooming+'Pt')[1] ) , weight )
+				jet2Area.Fill( getattr( events, 'jet'+grooming+'Area')[1], weight )
+				jet2Tau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[1], weight )
+				jet2Tau2.Fill( getattr( events, 'jet'+grooming+'Tau2')[1], weight )
+				jet2Tau3.Fill( getattr( events, 'jet'+grooming+'Tau3')[1], weight )
+				jet2Tau2vsTau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[1], getattr( events, 'jet'+grooming+'Tau2')[1] )
+				jet2Tau3vsTau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[1], getattr( events, 'jet'+grooming+'Tau3')[1] )
+				jet2Tau3vsTau2.Fill( getattr( events, 'jet'+grooming+'Tau2')[1], getattr( events, 'jet'+grooming+'Tau3')[1] )
+				jet2PtvsMass.Fill( getattr( events, 'jet'+grooming+'Pt')[1], getattr( events, 'jet'+grooming+'Mass')[1] )
+				jet2Ptvsht.Fill( getattr( events, 'jet'+grooming+'Pt')[1], HT )
+				jet2Massvsht.Fill( getattr( events, 'jet'+grooming+'Mass')[1], HT )
+				jet2MassvsMET.Fill( getattr( events, 'jet'+grooming+'Mass')[1], events.met )
+				jet2MassvsNPV.Fill( getattr( events, 'jet'+grooming+'Mass')[1], events.nvtx )
 
-			try: 
-				valJet2Tau21 = getattr( events, 'jet'+grooming+'Tau2')[1] / getattr( events, 'jet'+grooming+'Tau1')[1]
-			except ZeroDivisionError: 
-				valJet2Tau21 = 0
-			try: 
-				valJet2Tau31 = getattr( events, 'jet'+grooming+'Tau3')[1] / getattr( events, 'jet'+grooming+'Tau1')[1]
-			except ZeroDivisionError: 
-				valJet2Tau31 = 0
-			try: 
-				valJet2Tau32 = getattr( events, 'jet'+grooming+'Tau3')[1] / getattr( events, 'jet'+grooming+'Tau2')[1]
-			except ZeroDivisionError: 
-				valJet2Tau32 = 0
+				try: 
+					valJet2Tau21 = getattr( events, 'jet'+grooming+'Tau2')[1] / getattr( events, 'jet'+grooming+'Tau1')[1]
+				except ZeroDivisionError: 
+					valJet2Tau21 = 0
+				try: 
+					valJet2Tau31 = getattr( events, 'jet'+grooming+'Tau3')[1] / getattr( events, 'jet'+grooming+'Tau1')[1]
+				except ZeroDivisionError: 
+					valJet2Tau31 = 0
+				try: 
+					valJet2Tau32 = getattr( events, 'jet'+grooming+'Tau3')[1] / getattr( events, 'jet'+grooming+'Tau2')[1]
+				except ZeroDivisionError: 
+					valJet2Tau32 = 0
 
-			jet2Tau21.Fill( valJet2Tau21 )
-			jet2Tau31.Fill( valJet2Tau31 )
-			jet2MassvsTau21.Fill( getattr( events, 'jet'+grooming+'Mass')[1], valJet2Tau21 )
-			jet2Tau32.Fill( valJet2Tau32 )
+				jet2Tau21.Fill( valJet2Tau21 )
+				jet2Tau31.Fill( valJet2Tau31 )
+				jet2MassvsTau21.Fill( getattr( events, 'jet'+grooming+'Mass')[1], valJet2Tau21 )
+				jet2Tau32.Fill( valJet2Tau32 )
 
-			########## Leading and Second Leading
-			jet1vsjet2Mass.Fill( getattr( events, 'jet'+grooming+'Mass')[0], getattr( events, 'jet'+grooming+'Mass')[1] )
-			jet1vsjet2Tau21.Fill( valJet1Tau21, valJet2Tau21 )
+				########## Leading and Second Leading
+				jet1vsjet2Mass.Fill( getattr( events, 'jet'+grooming+'Mass')[0], getattr( events, 'jet'+grooming+'Mass')[1] )
+				jet1vsjet2Tau21.Fill( valJet1Tau21, valJet2Tau21 )
 
-			### To calculate the direction of the second jet in the leading jet rest frame
-			jet1P4 = TLorentzVector()
-			jet2P4 = TLorentzVector()
-			jet1P4.SetPtEtaPhiE( getattr( events, 'jet'+grooming+'Pt')[0], getattr( events, 'jet'+grooming+'Eta')[0], getattr( events, 'jet'+grooming+'Phi')[0], getattr( events, 'jet'+grooming+'Energy')[0] ) 
-			jet2P4.SetPtEtaPhiE( getattr( events, 'jet'+grooming+'Pt')[1], getattr( events, 'jet'+grooming+'Eta')[1], getattr( events, 'jet'+grooming+'Phi')[1], getattr( events, 'jet'+grooming+'Energy')[1] ) 
-			#print 'jet1 Pt', getattr( events, 'jet'+grooming+'Pt')[0], jet1P4.Pt(), jet1P4.Theta()
-			#print 'jet2 Pt', getattr( events, 'jet'+grooming+'Pt')[1], jet2P4.Pt(), jet2P4.Theta()
-			boost = TVector3()
-			boost = jet1P4.BoostVector()
-			#boost.SetXYZ( 0, 0, 0 )
-			jet2P4.Boost( boost )
-			#jet1P4.Boost( boost )
-			#jet1P4.RotateY( -jet1P4.Theta() )
-			#cosThetaStarjet1 = jet1P4.CosTheta()
-			cosThetaStar = jet2P4.CosTheta()
-			#print 'jet2 Pt Boosted', getattr( events, 'jet'+grooming+'Pt')[1], jet2P4.Pt(), jet2P4.Theta()
-			#print 'jet1 Pt Boosted', getattr( events, 'jet'+grooming+'Pt')[0], jet1P4.Pt(), jet1P4.Theta()
-			#jet2CosThetaStar.Fill( cosThetaStarjet1, weight )
-			jet2CosThetaStar.Fill( cosThetaStar, weight )
-			DeltaEta = abs( jet1P4.Eta() - jet2P4.Eta() )
-			tmpCosThetaStar = TMath.TanH( DeltaEta / 2.0  )
-			jet1CosThetaStar.Fill( tmpCosThetaStar, weight )
+				### To calculate the direction of the second jet in the leading jet rest frame
+				jet1P4 = TLorentzVector()
+				jet2P4 = TLorentzVector()
+				jet1P4.SetPtEtaPhiE( getattr( events, 'jet'+grooming+'Pt')[0], getattr( events, 'jet'+grooming+'Eta')[0], getattr( events, 'jet'+grooming+'Phi')[0], getattr( events, 'jet'+grooming+'Energy')[0] ) 
+				jet2P4.SetPtEtaPhiE( getattr( events, 'jet'+grooming+'Pt')[1], getattr( events, 'jet'+grooming+'Eta')[1], getattr( events, 'jet'+grooming+'Phi')[1], getattr( events, 'jet'+grooming+'Energy')[1] ) 
+				#print 'jet1 Pt', getattr( events, 'jet'+grooming+'Pt')[0], jet1P4.Pt(), jet1P4.Theta()
+				#print 'jet2 Pt', getattr( events, 'jet'+grooming+'Pt')[1], jet2P4.Pt(), jet2P4.Theta()
+				boost = TVector3()
+				boost = jet1P4.BoostVector()
+				#boost.SetXYZ( 0, 0, 0 )
+				jet2P4.Boost( boost )
+				#jet1P4.Boost( boost )
+				#jet1P4.RotateY( -jet1P4.Theta() )
+				#cosThetaStarjet1 = jet1P4.CosTheta()
+				cosThetaStar = jet2P4.CosTheta()
+				#print 'jet2 Pt Boosted', getattr( events, 'jet'+grooming+'Pt')[1], jet2P4.Pt(), jet2P4.Theta()
+				#print 'jet1 Pt Boosted', getattr( events, 'jet'+grooming+'Pt')[0], jet1P4.Pt(), jet1P4.Theta()
+				#jet2CosThetaStar.Fill( cosThetaStarjet1, weight )
+				jet2CosThetaStar.Fill( cosThetaStar, weight )
+				DeltaEta = abs( jet1P4.Eta() - jet2P4.Eta() )
+				tmpCosThetaStar = TMath.TanH( DeltaEta / 2.0  )
+				jet1CosThetaStar.Fill( tmpCosThetaStar, weight )
 
 
 			####### 3rd Leading Jet
@@ -515,17 +660,21 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 				#jet4Tau31.Fill( getattr( events, 'jet'+grooming+'Tau3')[3] / getattr( events, 'jet'+grooming+'Tau1')[3] )
 				#jet4Tau32.Fill( getattr( events, 'jet'+grooming+'Tau3')[3] / getattr( events, 'jet'+grooming+'Tau2')[3] )
 
-			if cut_jet1pt and cut_HT:
+			if cut_minTwoJets and cut_jet1pt and cut_HT:
 
 				############  Event Variables
 				cut_numberJets.Fill( getattr( events, 'nJets'+grooming ), weight )
+				cut_numberPV.Fill( events.nvtx, weight )
 				cut_ht.Fill( HT, weight )
+				cut_HTvsNPV.Fill( HT, events.nvtx )
+				cut_MET.Fill( events.met, weight )
 
 				############ Leading Jet
 				cut_jet1Pt.Fill( getattr( events, 'jet'+grooming+'Pt')[0], weight )
 				cut_jet1Eta.Fill( getattr( events, 'jet'+grooming+'Eta')[0], weight )
 				cut_jet1Phi.Fill( getattr( events, 'jet'+grooming+'Phi')[0], weight )
 				cut_jet1Mass.Fill( getattr( events, 'jet'+grooming+'Mass')[0], weight )
+				cut_jet1MassOverPt.Fill( ( getattr( events, 'jet'+grooming+'Mass')[0] ) / ( getattr( events, 'jet'+grooming+'Pt')[0] ) , weight )
 				cut_jet1Area.Fill( getattr( events, 'jet'+grooming+'Area')[0], weight )
 				cut_jet1Tau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[0], weight )
 				cut_jet1Tau2.Fill( getattr( events, 'jet'+grooming+'Tau2')[0], weight )
@@ -537,6 +686,7 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 				cut_jet1Ptvsht.Fill( getattr( events, 'jet'+grooming+'Pt')[0], HT )
 				cut_jet1Massvsht.Fill( getattr( events, 'jet'+grooming+'Mass')[0], HT )
 				cut_jet1MassvsMET.Fill( getattr( events, 'jet'+grooming+'Mass')[0], events.met )
+				cut_jet1MassvsNPV.Fill( getattr( events, 'jet'+grooming+'Mass')[0], events.nvtx )
 				cut_jet1Tau21.Fill( valJet1Tau21 )
 				cut_jet1Tau31.Fill( valJet1Tau31 )
 				cut_jet1MassvsTau21.Fill( getattr( events, 'jet'+grooming+'Mass')[0], valJet1Tau21 )
@@ -547,6 +697,7 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 				cut_jet2Eta.Fill( getattr( events, 'jet'+grooming+'Eta')[1], weight )
 				cut_jet2Phi.Fill( getattr( events, 'jet'+grooming+'Phi')[1], weight )
 				cut_jet2Mass.Fill( getattr( events, 'jet'+grooming+'Mass')[1], weight )
+				cut_jet2MassOverPt.Fill( ( getattr( events, 'jet'+grooming+'Mass')[1] ) / ( getattr( events, 'jet'+grooming+'Pt')[1] ) , weight )
 				cut_jet2Area.Fill( getattr( events, 'jet'+grooming+'Area')[1], weight )
 				cut_jet2Tau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[1], weight )
 				cut_jet2Tau2.Fill( getattr( events, 'jet'+grooming+'Tau2')[1], weight )
@@ -558,6 +709,7 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 				cut_jet2Ptvsht.Fill( getattr( events, 'jet'+grooming+'Pt')[1], HT )
 				cut_jet2Massvsht.Fill( getattr( events, 'jet'+grooming+'Mass')[1], HT )
 				cut_jet2MassvsMET.Fill( getattr( events, 'jet'+grooming+'Mass')[1], events.met )
+				cut_jet2MassvsNPV.Fill( getattr( events, 'jet'+grooming+'Mass')[1], events.nvtx )
 				cut_jet2Tau21.Fill( valJet2Tau21 )
 				cut_jet2Tau31.Fill( valJet2Tau31 )
 				cut_jet2MassvsTau21.Fill( getattr( events, 'jet'+grooming+'Mass')[1], valJet2Tau21 )
@@ -569,6 +721,127 @@ def myAnalyzer( infile, outputDir, sample, couts, final, jetAlgo, grooming, weig
 				cut_jet2CosThetaStar.Fill( cosThetaStar, weight )
 				cut_jet1CosThetaStar.Fill( tmpCosThetaStar, weight )
 
+			if cut_TwoJets and cut_jet1pt and cut_HT:
+
+				############  Event Variables
+				cut2Jets_numberJets.Fill( getattr( events, 'nJets'+grooming ), weight )
+				cut2Jets_numberPV.Fill( events.nvtx, weight )
+				cut2Jets_ht.Fill( HT, weight )
+				cut2Jets_HTvsNPV.Fill( HT, events.nvtx )
+				cut2Jets_MET.Fill( events.met, weight )
+
+				############ Leading Jet
+				cut2Jets_jet1Pt.Fill( getattr( events, 'jet'+grooming+'Pt')[0], weight )
+				cut2Jets_jet1Eta.Fill( getattr( events, 'jet'+grooming+'Eta')[0], weight )
+				cut2Jets_jet1Phi.Fill( getattr( events, 'jet'+grooming+'Phi')[0], weight )
+				cut2Jets_jet1Mass.Fill( getattr( events, 'jet'+grooming+'Mass')[0], weight )
+				cut2Jets_jet1MassOverPt.Fill( ( getattr( events, 'jet'+grooming+'Mass')[0] ) / ( getattr( events, 'jet'+grooming+'Pt')[0] ) , weight )
+				cut2Jets_jet1Area.Fill( getattr( events, 'jet'+grooming+'Area')[0], weight )
+				cut2Jets_jet1Tau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[0], weight )
+				cut2Jets_jet1Tau2.Fill( getattr( events, 'jet'+grooming+'Tau2')[0], weight )
+				cut2Jets_jet1Tau3.Fill( getattr( events, 'jet'+grooming+'Tau3')[0], weight )
+				cut2Jets_jet1Tau2vsTau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[0], getattr( events, 'jet'+grooming+'Tau2')[0] )
+				cut2Jets_jet1Tau3vsTau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[0], getattr( events, 'jet'+grooming+'Tau3')[0] )
+				cut2Jets_jet1Tau3vsTau2.Fill( getattr( events, 'jet'+grooming+'Tau2')[0], getattr( events, 'jet'+grooming+'Tau3')[0] )
+				cut2Jets_jet1PtvsMass.Fill( getattr( events, 'jet'+grooming+'Pt')[0], getattr( events, 'jet'+grooming+'Mass')[0] )
+				cut2Jets_jet1Ptvsht.Fill( getattr( events, 'jet'+grooming+'Pt')[0], HT )
+				cut2Jets_jet1Massvsht.Fill( getattr( events, 'jet'+grooming+'Mass')[0], HT )
+				cut2Jets_jet1MassvsMET.Fill( getattr( events, 'jet'+grooming+'Mass')[0], events.met )
+				cut2Jets_jet1MassvsNPV.Fill( getattr( events, 'jet'+grooming+'Mass')[0], events.nvtx )
+				cut2Jets_jet1Tau21.Fill( valJet1Tau21 )
+				cut2Jets_jet1Tau31.Fill( valJet1Tau31 )
+				cut2Jets_jet1MassvsTau21.Fill( getattr( events, 'jet'+grooming+'Mass')[0], valJet1Tau21 )
+				cut2Jets_jet1Tau32.Fill( valJet1Tau32 )
+
+				####### 2nd Leading Jet
+				cut2Jets_jet2Pt.Fill( getattr( events, 'jet'+grooming+'Pt')[1], weight )
+				cut2Jets_jet2Eta.Fill( getattr( events, 'jet'+grooming+'Eta')[1], weight )
+				cut2Jets_jet2Phi.Fill( getattr( events, 'jet'+grooming+'Phi')[1], weight )
+				cut2Jets_jet2Mass.Fill( getattr( events, 'jet'+grooming+'Mass')[1], weight )
+				cut2Jets_jet2MassOverPt.Fill( ( getattr( events, 'jet'+grooming+'Mass')[1] ) / ( getattr( events, 'jet'+grooming+'Pt')[1] ) , weight )
+				cut2Jets_jet2Area.Fill( getattr( events, 'jet'+grooming+'Area')[1], weight )
+				cut2Jets_jet2Tau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[1], weight )
+				cut2Jets_jet2Tau2.Fill( getattr( events, 'jet'+grooming+'Tau2')[1], weight )
+				cut2Jets_jet2Tau3.Fill( getattr( events, 'jet'+grooming+'Tau3')[1], weight )
+				cut2Jets_jet2Tau2vsTau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[1], getattr( events, 'jet'+grooming+'Tau2')[1] )
+				cut2Jets_jet2Tau3vsTau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[1], getattr( events, 'jet'+grooming+'Tau3')[1] )
+				cut2Jets_jet2Tau3vsTau2.Fill( getattr( events, 'jet'+grooming+'Tau2')[1], getattr( events, 'jet'+grooming+'Tau3')[1] )
+				cut2Jets_jet2PtvsMass.Fill( getattr( events, 'jet'+grooming+'Pt')[1], getattr( events, 'jet'+grooming+'Mass')[1] )
+				cut2Jets_jet2Ptvsht.Fill( getattr( events, 'jet'+grooming+'Pt')[1], HT )
+				cut2Jets_jet2Massvsht.Fill( getattr( events, 'jet'+grooming+'Mass')[1], HT )
+				cut2Jets_jet2MassvsMET.Fill( getattr( events, 'jet'+grooming+'Mass')[1], events.met )
+				cut2Jets_jet2MassvsNPV.Fill( getattr( events, 'jet'+grooming+'Mass')[1], events.nvtx )
+				cut2Jets_jet2Tau21.Fill( valJet2Tau21 )
+				cut2Jets_jet2Tau31.Fill( valJet2Tau31 )
+				cut2Jets_jet2MassvsTau21.Fill( getattr( events, 'jet'+grooming+'Mass')[1], valJet2Tau21 )
+				cut2Jets_jet2Tau32.Fill( valJet2Tau32 )
+
+				####### Leading and Second Leading
+				cut2Jets_jet1vsjet2Mass.Fill( getattr( events, 'jet'+grooming+'Mass')[0], getattr( events, 'jet'+grooming+'Mass')[1] )
+				cut2Jets_jet1vsjet2Tau21.Fill(  valJet1Tau21, valJet2Tau21 )
+				cut2Jets_jet2CosThetaStar.Fill( cosThetaStar, weight )
+				cut2Jets_jet1CosThetaStar.Fill( tmpCosThetaStar, weight )
+
+			if cut_minTwoJets and cut_HT:
+
+				############  Event Variables
+				cutWO1jetpt_numberJets.Fill( getattr( events, 'nJets'+grooming ), weight )
+				cutWO1jetpt_numberPV.Fill( events.nvtx, weight )
+				cutWO1jetpt_ht.Fill( HT, weight )
+				cutWO1jetpt_HTvsNPV.Fill( HT, events.nvtx )
+				cutWO1jetpt_MET.Fill( events.met, weight )
+
+				############ Leading Jet
+				cutWO1jetpt_jet1Pt.Fill( getattr( events, 'jet'+grooming+'Pt')[0], weight )
+				cutWO1jetpt_jet1Eta.Fill( getattr( events, 'jet'+grooming+'Eta')[0], weight )
+				cutWO1jetpt_jet1Phi.Fill( getattr( events, 'jet'+grooming+'Phi')[0], weight )
+				cutWO1jetpt_jet1Mass.Fill( getattr( events, 'jet'+grooming+'Mass')[0], weight )
+				cutWO1jetpt_jet1MassOverPt.Fill( ( getattr( events, 'jet'+grooming+'Mass')[0] ) / ( getattr( events, 'jet'+grooming+'Pt')[0] ) , weight )
+				cutWO1jetpt_jet1Area.Fill( getattr( events, 'jet'+grooming+'Area')[0], weight )
+				cutWO1jetpt_jet1Tau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[0], weight )
+				cutWO1jetpt_jet1Tau2.Fill( getattr( events, 'jet'+grooming+'Tau2')[0], weight )
+				cutWO1jetpt_jet1Tau3.Fill( getattr( events, 'jet'+grooming+'Tau3')[0], weight )
+				cutWO1jetpt_jet1Tau2vsTau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[0], getattr( events, 'jet'+grooming+'Tau2')[0] )
+				cutWO1jetpt_jet1Tau3vsTau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[0], getattr( events, 'jet'+grooming+'Tau3')[0] )
+				cutWO1jetpt_jet1Tau3vsTau2.Fill( getattr( events, 'jet'+grooming+'Tau2')[0], getattr( events, 'jet'+grooming+'Tau3')[0] )
+				cutWO1jetpt_jet1PtvsMass.Fill( getattr( events, 'jet'+grooming+'Pt')[0], getattr( events, 'jet'+grooming+'Mass')[0] )
+				cutWO1jetpt_jet1Ptvsht.Fill( getattr( events, 'jet'+grooming+'Pt')[0], HT )
+				cutWO1jetpt_jet1Massvsht.Fill( getattr( events, 'jet'+grooming+'Mass')[0], HT )
+				cutWO1jetpt_jet1MassvsMET.Fill( getattr( events, 'jet'+grooming+'Mass')[0], events.met )
+				cutWO1jetpt_jet1MassvsNPV.Fill( getattr( events, 'jet'+grooming+'Mass')[0], events.nvtx )
+				cutWO1jetpt_jet1Tau21.Fill( valJet1Tau21 )
+				cutWO1jetpt_jet1Tau31.Fill( valJet1Tau31 )
+				cutWO1jetpt_jet1MassvsTau21.Fill( getattr( events, 'jet'+grooming+'Mass')[0], valJet1Tau21 )
+				cutWO1jetpt_jet1Tau32.Fill( valJet1Tau32 )
+
+				####### 2nd Leading Jet
+				cutWO1jetpt_jet2Pt.Fill( getattr( events, 'jet'+grooming+'Pt')[1], weight )
+				cutWO1jetpt_jet2Eta.Fill( getattr( events, 'jet'+grooming+'Eta')[1], weight )
+				cutWO1jetpt_jet2Phi.Fill( getattr( events, 'jet'+grooming+'Phi')[1], weight )
+				cutWO1jetpt_jet2Mass.Fill( getattr( events, 'jet'+grooming+'Mass')[1], weight )
+				cutWO1jetpt_jet2MassOverPt.Fill( ( getattr( events, 'jet'+grooming+'Mass')[1] ) / ( getattr( events, 'jet'+grooming+'Pt')[1] ) , weight )
+				cutWO1jetpt_jet2Area.Fill( getattr( events, 'jet'+grooming+'Area')[1], weight )
+				cutWO1jetpt_jet2Tau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[1], weight )
+				cutWO1jetpt_jet2Tau2.Fill( getattr( events, 'jet'+grooming+'Tau2')[1], weight )
+				cutWO1jetpt_jet2Tau3.Fill( getattr( events, 'jet'+grooming+'Tau3')[1], weight )
+				cutWO1jetpt_jet2Tau2vsTau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[1], getattr( events, 'jet'+grooming+'Tau2')[1] )
+				cutWO1jetpt_jet2Tau3vsTau1.Fill( getattr( events, 'jet'+grooming+'Tau1')[1], getattr( events, 'jet'+grooming+'Tau3')[1] )
+				cutWO1jetpt_jet2Tau3vsTau2.Fill( getattr( events, 'jet'+grooming+'Tau2')[1], getattr( events, 'jet'+grooming+'Tau3')[1] )
+				cutWO1jetpt_jet2PtvsMass.Fill( getattr( events, 'jet'+grooming+'Pt')[1], getattr( events, 'jet'+grooming+'Mass')[1] )
+				cutWO1jetpt_jet2Ptvsht.Fill( getattr( events, 'jet'+grooming+'Pt')[1], HT )
+				cutWO1jetpt_jet2Massvsht.Fill( getattr( events, 'jet'+grooming+'Mass')[1], HT )
+				cutWO1jetpt_jet2MassvsMET.Fill( getattr( events, 'jet'+grooming+'Mass')[1], events.met )
+				cutWO1jetpt_jet2MassvsNPV.Fill( getattr( events, 'jet'+grooming+'Mass')[1], events.nvtx )
+				cutWO1jetpt_jet2Tau21.Fill( valJet2Tau21 )
+				cutWO1jetpt_jet2Tau31.Fill( valJet2Tau31 )
+				cutWO1jetpt_jet2MassvsTau21.Fill( getattr( events, 'jet'+grooming+'Mass')[1], valJet2Tau21 )
+				cutWO1jetpt_jet2Tau32.Fill( valJet2Tau32 )
+
+				####### Leading and Second Leading
+				cutWO1jetpt_jet1vsjet2Mass.Fill( getattr( events, 'jet'+grooming+'Mass')[0], getattr( events, 'jet'+grooming+'Mass')[1] )
+				cutWO1jetpt_jet1vsjet2Tau21.Fill(  valJet1Tau21, valJet2Tau21 )
+				cutWO1jetpt_jet2CosThetaStar.Fill( cosThetaStar, weight )
+				cutWO1jetpt_jet1CosThetaStar.Fill( tmpCosThetaStar, weight )
 
 	################################################################################################## end event loop
 
@@ -620,7 +893,8 @@ if __name__ == '__main__':
 		if FNAL:
 			#list = os.popen('ls -1 /eos/uscms/store/user/algomez/'+sample+'_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
 			tmpList = os.popen('ls -1v /eos/uscms/store/user/algomez/'+sample+'_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
-			outputDir = '/eos/uscms/store/user/algomez/QCD_8TeV/treeResults/'
+			#outputDir = '/eos/uscms/store/user/algomez/QCD_8TeV/treeResults/'
+			outputDir = '/store/user/algomez/QCD_8TeV/treeResults/'
 		else:
 			tmpList = os.popen('ls -1v /cms/gomez/Files/QCD_8TeV/PATtuples/'+sample+'_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
 			outputDir = '/cms/gomez/Files/QCD_8TeV/treeResults/'
@@ -657,6 +931,7 @@ if __name__ == '__main__':
 			list = os.popen('ls -1v /eos/uscms/store/user/algomez/'+sample+'/*.root').read().splitlines()
 			#list = os.popen('ls -1v /uscmst1b_scratch/lpc1/3DayLifetime/algomez/'+sample+'/*.root').read().splitlines()
 			outputDir = '/eos/uscms/store/user/algomez/Data/treeResults/'
+			#outputDir = '/store/user/algomez/Data/treeResults/'
 			#outputDir = '/uscms_data/d3/algomez/files/Data/treeResults/'
 		else:
 			list = os.popen('ls -1v /cms/gomez/Files/DATA/PATtuples/'+sample+'/*.root').read().splitlines()

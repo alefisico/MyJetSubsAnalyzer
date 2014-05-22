@@ -7,8 +7,10 @@ def setSelectionTitleCuts( signal ):
 	textBox.SetNDC()
 	textBox.SetTextSize(0.05) 
 	textBox.SetTextColor(kBlue)
-	#textBox.DrawText(0.16,0.95,"CMS Preliminary Simulation")
-	textBox.DrawText(0.16,0.95,"CMS Preliminary ")
+	if 'Data' in signal:
+		textBox.DrawText(0.16,0.95,"CMS Preliminary ")
+	else:
+	 	textBox.DrawText(0.16,0.95,"CMS Preliminary Simulation")
 
 	textBox1=TLatex()
 	textBox1.SetNDC()
@@ -28,6 +30,7 @@ def setSelectionTitleCuts( signal ):
 	textBox5=TLatex()
 	textBox5.SetNDC()
 	textBox5.SetTextSize(0.04) 
+	#textBox5.DrawLatex(0.70,0.50,"Number of Jets = 2 ")
 	textBox5.DrawLatex(0.70,0.50,"Number of Jets #geq 2 ")
 	
 	textBox6=TLatex()
@@ -38,13 +41,16 @@ def setSelectionTitleCuts( signal ):
 	textBox7=TLatex()
 	textBox7.SetNDC()
 	textBox7.SetTextSize(0.04) 
-	textBox7.DrawLatex(0.70,0.40,"1st jet p_{T} > 200 GeV")
+	#textBox7.DrawLatex(0.70,0.40,"1st jet p_{T} > 200 GeV")
 	
 	textBox8=TLatex()
 	textBox8.SetNDC()
 	textBox8.SetTextSize(0.04) 
-	#textBox8.DrawLatex(0.70,0.35,"Scale to 19.5 fb^{-1}")
-	textBox8.DrawLatex(0.70,0.35,"Scale to 0.79 fb^{-1}")
+	#textBox8.DrawLatex(0.70,0.35,"Scale to 0.79 fb^{-1}")
+	if 'Data' in signal:
+		textBox8.DrawLatex(0.70,0.35,"0.79 fb^{-1}")
+	else:
+		textBox8.DrawLatex(0.70,0.35,"Scale to 19.5 fb^{-1}")
 	
 def setSelectionTitleCuts2D( signal ):
 
@@ -131,7 +137,8 @@ def setTitle( signal ):
 
 def setTDRStyle():
 	tdrStyle = TStyle("tdrStyle","Style for P-TDR")
-	tdrStyle.SetPalette(1)
+	#tdrStyle.SetPalette(1)
+	tdrStyle.SetPalette(55)
 	# For the canvas:
 	tdrStyle.SetCanvasBorderMode(0)
 	tdrStyle.SetCanvasColor(0)
@@ -160,7 +167,7 @@ def setTDRStyle():
 
 	# For the histo:
 	#tdrStyle.SetHistFillColor(0)
-	#tdrStyle.SetHistFillStyle(0)
+	tdrStyle.SetHistFillStyle(0)
 	#tdrStyle.SetHistLineColor(1)
 	#tdrStyle.SetHistLineStyle(0)
 	#tdrStyle.SetHistLineWidth(1)

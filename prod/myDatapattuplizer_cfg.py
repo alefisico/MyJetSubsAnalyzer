@@ -630,8 +630,8 @@ process.hltFilter = cms.EDFilter('HLTHighLevel',
     TriggerResultsTag = cms.InputTag('TriggerResults','','HLT'),
     HLTPaths          = cms.vstring( listHLTPaths ),  
     eventSetupPathsKey = cms.string(''),
-    andOr              = cms.bool(True), #---- True = OR, False = AND between the HLT paths
-    throw              = cms.bool(False)
+    andOr              = cms.bool(True), ## how to deal with multiple triggers: True (OR) accept if ANY is true, False (AND) accept if ALL are true
+    throw              = cms.bool(False)  # throw exception on unknown path names
 )
 ################################
 ######## DAF PV's     ##########

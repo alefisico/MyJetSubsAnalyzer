@@ -12,6 +12,8 @@ from setTDRStyle import *
 import time, os, math, sys
 import tarfile
 import optparse
+from array import array
+
 
 gROOT.Reset()
 gROOT.SetBatch()
@@ -22,6 +24,150 @@ gROOT.SetStyle('tdrStyle')
 ###### Trick for add date or month to plots
 monthKey  =  time.strftime("%y%m")
 dateKey   = time.strftime("%y%m%d")
+
+xline = array('d', [0,2000])
+yline = array('d', [1,1])
+line = TGraph(2, xline, yline)
+line.SetLineColor(kRed)
+
+def DrawStack( Sample, inputDir, outputName, outputDir, listHistos, Algo, groomed):
+	"""create analysis Plots """
+
+	gStyle.SetOptStat(0)
+	targetDir = outputDir + dateKey + '/'
+	print 'Output directory: ', targetDir
+	if not ( os.path.exists( targetDir ) ): os.makedirs( targetDir )
+	tarFile = dateKey+"files_"+Sample+"_"+Algo+"_"+groomed+".tar.gz"
+	tar = tarfile.open( targetDir + tarFile, "w:gz")
+
+	outputList = [] ### for format
+	#---- open the files --------------------
+	#inputFile1 = TFile.Open( '/eos/uscms/store/user/algomez/Data/treeResults/'+Sample+'_'+Algo+'_'+groomed+'_Plots.root' )
+	inputFile1 = TFile.Open( '/uscms_data/d3/algomez/files/Data/'+Sample+'_'+Algo+'_'+groomed+'_Plots.root' )
+	inputFile2 = TFile.Open( '/uscms_data/d3/algomez/files/QCD_8TeV/QCD_HT-250To500_'+Algo+'_'+groomed+'_Plots.root' )
+	inputFile3 = TFile.Open( '/uscms_data/d3/algomez/files/QCD_8TeV/QCD_HT-500To1000_'+Algo+'_'+groomed+'_Plots.root' )
+	inputFile4 = TFile.Open( '/uscms_data/d3/algomez/files/QCD_8TeV/QCD_HT-1000ToInf_'+Algo+'_'+groomed+'_Plots.root' )
+	#inputFile5 = TFile.Open( '/uscms_data/d3/algomez/files/WJets/WJets_'+Algo+'_'+groomed+'_Plots.root' )
+	inputFile5 = TFile.Open( '/eos/uscms/store/user/algomez/WJets/treeResults/WJets_'+Algo+'_'+groomed+'_Plots.root' )
+	#inputFile6 = TFile.Open( '/uscms_data/d3/algomez/files/ZJets/ZJets_'+Algo+'_'+groomed+'_Plots.root' )
+	inputFile6 = TFile.Open( '/eos/uscms/store/user/algomez/ZJets/treeResults/ZJets_'+Algo+'_'+groomed+'_Plots.root' )
+	print 'Drawing Histograms from: ', inputFile1.GetName(), 'and ', inputFile2.GetName()
+
+	for histoInfo in listHistos:
+	
+		outputFileName = dateKey+'_'+histoInfo[0]+'_Stack_Data_Bkgs_'+Algo+'with'+groomed+'.png'  
+		print 'Processing.......', outputFileName
+		outputFile = targetDir + outputFileName
+		outputList.append( outputFileName )
+		print histoInfo[0]
+		h1 = inputFile1.Get('h_'+histoInfo[0]+'_'+Algo+'_'+groomed)
+		h2 = inputFile2.Get('h_'+histoInfo[0]+'_'+Algo+'_'+groomed)
+		h3 = inputFile3.Get('h_'+histoInfo[0]+'_'+Algo+'_'+groomed)
+		h4 = inputFile4.Get('h_'+histoInfo[0]+'_'+Algo+'_'+groomed)
+		h5 = inputFile5.Get('h_'+histoInfo[0]+'_'+Algo+'_'+groomed)
+		h6 = inputFile6.Get('h_'+histoInfo[0]+'_'+Algo+'_'+groomed)
+		newLumi = 800/19500.
+		print newLumi
+		h2.Scale( newLumi )
+		h3.Scale( newLumi )
+		h4.Scale( newLumi )
+		h5.Scale( newLumi*30.08/0.215 )
+		h6.Scale( newLumi*5.275/0.172 )
+		#----- Drawing -----------------------
+		h1.GetXaxis().SetTitle( histoInfo[1] )
+		binWidth = h1.GetBinWidth(1)
+		h1.GetYaxis().SetTitle( histoInfo[2]+str(binWidth) )
+		h2.Add( h3 )
+		h2.Add( h4 )
+		h2.Scale( 1.2 )
+		h1.SetLineColor(1)
+		h1.SetLineWidth(2)
+		h2.SetLineColor(4) 
+		h2.SetFillColor(4) 
+		h2.SetLineWidth(2) 
+		h5.SetLineColor(2)
+		h5.SetFillColor(2)
+		h5.SetLineWidth(2) 
+		h6.SetLineColor(3) 
+		h6.SetFillColor(3) 
+		h6.SetLineWidth(2)
+
+		hs = THStack( "hs", "hs" ) 
+		hs.Add( h2 ) 
+		hs.Add( h5 ) 
+		hs.Add( h6 )
+		#h1.SetMaximum(1.2*TMath.Max(h1.GetBinContent(h1.GetMaximumBin()),hs.GetBinContent(hs.GetMaximumBin())))
+
+		legend=TLegend(0.70,0.75,0.90,0.85) 
+		legend.SetFillStyle(0)
+		legend.AddEntry(h1, 'Data '+Algo+' '+groomed, "l")
+		legend.AddEntry(h2, 'QCD '+Algo+' '+groomed, "l")
+		legend.AddEntry(h5, 'TTWJets '+Algo+' '+groomed, "l")
+		legend.AddEntry(h6, 'TTZJets '+Algo+' '+groomed, "l")
+		legend.SetTextSize(0.03)
+
+		hRatio = h1.Clone()
+		for bin in range(0, hRatio.GetNbinsX()):
+			hRatio.SetBinContent(bin, 0.)
+			hRatio.SetBinError(bin, 0.)
+
+		for ibin in range(0, hRatio.GetNbinsX()):
+
+			binDataCont = h1.GetBinContent(ibin)
+			binDataErr = h1.GetBinError(ibin)
+			binQCDCont = h2.GetBinContent(ibin) +  h5.GetBinContent(ibin) + h6.GetBinContent(ibin) 
+			binQCDErr = h2.GetBinError(ibin)
+
+			if binQCDCont > 0 : 
+				diff = binDataCont/ binQCDCont 
+			#errDiff = diff * TMath.Sqrt( TMath.Power( P4Fit.GetParError(0) / P4Fit.GetParameter(0),2 ) + TMath.Power( P4Fit.GetParError(1)/ P4Fit.GetParameter(1), 2 )  + TMath.Power( P4Fit.GetParError(2)/ P4Fit.GetParameter(2), 2 )  + TMath.Power( P4Fit.GetParError(3)/ P4Fit.GetParameter(3), 2 ) )
+			#if (( ibin >= FitStart/binSize) and (binCont != 0) and (ibin <= FitEnd/binSize)):
+
+				hRatio.SetBinContent(ibin, diff)
+			#hRatio.SetBinError(ibin, binErr/valIntegral )
+			#hRatio.SetBinError(ibin, errDiff )#/valIntegral)
+		############################################################################### 
+
+		can = TCanvas('c1', 'c1',  10, 10, 800, 750 )
+		pad1 = TPad("pad1", "Histo",0,0.25,1.00,1.00,-1)
+		pad2 = TPad("pad2", "Residual",0,0,1.00,0.27,-1);
+		pad1.Draw()
+		pad2.Draw()
+
+		pad1.cd()
+
+		#can = TCanvas('can_'+histoInfo[0],'can_'+histoInfo[0],800,500)
+		#if 'Pt' in histoInfo[0]: can.SetLogy()
+		#if 'Mass' in histoInfo[0]: can.SetLogy()
+		#h1.Sumw2()
+		#hs.Sumw2()
+		hs.Draw('hist')
+		h1.Draw('same hist')
+		legend.Draw()
+		if 'cut' in histoInfo[0]: setSelectionTitleCuts( outputName )
+		else: setSelectionTitle( outputName )
+		pad2.cd()
+		hRatio.GetYaxis().SetLabelSize(0.12)
+		hRatio.GetXaxis().SetLabelSize(0.12)
+		hRatio.GetYaxis().SetTitleSize(0.12)
+		hRatio.GetYaxis().SetTitleOffset(0.5)
+		#hRatio.GetXaxis().SetTitleOffset(0.6)
+		#hRatio.GetYaxis().SetLimits(-5,5)
+		hRatio.SetMaximum(2)
+		#hRatio.GetXaxis().SetTitle( histoInfo[1] )
+		hRatio.GetYaxis().SetTitle( 'Data/Bkg' )
+		hRatio.Draw()
+		line.Draw("same")
+		can.SaveAs( outputFile )
+		del can
+	
+		tar.add( outputFile, outputFileName )
+
+	tar.close()
+	print 'Creating tar file with all plots named: ',  tarFile
+	printHTML( outputList  )
+	printLatex( outputList  )
+
 
 ###############################################################
 ###  Draw Histograms from final Tree (after selection)    #####
@@ -264,15 +410,19 @@ def DrawCmpDataQCD( Sample, inputDir, outputName, outputDir, listHistos, Algo, g
 
 	outputList = [] ### for format
 	#---- open the files --------------------
-	inputFile1 = TFile.Open( inputDir+Sample+'_'+Algo+'_'+groomed+'_Plots.root' )
-	inputFile2 = TFile.Open( '/cms/gomez/Files/QCD_8TeV/treeResults/rootFiles/QCD_HT-250To500_'+Algo+'_'+groomed+'_Plots.root' )
-	inputFile3 = TFile.Open( '/cms/gomez/Files/QCD_8TeV/treeResults/rootFiles/QCD_HT-500To1000_'+Algo+'_'+groomed+'_Plots.root' )
-	inputFile4 = TFile.Open( '/cms/gomez/Files/QCD_8TeV/treeResults/rootFiles/QCD_HT-1000ToInf_'+Algo+'_'+groomed+'_Plots.root' )
+	#inputFile1 = TFile.Open( inputDir+Sample+'_'+Algo+'_'+groomed+'_Plots.root' )
+	#inputFile2 = TFile.Open( '/cms/gomez/Files/QCD_8TeV/treeResults/rootFiles/QCD_HT-250To500_'+Algo+'_'+groomed+'_Plots.root' )
+	#inputFile3 = TFile.Open( '/cms/gomez/Files/QCD_8TeV/treeResults/rootFiles/QCD_HT-500To1000_'+Algo+'_'+groomed+'_Plots.root' )
+	#inputFile4 = TFile.Open( '/cms/gomez/Files/QCD_8TeV/treeResults/rootFiles/QCD_HT-1000ToInf_'+Algo+'_'+groomed+'_Plots.root' )
+	inputFile1 = TFile.Open( '/uscms_data/d3/algomez/files/Data/'+Sample+'_'+Algo+'_'+groomed+'_Plots.root' )
+	inputFile2 = TFile.Open( '/uscms_data/d3/algomez/files/QCD_8TeV/QCD_HT-250To500_'+Algo+'_'+groomed+'_Plots.root' )
+	inputFile3 = TFile.Open( '/uscms_data/d3/algomez/files/QCD_8TeV/QCD_HT-500To1000_'+Algo+'_'+groomed+'_Plots.root' )
+	inputFile4 = TFile.Open( '/uscms_data/d3/algomez/files/QCD_8TeV/QCD_HT-1000ToInf_'+Algo+'_'+groomed+'_Plots.root' )
 	print 'Drawing Histograms from: ', inputFile1.GetName(), 'and ', inputFile2.GetName()
 
 	for histoInfo in listHistos:
 	
-		outputFileName = dateKey+'_'+histoInfo[0]+'_'+Sample+'_QCD_'+Algo+'with'+groomed+'.pdf'  
+		outputFileName = dateKey+'_'+histoInfo[0]+'_'+Sample+'_QCD_'+Algo+'with'+groomed+'.png'  
 		print 'Processing.......', outputFileName
 		outputFile = targetDir + outputFileName
 		outputList.append( outputFileName )
@@ -281,29 +431,61 @@ def DrawCmpDataQCD( Sample, inputDir, outputName, outputDir, listHistos, Algo, g
 		h2 = inputFile2.Get('h_'+histoInfo[0]+'_'+Algo+'_'+groomed)
 		h3 = inputFile3.Get('h_'+histoInfo[0]+'_'+Algo+'_'+groomed)
 		h4 = inputFile4.Get('h_'+histoInfo[0]+'_'+Algo+'_'+groomed)
-		h2.Scale( 800/19500. )
-		h3.Scale( 800/19500. )
-		h4.Scale( 800/19500. )
+		newLumi = 800/19500.
+		print newLumi
+		h2.Scale( newLumi )
+		h3.Scale( newLumi )
+		h4.Scale( newLumi )
 		#----- Drawing -----------------------
 		h1.GetXaxis().SetTitle( histoInfo[1] )
 		binWidth = h1.GetBinWidth(1)
 		h1.GetYaxis().SetTitle( histoInfo[2]+str(binWidth) )
 		h2.Add( h3 )
 		h2.Add( h4 )
-		h2.Scale( 1.3 )
+		h2.Scale( 1.2 )
 		h1.SetLineColor(1)
 		h1.SetLineWidth(2)
-		h2.SetLineColor(2)
+		h2.SetLineColor(4)
 		h2.SetLineWidth(2)
 		h1.SetMaximum(1.2*TMath.Max(h1.GetBinContent(h1.GetMaximumBin()),h2.GetBinContent(h2.GetMaximumBin())))
 
-		legend=TLegend(0.70,0.65,0.90,0.85)
+		legend=TLegend(0.70,0.75,0.90,0.85)
 		legend.SetFillStyle(0)
 		legend.AddEntry(h1, 'Data '+Algo+' '+groomed, "l")
 		legend.AddEntry(h2, 'QCD '+Algo+' '+groomed, "l")
 		legend.SetTextSize(0.03)
 
-		can = TCanvas('can_'+histoInfo[0],'can_'+histoInfo[0],800,500)
+		hRatio = h2.Clone()
+		for bin in range(0, hRatio.GetNbinsX()):
+			hRatio.SetBinContent(bin, 0.)
+			hRatio.SetBinError(bin, 0.)
+
+		for ibin in range(0, hRatio.GetNbinsX()):
+
+			binDataCont = h1.GetBinContent(ibin)
+			binDataErr = h1.GetBinError(ibin)
+			binQCDCont = float(h2.GetBinContent(ibin))
+			binQCDErr = h2.GetBinError(ibin)
+
+			if binQCDCont > 0 : 
+				diff = binDataCont/ binQCDCont 
+			#errDiff = diff * TMath.Sqrt( TMath.Power( P4Fit.GetParError(0) / P4Fit.GetParameter(0),2 ) + TMath.Power( P4Fit.GetParError(1)/ P4Fit.GetParameter(1), 2 )  + TMath.Power( P4Fit.GetParError(2)/ P4Fit.GetParameter(2), 2 )  + TMath.Power( P4Fit.GetParError(3)/ P4Fit.GetParameter(3), 2 ) )
+			#if (( ibin >= FitStart/binSize) and (binCont != 0) and (ibin <= FitEnd/binSize)):
+
+				hRatio.SetBinContent(ibin, diff)
+			#hRatio.SetBinError(ibin, binErr/valIntegral )
+			#hRatio.SetBinError(ibin, errDiff )#/valIntegral)
+		############################################################################### 
+
+		can = TCanvas('c1', 'c1',  10, 10, 800, 750 )
+		pad1 = TPad("pad1", "Histo",0,0.25,1.00,1.00,-1)
+		pad2 = TPad("pad2", "Residual",0,0,1.00,0.27,-1);
+		pad1.Draw()
+		pad2.Draw()
+
+		pad1.cd()
+
+		#can = TCanvas('can_'+histoInfo[0],'can_'+histoInfo[0],800,500)
 		#if 'Pt' in histoInfo[0]: can.SetLogy()
 		#if 'Mass' in histoInfo[0]: can.SetLogy()
 		h1.Sumw2()
@@ -313,6 +495,18 @@ def DrawCmpDataQCD( Sample, inputDir, outputName, outputDir, listHistos, Algo, g
 		legend.Draw()
 		if 'cut' in histoInfo[0]: setSelectionTitleCuts( outputName )
 		else: setSelectionTitle( outputName )
+		pad2.cd()
+		hRatio.GetYaxis().SetLabelSize(0.12)
+		hRatio.GetXaxis().SetLabelSize(0.12)
+		hRatio.GetYaxis().SetTitleSize(0.12)
+		hRatio.GetYaxis().SetTitleOffset(0.5)
+		#hRatio.GetXaxis().SetTitleOffset(0.6)
+		#hRatio.GetYaxis().SetLimits(-5,5)
+		hRatio.SetMaximum(2)
+		#hRatio.GetXaxis().SetTitle( histoInfo[1] )
+		hRatio.GetYaxis().SetTitle( 'Data/Bkg' )
+		hRatio.Draw()
+		line.Draw("same")
 		can.SaveAs( outputFile )
 		del can
 	
@@ -411,16 +605,16 @@ def DrawCmpAllGrom( Sample, inputDir, outputName, outputDir, listHistos, Algo):
 	inputFile1 = TFile.Open( inputDir+Sample+'_'+Algo+'__Plots.root' )
 	inputFile2 = TFile.Open( inputDir+Sample+'_'+Algo+'_Trimmed_Plots.root' )
 	inputFile3 = TFile.Open( inputDir+Sample+'_'+Algo+'_Pruned_Plots.root' )
-	inputFile4 = TFile.Open( inputDir+Sample+'_'+Algo+'_Filtered_Plots.root' )
-	#inputFile4 = TFile.Open( inputDir+Sample+'_'+Algo+'_FilteredN2_Plots.root' )
-	#inputFile6 = TFile.Open( inputDir+Sample+'_'+Algo+'_FilteredN3_Plots.root' )
+	#inputFile4 = TFile.Open( inputDir+Sample+'_'+Algo+'_Filtered_Plots.root' )
+	inputFile4 = TFile.Open( inputDir+Sample+'_'+Algo+'_FilteredN2_Plots.root' )
+	inputFile6 = TFile.Open( inputDir+Sample+'_'+Algo+'_FilteredN3_Plots.root' )
 	inputFile5 = TFile.Open( inputDir+Sample+'_'+Algo+'_MassDropFiltered_Plots.root' )
-	#print 'Drawing Histograms from: ', inputFile1.GetName(), inputFile2.GetName(), inputFile3.GetName(), inputFile4.GetName(), inputFile5.GetName(), inputFile5.GetName()
-	print 'Drawing Histograms from: ', inputFile1.GetName(), inputFile2.GetName(), inputFile3.GetName(), inputFile4.GetName(), inputFile5.GetName()
+	print 'Drawing Histograms from: ', inputFile1.GetName(), inputFile2.GetName(), inputFile3.GetName(), inputFile4.GetName(), inputFile5.GetName(), inputFile5.GetName()
+	#print 'Drawing Histograms from: ', inputFile1.GetName(), inputFile2.GetName(), inputFile3.GetName(), inputFile4.GetName(), inputFile5.GetName()
 
 	for histoInfo in listHistos:
 	
-		outputFileName = dateKey+'_'+histoInfo[0]+'_'+Sample+'_'+Algo+'_cmpAllGroomed.png'  
+		outputFileName = dateKey+'_'+histoInfo[0]+'_'+Sample+'_'+Algo+'_cmpAllGroomed.pdf'  
 		print 'Processing.......', outputFileName
 		outputFile = targetDir + outputFileName
 		outputList.append( outputFileName )
@@ -428,9 +622,9 @@ def DrawCmpAllGrom( Sample, inputDir, outputName, outputDir, listHistos, Algo):
 		h1 = inputFile1.Get('h_'+histoInfo[0]+'_'+Algo+'_')
 		h2 = inputFile2.Get('h_'+histoInfo[0]+'_'+Algo+'_Trimmed')
 		h3 = inputFile3.Get('h_'+histoInfo[0]+'_'+Algo+'_Pruned')
-		h4 = inputFile4.Get('h_'+histoInfo[0]+'_'+Algo+'_Filtered')
-		#h4 = inputFile4.Get('h_'+histoInfo[0]+'_'+Algo+'_FilteredN2')
-		#h6 = inputFile6.Get('h_'+histoInfo[0]+'_'+Algo+'_FilteredN3')
+		#h4 = inputFile4.Get('h_'+histoInfo[0]+'_'+Algo+'_Filtered')
+		h4 = inputFile4.Get('h_'+histoInfo[0]+'_'+Algo+'_FilteredN2')
+		h6 = inputFile6.Get('h_'+histoInfo[0]+'_'+Algo+'_FilteredN3')
 		h5 = inputFile5.Get('h_'+histoInfo[0]+'_'+Algo+'_MassDropFiltered')
 		#----- Drawing -----------------------
 		h1.GetXaxis().SetTitle( histoInfo[1] )
@@ -446,10 +640,10 @@ def DrawCmpAllGrom( Sample, inputDir, outputName, outputDir, listHistos, Algo):
 		h4.SetLineWidth(2)
 		h5.SetLineColor(6)
 		h5.SetLineWidth(2)
-		#h6.SetLineColor(7)
-		#h6.SetLineWidth(2)
-		#h1.SetMaximum(1.2*max(h1.GetBinContent(h1.GetMaximumBin()),h2.GetBinContent(h2.GetMaximumBin()),h3.GetBinContent(h3.GetMaximumBin()),h4.GetBinContent(h4.GetMaximumBin()),h5.GetBinContent(h5.GetMaximumBin()),h5.GetBinContent(h5.GetMaximumBin())))
-		h1.SetMaximum(1.2*max(h1.GetBinContent(h1.GetMaximumBin()),h2.GetBinContent(h2.GetMaximumBin()),h3.GetBinContent(h3.GetMaximumBin()),h4.GetBinContent(h4.GetMaximumBin()),h5.GetBinContent(h5.GetMaximumBin())))
+		h6.SetLineColor(7)
+		h6.SetLineWidth(2)
+		h1.SetMaximum(1.2*max(h1.GetBinContent(h1.GetMaximumBin()),h2.GetBinContent(h2.GetMaximumBin()),h3.GetBinContent(h3.GetMaximumBin()),h4.GetBinContent(h4.GetMaximumBin()),h5.GetBinContent(h5.GetMaximumBin()),h5.GetBinContent(h5.GetMaximumBin())))
+		#h1.SetMaximum(1.2*max(h1.GetBinContent(h1.GetMaximumBin()),h2.GetBinContent(h2.GetMaximumBin()),h3.GetBinContent(h3.GetMaximumBin()),h4.GetBinContent(h4.GetMaximumBin()),h5.GetBinContent(h5.GetMaximumBin())))
 
 		legend=TLegend(0.70,0.70,0.90,0.90)
 		legend.SetFillStyle(0)
@@ -457,8 +651,7 @@ def DrawCmpAllGrom( Sample, inputDir, outputName, outputDir, listHistos, Algo):
 		legend.AddEntry(h2, Algo+' Trimmed', "l")
 		legend.AddEntry(h3, Algo+' Pruned', "l")
 		legend.AddEntry(h4, Algo+' Filtered N=2', "l")
-		#legend.AddEntry(h4, Algo+' Filtered N=2', "l")
-		#legend.AddEntry(h6, Algo+' Filtered N=3', "l")
+		legend.AddEntry(h6, Algo+' Filtered N=3', "l")
 		legend.AddEntry(h5, Algo+' MassDropFiltered', "l")
 		legend.SetTextSize(0.03)
 
@@ -470,13 +663,13 @@ def DrawCmpAllGrom( Sample, inputDir, outputName, outputDir, listHistos, Algo):
 		h3.Sumw2()
 		h4.Sumw2()
 		h5.Sumw2()
-		#h6.Sumw2()
+		h6.Sumw2()
 		h1.Draw('histe ')
 		h2.Draw('same histe')
 		h3.Draw('same histe')
 		h4.Draw('same histe')
 		h5.Draw('same histe')
-		#h6.Draw('same histe')
+		h6.Draw('same histe')
 		legend.Draw()
 		if 'cut' in histoInfo[0]: setSelectionTitleCuts( outputName )
 		else: setSelectionTitle( Sample )
@@ -861,152 +1054,281 @@ if __name__ == '__main__':
 	cat = options.cat
 
 	listHistos = [
-		[ 'ht', 'H_{T} [GeV]', 'Events / '], 
-		[ 'numberPV', 'Number of Primary Vertex', 'Events / '], 
-		[ 'MET', 'MET [GeV]', 'Events / '], 
-		[ 'numberJets', 'Number of Jets', 'Events / '], 
-		[ 'jetPt', 'Jets p_{T} [GeV]', 'Jets per Events / ' ],
-		[ 'jetEta', 'Jets #eta', 'Jets per Events / ' ],
-		[ 'jetPhi', 'Jets #phi', 'Jets per Events / ' ],
-		[ 'jetMass', 'Jets Mass [GeV]', 'Jets per Events / ' ],
-		[ 'jetArea', 'Jets Area', 'Jets per Events / ' ],
-		[ 'jetTau1', '#tau_{1}', 'Jets per Events / ' ],
-		[ 'jetTau2', '#tau_{2}', 'Jets per Events / ' ],
-		[ 'jetTau3', '#tau_{3}', 'Jets per Events / ' ],
-		[ 'jetTau21', '#tau_{2} / #tau_{1}', 'Jets per Events / ' ],
-		[ 'jetTau31', '#tau_{3} / #tau_{1}', 'Jets per Events / ' ],
-		[ 'jetTau32', '#tau_{3} / #tau_{2}', 'Jets per Events / ' ],
-
-		[ 'jet1Pt', 'Leading Jet p_{T} [GeV]', 'Events / ' ],
-		[ 'jet1Eta', 'Leading Jet #eta', 'Events / ' ],
-		[ 'jet1Phi', 'Leading Jet #phi', 'Events / ' ],
-		[ 'jet1Mass', 'Leading Jet Mass [GeV]', 'Events / ' ],
-		[ 'jet1Area', 'Leading Jet Area', 'Events / ' ],
-		[ 'jet1Tau1', '#tau_{1} Leading Jet', 'Events / ' ],
-		[ 'jet1Tau2', '#tau_{2} Leading Jet', 'Events / ' ],
-		[ 'jet1Tau3', '#tau_{3} Leading Jet', 'Events / ' ],
-		[ 'jet1Tau21', '#tau_{2} / #tau_{1} Leading Jet', 'Events / ' ],
-		[ 'jet1Tau31', '#tau_{3} / #tau_{1} Leading Jet', 'Events / ' ],
-		[ 'jet1Tau32', '#tau_{3} / #tau_{2} Leading Jet', 'Events / ' ],
-
-		[ 'jet2Pt', '2nd Leading Jet p_{T} [GeV]', 'Events / ' ],
-		[ 'jet2Eta', '2nd Leading Jet #eta', 'Events / ' ],
-		[ 'jet2Phi', '2nd Leading Jet #phi', 'Events / ' ],
-		[ 'jet2Mass', '2nd Leading Jet Mass [GeV]', 'Events / ' ],
-		[ 'jet2Area', '2nd Leading Jet Area', 'Events / ' ],
-		[ 'jet2Tau1', '#tau_{1} 2nd Leading Jet', 'Events / ' ],
-		[ 'jet2Tau2', '#tau_{2} 2nd Leading Jet', 'Events / ' ],
-		[ 'jet2Tau3', '#tau_{3} 2nd Leading Jet', 'Events / ' ],
-		[ 'jet2Tau21', '#tau_{2} / #tau_{1} 2nd Leading Jet', 'Events / ' ],
-		[ 'jet2Tau31', '#tau_{3} / #tau_{1} 2nd Leading Jet', 'Events / ' ],
-		[ 'jet2Tau32', '#tau_{3} / #tau_{2} 2nd Leading Jet', 'Events / ' ],
-
-#		[ 'jet3Pt', '3rd Leading Jet p_{T} [GeV]', 'Events / ' ],
-#		[ 'jet3Eta', '3rd Leading Jet #eta', 'Events / ' ],
-#		[ 'jet3Phi', '3rd Leading Jet #phi', 'Events / ' ],
-#		[ 'jet3Mass', '3rd Leading Jet Mass [GeV]', 'Events / ' ],
-#		[ 'jet3Area', '3rd Leading Jet Area', 'Events / ' ],
-#		[ 'jet3Tau1', '#tau_{1} 3rd Leading Jet', 'Events / ' ],
-#		[ 'jet3Tau2', '#tau_{2} 3rd Leading Jet', 'Events / ' ],
-#		[ 'jet3Tau3', '#tau_{3} 3rd Leading Jet', 'Events / ' ],
-#		[ 'jet3Tau21', '#tau_{2} / #tau_{1} 3rd Leading Jet', 'Events / ' ],
-#		[ 'jet3Tau31', '#tau_{3} / #tau_{1} 3rd Leading Jet', 'Events / ' ],
-#		[ 'jet3Tau32', '#tau_{3} / #tau_{2} 3rd Leading Jet', 'Events / ' ],
-
-		[ 'cut_ht', 'H_{T} [GeV]', 'Events / '], 
-		[ 'cut_numberJets', 'Number of Jets', 'Events / '], 
+#		[ 'ht', 'H_{T} [GeV]', 'Events / '], 
+#		[ 'numberPV', 'Number of Primary Vertex', 'Events / '], 
+#		[ 'MET', 'MET [GeV]', 'Events / '], 
+#		[ 'numberJets', 'Number of Jets', 'Events / '], 
+##		[ 'jetPt', 'Jets p_{T} [GeV]', 'Jets per Events / ' ],
+##		[ 'jetEta', 'Jets #eta', 'Jets per Events / ' ],
+##		[ 'jetPhi', 'Jets #phi', 'Jets per Events / ' ],
+##		[ 'jetMass', 'Jets Mass [GeV]', 'Jets per Events / ' ],
+##		[ 'jetArea', 'Jets Area', 'Jets per Events / ' ],
+##		[ 'jetTau1', '#tau_{1}', 'Jets per Events / ' ],
+##		[ 'jetTau2', '#tau_{2}', 'Jets per Events / ' ],
+##		[ 'jetTau3', '#tau_{3}', 'Jets per Events / ' ],
+##		[ 'jetTau21', '#tau_{2} / #tau_{1}', 'Jets per Events / ' ],
+##		[ 'jetTau31', '#tau_{3} / #tau_{1}', 'Jets per Events / ' ],
+##		[ 'jetTau32', '#tau_{3} / #tau_{2}', 'Jets per Events / ' ],
+##
+##		[ 'jet1Pt', 'Leading Jet p_{T} [GeV]', 'Events / ' ],
+##		[ 'jet1Eta', 'Leading Jet #eta', 'Events / ' ],
+##		[ 'jet1Phi', 'Leading Jet #phi', 'Events / ' ],
+##		[ 'jet1Mass', 'Leading Jet Mass [GeV]', 'Events / ' ],
+##		[ 'jet1Area', 'Leading Jet Area', 'Events / ' ],
+##		[ 'jet1Tau1', '#tau_{1} Leading Jet', 'Events / ' ],
+##		[ 'jet1Tau2', '#tau_{2} Leading Jet', 'Events / ' ],
+##		[ 'jet1Tau3', '#tau_{3} Leading Jet', 'Events / ' ],
+##		[ 'jet1Tau21', '#tau_{2} / #tau_{1} Leading Jet', 'Events / ' ],
+##		[ 'jet1Tau31', '#tau_{3} / #tau_{1} Leading Jet', 'Events / ' ],
+##		[ 'jet1Tau32', '#tau_{3} / #tau_{2} Leading Jet', 'Events / ' ],
+##
+##		[ 'jet2Pt', '2nd Leading Jet p_{T} [GeV]', 'Events / ' ],
+##		[ 'jet2Eta', '2nd Leading Jet #eta', 'Events / ' ],
+##		[ 'jet2Phi', '2nd Leading Jet #phi', 'Events / ' ],
+##		[ 'jet2Mass', '2nd Leading Jet Mass [GeV]', 'Events / ' ],
+##		[ 'jet2Area', '2nd Leading Jet Area', 'Events / ' ],
+##		[ 'jet2Tau1', '#tau_{1} 2nd Leading Jet', 'Events / ' ],
+##		[ 'jet2Tau2', '#tau_{2} 2nd Leading Jet', 'Events / ' ],
+##		[ 'jet2Tau3', '#tau_{3} 2nd Leading Jet', 'Events / ' ],
+##		[ 'jet2Tau21', '#tau_{2} / #tau_{1} 2nd Leading Jet', 'Events / ' ],
+##		[ 'jet2Tau31', '#tau_{3} / #tau_{1} 2nd Leading Jet', 'Events / ' ],
+##		[ 'jet2Tau32', '#tau_{3} / #tau_{2} 2nd Leading Jet', 'Events / ' ],
+#
+##		[ 'jet3Pt', '3rd Leading Jet p_{T} [GeV]', 'Events / ' ],
+##		[ 'jet3Eta', '3rd Leading Jet #eta', 'Events / ' ],
+##		[ 'jet3Phi', '3rd Leading Jet #phi', 'Events / ' ],
+##		[ 'jet3Mass', '3rd Leading Jet Mass [GeV]', 'Events / ' ],
+##		[ 'jet3Area', '3rd Leading Jet Area', 'Events / ' ],
+##		[ 'jet3Tau1', '#tau_{1} 3rd Leading Jet', 'Events / ' ],
+##		[ 'jet3Tau2', '#tau_{2} 3rd Leading Jet', 'Events / ' ],
+##		[ 'jet3Tau3', '#tau_{3} 3rd Leading Jet', 'Events / ' ],
+##		[ 'jet3Tau21', '#tau_{2} / #tau_{1} 3rd Leading Jet', 'Events / ' ],
+##		[ 'jet3Tau31', '#tau_{3} / #tau_{1} 3rd Leading Jet', 'Events / ' ],
+##		[ 'jet3Tau32', '#tau_{3} / #tau_{2} 3rd Leading Jet', 'Events / ' ],
+#
+###### cut2Jets, cutWO1jetpt 
+#
+#		[ 'cut_ht', 'H_{T} [GeV]', 'Events / '], 
+#		[ 'cut_numberJets', 'Number of Jets', 'Events / '], 
 #		[ 'cut_numberPV', 'Number of Primary Vertex', 'Events / '], 
 #		[ 'cut_MET', 'MET [GeV]', 'Events / '], 
-#		[ 'cut_jetPt', 'Jets p_{T} [GeV]', 'Jets per Events / ' ],
-#		[ 'cut_jetEta', 'Jets #eta', 'Jets per Events / ' ],
-#		[ 'cut_jetPhi', 'Jets #phi', 'Jets per Events / ' ],
-#		[ 'cut_jetMass', 'Jets Mass [GeV]', 'Jets per Events / ' ],
-#		[ 'cut_jetArea', 'Jets Area', 'Jets per Events / ' ],
-#		[ 'cut_jetTau1', '#tau_{1}', 'Jets per Events / ' ],
-#		[ 'cut_jetTau2', '#tau_{2}', 'Jets per Events / ' ],
-#		[ 'cut_jetTau3', '#tau_{3}', 'Jets per Events / ' ],
-#		[ 'cut_jetTau21', '#tau_{2} / #tau_{1}', 'Jets per Events / ' ],
-#		[ 'cut_jetTau31', '#tau_{3} / #tau_{1}', 'Jets per Events / ' ],
-#		[ 'cut_jetTau32', '#tau_{3} / #tau_{2}', 'Jets per Events / ' ],
+##		[ 'cut_jetPt', 'Jets p_{T} [GeV]', 'Jets per Events / ' ],
+##		[ 'cut_jetEta', 'Jets #eta', 'Jets per Events / ' ],
+##		[ 'cut_jetPhi', 'Jets #phi', 'Jets per Events / ' ],
+##		[ 'cut_jetMass', 'Jets Mass [GeV]', 'Jets per Events / ' ],
+##		[ 'cut_jetArea', 'Jets Area', 'Jets per Events / ' ],
+##		[ 'cut_jetTau1', '#tau_{1}', 'Jets per Events / ' ],
+##		[ 'cut_jetTau2', '#tau_{2}', 'Jets per Events / ' ],
+##		[ 'cut_jetTau3', '#tau_{3}', 'Jets per Events / ' ],
+##		[ 'cut_jetTau21', '#tau_{2} / #tau_{1}', 'Jets per Events / ' ],
+##		[ 'cut_jetTau31', '#tau_{3} / #tau_{1}', 'Jets per Events / ' ],
+##		[ 'cut_jetTau32', '#tau_{3} / #tau_{2}', 'Jets per Events / ' ],
+#
+#		[ 'cut_jet1Pt', 'Leading Jet p_{T} [GeV]', 'Events / ' ],
+#		[ 'cut_jet1Eta', 'Leading Jet #eta', 'Events / ' ],
+#		[ 'cut_jet1Phi', 'Leading Jet #phi', 'Events / ' ],
+#		[ 'cut_jet1Mass', 'Leading Jet Mass [GeV]', 'Events / ' ],
+#		[ 'cut_jet1MassOverPt', 'Leading Jet Mass/P_{T}', 'Events / ' ],
+#		[ 'cut_jet1Area', 'Leading Jet Area', 'Events / ' ],
+#		[ 'cut_jet1Tau1', '#tau_{1} Leading Jet', 'Events / ' ],
+#		[ 'cut_jet1Tau2', '#tau_{2} Leading Jet', 'Events / ' ],
+#		[ 'cut_jet1Tau3', '#tau_{3} Leading Jet', 'Events / ' ],
+#		[ 'cut_jet1Tau21', '#tau_{2} / #tau_{1} Leading Jet', 'Events / ' ],
+#		[ 'cut_jet1Tau31', '#tau_{3} / #tau_{1} Leading Jet', 'Events / ' ],
+#		[ 'cut_jet1Tau32', '#tau_{3} / #tau_{2} Leading Jet', 'Events / ' ],
+#
+#		[ 'cut_jet2Pt', '2nd Leading Jet p_{T} [GeV]', 'Events / ' ],
+#		[ 'cut_jet2Eta', '2nd Leading Jet #eta', 'Events / ' ],
+#		[ 'cut_jet2Phi', '2nd Leading Jet #phi', 'Events / ' ],
+#		[ 'cut_jet2Mass', '2nd Leading Jet Mass [GeV]', 'Events / ' ],
+#		[ 'cut_jet2MassOverPt', '2nd Leading Jet Mass/P_{T}', 'Events / ' ],
+#		[ 'cut_jet2Area', '2nd Leading Jet Area', 'Events / ' ],
+#		[ 'cut_jet2Tau1', '#tau_{1} 2nd Leading Jet', 'Events / ' ],
+#		[ 'cut_jet2Tau2', '#tau_{2} 2nd Leading Jet', 'Events / ' ],
+#		[ 'cut_jet2Tau3', '#tau_{3} 2nd Leading Jet', 'Events / ' ],
+#		[ 'cut_jet2Tau21', '#tau_{2} / #tau_{1} 2nd Leading Jet', 'Events / ' ],
+#		[ 'cut_jet2Tau31', '#tau_{3} / #tau_{1} 2nd Leading Jet', 'Events / ' ],
+#		[ 'cut_jet2Tau32', '#tau_{3} / #tau_{2} 2nd Leading Jet', 'Events / ' ],
 
-		[ 'cut_jet1Pt', 'Leading Jet p_{T} [GeV]', 'Events / ' ],
-		[ 'cut_jet1Eta', 'Leading Jet #eta', 'Events / ' ],
-		[ 'cut_jet1Phi', 'Leading Jet #phi', 'Events / ' ],
-		[ 'cut_jet1Mass', 'Leading Jet Mass [GeV]', 'Events / ' ],
-		[ 'cut_jet1Area', 'Leading Jet Area', 'Events / ' ],
-		[ 'cut_jet1Tau1', '#tau_{1} Leading Jet', 'Events / ' ],
-		[ 'cut_jet1Tau2', '#tau_{2} Leading Jet', 'Events / ' ],
-		[ 'cut_jet1Tau3', '#tau_{3} Leading Jet', 'Events / ' ],
-		[ 'cut_jet1Tau21', '#tau_{2} / #tau_{1} Leading Jet', 'Events / ' ],
-		[ 'cut_jet1Tau31', '#tau_{3} / #tau_{1} Leading Jet', 'Events / ' ],
-		[ 'cut_jet1Tau32', '#tau_{3} / #tau_{2} Leading Jet', 'Events / ' ],
 
-		[ 'cut_jet2Pt', '2nd Leading Jet p_{T} [GeV]', 'Events / ' ],
-		[ 'cut_jet2Eta', '2nd Leading Jet #eta', 'Events / ' ],
-		[ 'cut_jet2Phi', '2nd Leading Jet #phi', 'Events / ' ],
-		[ 'cut_jet2Mass', '2nd Leading Jet Mass [GeV]', 'Events / ' ],
-		[ 'cut_jet2Area', '2nd Leading Jet Area', 'Events / ' ],
-		[ 'cut_jet2Tau1', '#tau_{1} 2nd Leading Jet', 'Events / ' ],
-		[ 'cut_jet2Tau2', '#tau_{2} 2nd Leading Jet', 'Events / ' ],
-		[ 'cut_jet2Tau3', '#tau_{3} 2nd Leading Jet', 'Events / ' ],
-		[ 'cut_jet2Tau21', '#tau_{2} / #tau_{1} 2nd Leading Jet', 'Events / ' ],
-		[ 'cut_jet2Tau31', '#tau_{3} / #tau_{1} 2nd Leading Jet', 'Events / ' ],
-		[ 'cut_jet2Tau32', '#tau_{3} / #tau_{2} 2nd Leading Jet', 'Events / ' ],
+#		[ 'cut2Jets_ht', 'H_{T} [GeV]', 'Events / '], 
+#		[ 'cut2Jets_numberJets', 'Number of Jets', 'Events / '], 
+#		[ 'cut2Jets_numberPV', 'Number of Primary Vertex', 'Events / '], 
+#		[ 'cut2Jets_MET', 'MET [GeV]', 'Events / '], 
+#
+#		[ 'cut2Jets_jet1Pt', 'Leading Jet p_{T} [GeV]', 'Events / ' ],
+#		[ 'cut2Jets_jet1Eta', 'Leading Jet #eta', 'Events / ' ],
+#		[ 'cut2Jets_jet1Phi', 'Leading Jet #phi', 'Events / ' ],
+#		[ 'cut2Jets_jet1Mass', 'Leading Jet Mass [GeV]', 'Events / ' ],
+#		[ 'cut2Jets_jet1MassOverPt', 'Leading Jet Mass/P_{T}', 'Events / ' ],
+#		[ 'cut2Jets_jet1Area', 'Leading Jet Area', 'Events / ' ],
+#		[ 'cut2Jets_jet1Tau1', '#tau_{1} Leading Jet', 'Events / ' ],
+#		[ 'cut2Jets_jet1Tau2', '#tau_{2} Leading Jet', 'Events / ' ],
+#		[ 'cut2Jets_jet1Tau3', '#tau_{3} Leading Jet', 'Events / ' ],
+#		[ 'cut2Jets_jet1Tau21', '#tau_{2} / #tau_{1} Leading Jet', 'Events / ' ],
+#		[ 'cut2Jets_jet1Tau31', '#tau_{3} / #tau_{1} Leading Jet', 'Events / ' ],
+#		[ 'cut2Jets_jet1Tau32', '#tau_{3} / #tau_{2} Leading Jet', 'Events / ' ],
+#
+#		[ 'cut2Jets_jet2Pt', '2nd Leading Jet p_{T} [GeV]', 'Events / ' ],
+#		[ 'cut2Jets_jet2Eta', '2nd Leading Jet #eta', 'Events / ' ],
+#		[ 'cut2Jets_jet2Phi', '2nd Leading Jet #phi', 'Events / ' ],
+#		[ 'cut2Jets_jet2Mass', '2nd Leading Jet Mass [GeV]', 'Events / ' ],
+#		[ 'cut2Jets_jet2MassOverPt', '2nd Leading Jet Mass/P_{T}', 'Events / ' ],
+#		[ 'cut2Jets_jet2Area', '2nd Leading Jet Area', 'Events / ' ],
+#		[ 'cut2Jets_jet2Tau1', '#tau_{1} 2nd Leading Jet', 'Events / ' ],
+#		[ 'cut2Jets_jet2Tau2', '#tau_{2} 2nd Leading Jet', 'Events / ' ],
+#		[ 'cut2Jets_jet2Tau3', '#tau_{3} 2nd Leading Jet', 'Events / ' ],
+#		[ 'cut2Jets_jet2Tau21', '#tau_{2} / #tau_{1} 2nd Leading Jet', 'Events / ' ],
+#		[ 'cut2Jets_jet2Tau31', '#tau_{3} / #tau_{1} 2nd Leading Jet', 'Events / ' ],
+#		[ 'cut2Jets_jet2Tau32', '#tau_{3} / #tau_{2} 2nd Leading Jet', 'Events / ' ],
+
+		[ 'cutWO1jetpt_ht', 'H_{T} [GeV]', 'Events / '], 
+		[ 'cutWO1jetpt_numberJets', 'Number of Jets', 'Events / '], 
+		[ 'cutWO1jetpt_numberPV', 'Number of Primary Vertex', 'Events / '], 
+		[ 'cutWO1jetpt_MET', 'MET [GeV]', 'Events / '], 
+
+		[ 'cutWO1jetpt_jet1Pt', 'Leading Jet p_{T} [GeV]', 'Events / ' ],
+		[ 'cutWO1jetpt_jet1Eta', 'Leading Jet #eta', 'Events / ' ],
+		[ 'cutWO1jetpt_jet1Phi', 'Leading Jet #phi', 'Events / ' ],
+		[ 'cutWO1jetpt_jet1Mass', 'Leading Jet Mass [GeV]', 'Events / ' ],
+		[ 'cutWO1jetpt_jet1MassOverPt', 'Leading Jet Mass/P_{T}', 'Events / ' ],
+		[ 'cutWO1jetpt_jet1Area', 'Leading Jet Area', 'Events / ' ],
+		[ 'cutWO1jetpt_jet1Tau1', '#tau_{1} Leading Jet', 'Events / ' ],
+		[ 'cutWO1jetpt_jet1Tau2', '#tau_{2} Leading Jet', 'Events / ' ],
+		[ 'cutWO1jetpt_jet1Tau3', '#tau_{3} Leading Jet', 'Events / ' ],
+		[ 'cutWO1jetpt_jet1Tau21', '#tau_{2} / #tau_{1} Leading Jet', 'Events / ' ],
+		[ 'cutWO1jetpt_jet1Tau31', '#tau_{3} / #tau_{1} Leading Jet', 'Events / ' ],
+		[ 'cutWO1jetpt_jet1Tau32', '#tau_{3} / #tau_{2} Leading Jet', 'Events / ' ],
+
+		[ 'cutWO1jetpt_jet2Pt', '2nd Leading Jet p_{T} [GeV]', 'Events / ' ],
+		[ 'cutWO1jetpt_jet2Eta', '2nd Leading Jet #eta', 'Events / ' ],
+		[ 'cutWO1jetpt_jet2Phi', '2nd Leading Jet #phi', 'Events / ' ],
+		[ 'cutWO1jetpt_jet2Mass', '2nd Leading Jet Mass [GeV]', 'Events / ' ],
+		[ 'cutWO1jetpt_jet2MassOverPt', '2nd Leading Jet Mass/P_{T}', 'Events / ' ],
+		[ 'cutWO1jetpt_jet2Area', '2nd Leading Jet Area', 'Events / ' ],
+		[ 'cutWO1jetpt_jet2Tau1', '#tau_{1} 2nd Leading Jet', 'Events / ' ],
+		[ 'cutWO1jetpt_jet2Tau2', '#tau_{2} 2nd Leading Jet', 'Events / ' ],
+		[ 'cutWO1jetpt_jet2Tau3', '#tau_{3} 2nd Leading Jet', 'Events / ' ],
+		[ 'cutWO1jetpt_jet2Tau21', '#tau_{2} / #tau_{1} 2nd Leading Jet', 'Events / ' ],
+		[ 'cutWO1jetpt_jet2Tau31', '#tau_{3} / #tau_{1} 2nd Leading Jet', 'Events / ' ],
+		[ 'cutWO1jetpt_jet2Tau32', '#tau_{3} / #tau_{2} 2nd Leading Jet', 'Events / ' ],
 	]
 	#if ('analysis' in process ): analysisPlots( 'stopUDD312_'+mass, '/cms/gomez/Stops/st_jj/treeResults/rootFiles/140423/', 'stopUDD312_'+mass+'', '/cms/gomez/Stops/st_jj/treeResults/Plots/', listHistos, jetAlgo1, groomed )
 	if ('analysis' in process ): analysisPlots( 'RPVSt'+mass+'tojj_8TeV_HT500', '/cms/gomez/Files/RPVSttojj_8TeV/treeResults/rootFiles/', 'RPV Stop '+mass+' GeV', '/cms/gomez/Files/Plots/', listHistos, jetAlgo1, groomed )
 	if ('anaCmpGrom' in process ): DrawCmp( 'stopUDD312_'+mass, '/cms/gomez/Stops/st_jj/treeResults/rootFiles/140417/', 'stopUDD312_'+mass+'', '/cms/gomez/Stops/st_jj/treeResults/Plots/', listHistos, jetAlgo1, groomed )
 	#if ('anaCmpAll' in process ): DrawCmpAllGrom( 'stopUDD312_'+mass, '/cms/gomez/Stops/st_jj/treeResults/rootFiles/140417/', 'stopUDD312_'+mass+'', '/cms/gomez/Stops/st_jj/treeResults/Plots/', listHistos, jetAlgo1 )
-	if ('anaCmpAll' in process ): DrawCmpAllGrom( 'RPVSt'+mass+'tojj_8TeV_HT500', '/cms/gomez/Files/RPVSttojj_8TeV/treeResults/rootFiles/', 'RPV Stop '+mass+' GeV', '/cms/gomez/Files/Plots/', listHistos, jetAlgo1 )
-	if ('dataCmpAll' in process ): DrawCmpAllGrom( 'Data_HT-Run2012A-22Jan2013', '/cms/gomez/Files/DATA/treeResults/rootFiles/140510/', 'Data', '/cms/gomez/Files/Plots/', listHistos, jetAlgo1 )
+	#if ('anaCmpAll' in process ): DrawCmpAllGrom( 'RPVSt'+mass+'tojj_8TeV_HT500', '/cms/gomez/Files/RPVSttojj_8TeV/treeResults/rootFiles/', 'RPV Stop '+mass+' GeV', '/cms/gomez/Files/Plots/', listHistos, jetAlgo1 )
+	if ('anaCmpAll' in process ): DrawCmpAllGrom( 'RPVSt'+mass+'tojj_8TeV_HT500', '/uscms_data/d3/algomez/files/RPVSt100tojj_8TeV_HT500/treeResults/', 'RPV Stop '+mass+' GeV', '/uscms_data/d3/algomez/Substructure/Analyzer/CMSSW_5_3_12/src/jetSubs/MyJetSubsAnalyzer/test/Plots/', listHistos, jetAlgo1 )
+	#if ('dataCmpAll' in process ): DrawCmpAllGrom( 'Data_HT-Run2012A-22Jan2013', '/cms/gomez/Files/DATA/treeResults/rootFiles/140510/', 'Data', '/cms/gomez/Files/Plots/', listHistos, jetAlgo1 )
+	if ('dataCmpAll' in process ): DrawCmpAllGrom( 'Data_HT-Run2012A-22Jan2013', '/eos/uscms/store/user/algomez/Data/treeResults/', 'Data', '/uscms_data/d3/algomez/Substructure/Analyzer/CMSSW_5_3_12/src/jetSubs/MyJetSubsAnalyzer/test/Plots/', listHistos, jetAlgo1 )
 	if ('QCDCmpAll' in process ): DrawCmpAllGromQCD( 'QCD_8TeV', '/cms/gomez/Files/QCD_8TeV/treeResults/rootFiles/', '/cms/gomez/Files/Plots/', listHistos, jetAlgo1 )
-	if ('DATAQCD' in process ): DrawCmpDataQCD( 'Data_HT-Run2012A-22Jan2013', '/cms/gomez/Files/DATA/treeResults/rootFiles/140510/', '', '/cms/gomez/Files/Plots/', listHistos, jetAlgo1, groomed )
+	#if ('DATAQCD' in process ): DrawCmpDataQCD( 'Data_HT-Run2012A-22Jan2013', '/cms/gomez/Files/DATA/treeResults/rootFiles/140510/', '', '/cms/gomez/Files/Plots/', listHistos, jetAlgo1, groomed )
+	if ('DATAQCD' in process ): DrawCmpDataQCD( 'Data_HT-Run2012A-22Jan2013', '/cms/gomez/Files/DATA/treeResults/rootFiles/140510/', '', '/uscms_data/d3/algomez/Substructure/Analyzer/CMSSW_5_3_12/src/jetSubs/MyJetSubsAnalyzer/test/Plots/', listHistos, jetAlgo1, groomed )
+	if ('Stack' in process ): DrawStack( 'Data_HT-Run2012A-22Jan2013', '/cms/gomez/Files/DATA/treeResults/rootFiles/140510/', '', '/uscms_data/d3/algomez/Substructure/Analyzer/CMSSW_5_3_12/src/jetSubs/MyJetSubsAnalyzer/test/Plots/', listHistos, jetAlgo1, groomed )
 
 	list2DHistos = [
 
-			[ 'jet1PtvsMass', 'Leading Jet p_{T} [GeV]', 'Leading Jet Mass [GeV]' ],
-			[ 'jet1Tau2vsTau1', '#tau_{1} Leading Jet', '#tau_{2} Leading Jet' ],
-			[ 'jet1Tau3vsTau1', '#tau_{1} Leading Jet', '#tau_{3} Leading Jet' ],
-			[ 'jet1Tau3vsTau2', '#tau_{2} Leading Jet', '#tau_{3} Leading Jet' ],
-			[ 'jet1Ptvsht', 'Leading Jet p_{T} [GeV]', 'H_{t} [GeV]' ],
-			[ 'jet1Massvsht', 'Leading Jet Mass [GeV]', 'H_{t} [GeV]' ],
-			[ 'jet1MassvsTau21', 'Leading Jet Mass [GeV]', '#tau_{2}/#tau_{1} Leading Jet' ],
+#			[ 'HTvsNPV', 'H_{t} [GeV]', 'Number of Primary Vertex' ],
+#
+#			[ 'jet1PtvsMass', 'Leading Jet p_{T} [GeV]', 'Leading Jet Mass [GeV]' ],
+#			[ 'jet1Tau2vsTau1', '#tau_{1} Leading Jet', '#tau_{2} Leading Jet' ],
+#			[ 'jet1Tau3vsTau1', '#tau_{1} Leading Jet', '#tau_{3} Leading Jet' ],
+#			[ 'jet1Tau3vsTau2', '#tau_{2} Leading Jet', '#tau_{3} Leading Jet' ],
+#			[ 'jet1Ptvsht', 'Leading Jet p_{T} [GeV]', 'H_{t} [GeV]' ],
+#			[ 'jet1Massvsht', 'Leading Jet Mass [GeV]', 'H_{t} [GeV]' ],
+#			[ 'jet1MassvsTau21', 'Leading Jet Mass [GeV]', '#tau_{2}/#tau_{1} Leading Jet' ],
+#
+#			[ 'jet2PtvsMass', '2nd Leading Jet p_{T} [GeV]', '2nd Leading Jet Mass [GeV]' ],
+#			[ 'jet2Tau2vsTau1', '#tau_{1} 2nd Leading Jet', '#tau_{2} 2nd Leading Jet' ],
+#			[ 'jet2Tau3vsTau1', '#tau_{1} 2nd Leading Jet', '#tau_{3} 2nd Leading Jet' ],
+#			[ 'jet2Tau3vsTau2', '#tau_{2} 2nd Leading Jet', '#tau_{3} 2nd Leading Jet' ],
+#			[ 'jet2Ptvsht', '2nd Leading Jet p_{T} [GeV]', 'H_{t} [GeV]' ],
+#			[ 'jet2Massvsht', '2nd Leading Jet Mass [GeV]', 'H_{t} [GeV]' ],
+#			[ 'jet2MassvsTau21', '2nd Leading Jet Mass [GeV]', '#tau_{2}/#tau_{1} 2nd Leading Jet' ],
+#
+#			[ 'jet1vsjet2Mass', 'Leading Jet Mass [GeV]', '2nd Leading Jet Mass [GeV]' ],
+#			[ 'jet1vsjet2Tau21', '#tau_{2}/#tau_{1} Leading Jet', '#tau_{2}/#tau_{1} 2nd Leading Jet' ],
+#
+#			[ 'cut_HTvsNPV', 'H_{t} [GeV]', 'Number of Primary Vertex' ],
+#			[ 'cut_jet1PtvsMass', 'Leading Jet p_{T} [GeV]', 'Leading Jet Mass [GeV]' ],
+#			[ 'cut_jet1Tau2vsTau1', '#tau_{1} Leading Jet', '#tau_{2} Leading Jet' ],
+#			[ 'cut_jet1Tau3vsTau1', '#tau_{1} Leading Jet', '#tau_{3} Leading Jet' ],
+#			[ 'cut_jet1Tau3vsTau2', '#tau_{2} Leading Jet', '#tau_{3} Leading Jet' ],
+#			[ 'cut_jet1Ptvsht', 'Leading Jet p_{T} [GeV]', 'H_{t} [GeV]' ],
+#			[ 'cut_jet1Massvsht', 'Leading Jet Mass [GeV]', 'H_{t} [GeV]' ],
+#			[ 'cut_jet1MassvsTau21', 'Leading Jet Mass [GeV]', '#tau_{2}/#tau_{1} Leading Jet' ],
+#			[ 'cut_jet1MassvsMET', 'Leading Jet Mass [GeV]', 'MET [GeV]' ],
+#			[ 'cut_jet1MassvsNPV', 'Leading Jet Mass [GeV]', 'Number of Primary Vertex' ],
+#
+#			[ 'cut_jet2PtvsMass', '2nd Leading Jet p_{T} [GeV]', '2nd Leading Jet Mass [GeV]' ],
+#			[ 'cut_jet2Tau2vsTau1', '#tau_{1} 2nd Leading Jet', '#tau_{2} 2nd Leading Jet' ],
+#			[ 'cut_jet2Tau3vsTau1', '#tau_{1} 2nd Leading Jet', '#tau_{3} 2nd Leading Jet' ],
+#			[ 'cut_jet2Tau3vsTau2', '#tau_{2} 2nd Leading Jet', '#tau_{3} 2nd Leading Jet' ],
+#			[ 'cut_jet2Ptvsht', '2nd Leading Jet p_{T} [GeV]', 'H_{t} [GeV]' ],
+#			[ 'cut_jet2Massvsht', '2nd Leading Jet Mass [GeV]', 'H_{t} [GeV]' ],
+#			[ 'cut_jet2MassvsTau21', '2nd Leading Jet Mass [GeV]', '#tau_{2}/#tau_{1} 2nd Leading Jet' ],
+#			[ 'cut_jet2MassvsMET', '2nd Leading Jet Mass [GeV]', 'MET [GeV]' ],
+#			[ 'cut_jet2MassvsNPV', '2nd Leading Jet Mass [GeV]', 'Number of Primary Vertex' ],
+#
+#			[ 'cut_jet1vsjet2Mass', 'Leading Jet Mass [GeV]', '2nd Leading Jet Mass [GeV]' ],
+#			[ 'cut_jet1vsjet2Tau21', '#tau_{2}/#tau_{1} Leading Jet', '#tau_{2}/#tau_{1} 2nd Leading Jet' ],
 
-			[ 'jet2PtvsMass', '2nd Leading Jet p_{T} [GeV]', '2nd Leading Jet Mass [GeV]' ],
-			[ 'jet2Tau2vsTau1', '#tau_{1} 2nd Leading Jet', '#tau_{2} 2nd Leading Jet' ],
-			[ 'jet2Tau3vsTau1', '#tau_{1} 2nd Leading Jet', '#tau_{3} 2nd Leading Jet' ],
-			[ 'jet2Tau3vsTau2', '#tau_{2} 2nd Leading Jet', '#tau_{3} 2nd Leading Jet' ],
-			[ 'jet2Ptvsht', '2nd Leading Jet p_{T} [GeV]', 'H_{t} [GeV]' ],
-			[ 'jet2Massvsht', '2nd Leading Jet Mass [GeV]', 'H_{t} [GeV]' ],
-			[ 'jet2MassvsTau21', '2nd Leading Jet Mass [GeV]', '#tau_{2}/#tau_{1} 2nd Leading Jet' ],
 
-			[ 'jet1vsjet2Mass', 'Leading Jet Mass [GeV]', '2nd Leading Jet Mass [GeV]' ],
-			[ 'jet1vsjet2Tau21', '#tau_{2}/#tau_{1} Leading Jet', '#tau_{2}/#tau_{1} 2nd Leading Jet' ],
+#			[ 'cut2Jets_HTvsNPV', 'H_{t} [GeV]', 'Number of Primary Vertex' ],
+#			[ 'cut2Jets_jet1PtvsMass', 'Leading Jet p_{T} [GeV]', 'Leading Jet Mass [GeV]' ],
+#			[ 'cut2Jets_jet1Tau2vsTau1', '#tau_{1} Leading Jet', '#tau_{2} Leading Jet' ],
+#			[ 'cut2Jets_jet1Tau3vsTau1', '#tau_{1} Leading Jet', '#tau_{3} Leading Jet' ],
+#			[ 'cut2Jets_jet1Tau3vsTau2', '#tau_{2} Leading Jet', '#tau_{3} Leading Jet' ],
+#			[ 'cut2Jets_jet1Ptvsht', 'Leading Jet p_{T} [GeV]', 'H_{t} [GeV]' ],
+#			[ 'cut2Jets_jet1Massvsht', 'Leading Jet Mass [GeV]', 'H_{t} [GeV]' ],
+#			[ 'cut2Jets_jet1MassvsTau21', 'Leading Jet Mass [GeV]', '#tau_{2}/#tau_{1} Leading Jet' ],
+#			[ 'cut2Jets_jet1MassvsMET', 'Leading Jet Mass [GeV]', 'MET [GeV]' ],
+#			[ 'cut2Jets_jet1MassvsNPV', 'Leading Jet Mass [GeV]', 'Number of Primary Vertex' ],
+#
+#			[ 'cut2Jets_jet2PtvsMass', '2nd Leading Jet p_{T} [GeV]', '2nd Leading Jet Mass [GeV]' ],
+#			[ 'cut2Jets_jet2Tau2vsTau1', '#tau_{1} 2nd Leading Jet', '#tau_{2} 2nd Leading Jet' ],
+#			[ 'cut2Jets_jet2Tau3vsTau1', '#tau_{1} 2nd Leading Jet', '#tau_{3} 2nd Leading Jet' ],
+#			[ 'cut2Jets_jet2Tau3vsTau2', '#tau_{2} 2nd Leading Jet', '#tau_{3} 2nd Leading Jet' ],
+#			[ 'cut2Jets_jet2Ptvsht', '2nd Leading Jet p_{T} [GeV]', 'H_{t} [GeV]' ],
+#			[ 'cut2Jets_jet2Massvsht', '2nd Leading Jet Mass [GeV]', 'H_{t} [GeV]' ],
+#			[ 'cut2Jets_jet2MassvsTau21', '2nd Leading Jet Mass [GeV]', '#tau_{2}/#tau_{1} 2nd Leading Jet' ],
+#			[ 'cut2Jets_jet2MassvsMET', '2nd Leading Jet Mass [GeV]', 'MET [GeV]' ],
+#			[ 'cut2Jets_jet2MassvsNPV', '2nd Leading Jet Mass [GeV]', 'Number of Primary Vertex' ],
+#
+#			[ 'cut2Jets_jet1vsjet2Mass', 'Leading Jet Mass [GeV]', '2nd Leading Jet Mass [GeV]' ],
+#			[ 'cut2Jets_jet1vsjet2Tau21', '#tau_{2}/#tau_{1} Leading Jet', '#tau_{2}/#tau_{1} 2nd Leading Jet' ],
 
-			[ 'cut_jet1PtvsMass', 'Leading Jet p_{T} [GeV]', 'Leading Jet Mass [GeV]' ],
-			[ 'cut_jet1Tau2vsTau1', '#tau_{1} Leading Jet', '#tau_{2} Leading Jet' ],
-			[ 'cut_jet1Tau3vsTau1', '#tau_{1} Leading Jet', '#tau_{3} Leading Jet' ],
-			[ 'cut_jet1Tau3vsTau2', '#tau_{2} Leading Jet', '#tau_{3} Leading Jet' ],
-			[ 'cut_jet1Ptvsht', 'Leading Jet p_{T} [GeV]', 'H_{t} [GeV]' ],
-			[ 'cut_jet1Massvsht', 'Leading Jet Mass [GeV]', 'H_{t} [GeV]' ],
-			[ 'cut_jet1MassvsTau21', 'Leading Jet Mass [GeV]', '#tau_{2}/#tau_{1} Leading Jet' ],
 
-			[ 'cut_jet2PtvsMass', '2nd Leading Jet p_{T} [GeV]', '2nd Leading Jet Mass [GeV]' ],
-			[ 'cut_jet2Tau2vsTau1', '#tau_{1} 2nd Leading Jet', '#tau_{2} 2nd Leading Jet' ],
-			[ 'cut_jet2Tau3vsTau1', '#tau_{1} 2nd Leading Jet', '#tau_{3} 2nd Leading Jet' ],
-			[ 'cut_jet2Tau3vsTau2', '#tau_{2} 2nd Leading Jet', '#tau_{3} 2nd Leading Jet' ],
-			[ 'cut_jet2Ptvsht', '2nd Leading Jet p_{T} [GeV]', 'H_{t} [GeV]' ],
-			[ 'cut_jet2Massvsht', '2nd Leading Jet Mass [GeV]', 'H_{t} [GeV]' ],
-			[ 'cut_jet2MassvsTau21', '2nd Leading Jet Mass [GeV]', '#tau_{2}/#tau_{1} 2nd Leading Jet' ],
+			[ 'cutWO1jetpt_HTvsNPV', 'H_{t} [GeV]', 'Number of Primary Vertex' ],
+			[ 'cutWO1jetpt_jet1PtvsMass', 'Leading Jet p_{T} [GeV]', 'Leading Jet Mass [GeV]' ],
+			[ 'cutWO1jetpt_jet1Tau2vsTau1', '#tau_{1} Leading Jet', '#tau_{2} Leading Jet' ],
+			[ 'cutWO1jetpt_jet1Tau3vsTau1', '#tau_{1} Leading Jet', '#tau_{3} Leading Jet' ],
+			[ 'cutWO1jetpt_jet1Tau3vsTau2', '#tau_{2} Leading Jet', '#tau_{3} Leading Jet' ],
+			[ 'cutWO1jetpt_jet1Ptvsht', 'Leading Jet p_{T} [GeV]', 'H_{t} [GeV]' ],
+			[ 'cutWO1jetpt_jet1Massvsht', 'Leading Jet Mass [GeV]', 'H_{t} [GeV]' ],
+			[ 'cutWO1jetpt_jet1MassvsTau21', 'Leading Jet Mass [GeV]', '#tau_{2}/#tau_{1} Leading Jet' ],
+			[ 'cutWO1jetpt_jet1MassvsMET', 'Leading Jet Mass [GeV]', 'MET [GeV]' ],
+			[ 'cutWO1jetpt_jet1MassvsNPV', 'Leading Jet Mass [GeV]', 'Number of Primary Vertex' ],
 
-			[ 'cut_jet1vsjet2Mass', 'Leading Jet Mass [GeV]', '2nd Leading Jet Mass [GeV]' ],
-			[ 'cut_jet1vsjet2Tau21', '#tau_{2}/#tau_{1} Leading Jet', '#tau_{2}/#tau_{1} 2nd Leading Jet' ],
+			[ 'cutWO1jetpt_jet2PtvsMass', '2nd Leading Jet p_{T} [GeV]', '2nd Leading Jet Mass [GeV]' ],
+			[ 'cutWO1jetpt_jet2Tau2vsTau1', '#tau_{1} 2nd Leading Jet', '#tau_{2} 2nd Leading Jet' ],
+			[ 'cutWO1jetpt_jet2Tau3vsTau1', '#tau_{1} 2nd Leading Jet', '#tau_{3} 2nd Leading Jet' ],
+			[ 'cutWO1jetpt_jet2Tau3vsTau2', '#tau_{2} 2nd Leading Jet', '#tau_{3} 2nd Leading Jet' ],
+			[ 'cutWO1jetpt_jet2Ptvsht', '2nd Leading Jet p_{T} [GeV]', 'H_{t} [GeV]' ],
+			[ 'cutWO1jetpt_jet2Massvsht', '2nd Leading Jet Mass [GeV]', 'H_{t} [GeV]' ],
+			[ 'cutWO1jetpt_jet2MassvsTau21', '2nd Leading Jet Mass [GeV]', '#tau_{2}/#tau_{1} 2nd Leading Jet' ],
+			[ 'cutWO1jetpt_jet2MassvsMET', '2nd Leading Jet Mass [GeV]', 'MET [GeV]' ],
+			[ 'cutWO1jetpt_jet2MassvsNPV', '2nd Leading Jet Mass [GeV]', 'Number of Primary Vertex' ],
 
+			[ 'cutWO1jetpt_jet1vsjet2Mass', 'Leading Jet Mass [GeV]', '2nd Leading Jet Mass [GeV]' ],
+			[ 'cutWO1jetpt_jet1vsjet2Tau21', '#tau_{2}/#tau_{1} Leading Jet', '#tau_{2}/#tau_{1} 2nd Leading Jet' ],
 			]
 
 	#if ('2d' in process): Draw2D( 'stopUDD312_'+mass, '/cms/gomez/Stops/st_jj/treeResults/rootFiles/140408/', 'stopUDD312_'+mass+'', '/cms/gomez/Stops/st_jj/treeResults/Plots/', list2DHistos, jetAlgo1, groomed )
-	if ('2dS' in process): Draw2D( 'RPVSt'+mass+'tojj_8TeV_HT500', '/cms/gomez/Files/RPVSttojj_8TeV/treeResults/rootFiles/', 'RPV Stop '+mass+' GeV', '/cms/gomez/Files/Plots/', list2DHistos, jetAlgo1, groomed )
-	if ('2dD' in process): Draw2D( 'Data_HT-Run2012A-22Jan2013', '/cms/gomez/Files/DATA/treeResults/rootFiles/140510/', 'Data', '/cms/gomez/Files/Plots/', list2DHistos, jetAlgo1, groomed )
+	#if ('2dS' in process): Draw2D( 'RPVSt'+mass+'tojj_8TeV_HT500', '/cms/gomez/Files/RPVSttojj_8TeV/treeResults/rootFiles/', 'RPV Stop '+mass+' GeV', '/cms/gomez/Files/Plots/', list2DHistos, jetAlgo1, groomed )
+	if ('2dS' in process): Draw2D( 'RPVSt'+mass+'tojj_8TeV_HT500', '/uscms_data/d3/algomez/files/RPVSt100tojj_8TeV_HT500/treeResults/', 'RPV Stop '+mass+' GeV', '/uscms_data/d3/algomez/Substructure/Analyzer/CMSSW_5_3_12/src/jetSubs/MyJetSubsAnalyzer/test/Plots/', list2DHistos, jetAlgo1, groomed )
+	#if ('2dD' in process): Draw2D( 'Data_HT-Run2012A-22Jan2013', '/cms/gomez/Files/DATA/treeResults/rootFiles/140510/', 'Data', '/cms/gomez/Files/Plots/', list2DHistos, jetAlgo1, groomed )
+	if ('2dD' in process): Draw2D( 'Data_HT-Run2012A-22Jan2013', '/eos/uscms/store/user/algomez/Data/treeResults/', 'Data', '/uscms_data/d3/algomez/Substructure/Analyzer/CMSSW_5_3_12/src/jetSubs/MyJetSubsAnalyzer/test/Plots/', list2DHistos, jetAlgo1, groomed )
 	if ('2dQ' in process): Draw2DQCD( 'QCD_8TeV', '/cms/gomez/Files/QCD_8TeV/treeResults/rootFiles/', 'QCD', '/cms/gomez/Files/Plots/', list2DHistos, jetAlgo1, groomed )
 
 	##################################################################### Matching

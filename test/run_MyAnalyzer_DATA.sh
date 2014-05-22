@@ -1,20 +1,21 @@
 #!/bin/bash
 
 MAINDIR=`pwd`
-BASEDIR="/cms/gomez/Substructure/Analyzer/CMSSW_5_3_12/src/"
+BASEDIR="/uscms_data/d3/algomez/Substructure/Analyzer/CMSSW_5_3_12/src/"
 run="MyAnalyzer.py"
 condorFile='condor_MyAnalyzer_DATA.jdl'
 tmpCondorFile='condor_MyAnalyzer_DATA_tmp.jdl'
 runFile='runCondor_MyAnalyzer_DATA.jdl'
 tmpRunFile='runCondor_MyAnalyzer_DATA_tmp.jdl'
-condorLogDir="/cms/gomez/Files/DATA/treeResults/condorlog/"
+condorLogDir=${MAINDIR}"/condorlog/"
 jetAlgo=( CA8 AK7 KT8 )
 #jetAlgo=( AK4 AK5 AK7 CA4 CA8 KT4 KT8 )
 mass=( HT-Run2012A-22Jan2013 )
-grooming=( Pruned Trimmed Filtered MassDropFiltered )
+#mass=( HT-Run2012B-22Jan2013 HT-Run2012C-22Jan2013 HT-Run2012D-22Jan2013)
+grooming=( Pruned Trimmed FilteredN2 FilteredN3 MassDropFiltered )
 
 #################################################
-cd ${MAINDIR}
+cd ${MAINDIR}'/condorlog'
 
 ############################################
 echo " Creating run file.... "
@@ -27,12 +28,10 @@ echo "#!/bin/bash
 # If you have additional custom enhancements to your shell 
 # environment, you may need to add them here
 
-export CUR_DIR=\$PWD
 
 export SCRAM_ARCH=\"slc5_amd64_gcc462\"
-export VO_CMS_SW_DIR=\"/cms/base/cmssoft\"
 export COIN_FULL_INDIRECT_RENDERING=1
-source /cms/base/cmssoft/cmsset_default.sh
+source /uscmst1/prod/sw/cms/setup/shrc prod
 
 # Change to your CMSSW software version
 # Shown for c shell
@@ -42,9 +41,9 @@ eval \`scramv1 runtime -sh\`
 date
 
 # Switch to your working directory below
-cd  \$CUR_DIR
+cd ${MAINDIR}
 
-python ${run} -s Data -f -q \$1 -j \$2 -g \$3 
+python ${run} -w -s Data -f -q \$1 -j \$2 -g \$3 
 " >> ${runFile}
 chmod +x ${runFile}
 
@@ -55,9 +54,11 @@ if [ -f ${condorFile} ]; then
 fi
 echo "## To use condor
 Universe = vanilla
-initialdir = ${MAINDIR}
+initialdir = ${condorLogDir}
 Executable = \$(initialdir)/${runFile}
-+AccountingGroup = "group_rutgers.gomez"
+Requirements = Memory >= 199 &&OpSys == \"LINUX\"&& (Arch != \"DUMMY\" )&& Disk > 1000000
+Should_Transfer_Files = YES
+WhenToTransferOutput = ON_EXIT
 Notify_User = gomez@physics.rutgers.edu
 
 Outputdir = ${condorLogDir}
@@ -93,12 +94,9 @@ echo "#!/bin/bash
 # If you have additional custom enhancements to your shell 
 # environment, you may need to add them here
 
-export CUR_DIR=\$PWD
-
 export SCRAM_ARCH=\"slc5_amd64_gcc462\"
-export VO_CMS_SW_DIR=\"/cms/base/cmssoft\"
 export COIN_FULL_INDIRECT_RENDERING=1
-source /cms/base/cmssoft/cmsset_default.sh
+source /uscmst1/prod/sw/cms/setup/shrc prod
 
 # Change to your CMSSW software version
 # Shown for c shell
@@ -108,9 +106,9 @@ eval \`scramv1 runtime -sh\`
 date
 
 # Switch to your working directory below
-cd  \$CUR_DIR
+cd ${MAINDIR}
 
-python ${run} -s Data -f -q \$1 -j \$2 
+python ${run} -w -s Data -f -q \$1 -j \$2 
 " >> ${tmpRunFile}
 chmod +x ${tmpRunFile}
 
@@ -120,9 +118,11 @@ if [ -f ${tmpCondorFile} ]; then
 fi
 echo "## To use condor
 Universe = vanilla
-initialdir = ${MAINDIR}
+initialdir = ${condorLogDir}
 Executable = \$(initialdir)/${tmpRunFile}
-+AccountingGroup = "group_rutgers.gomez"
+Requirements = Memory >= 199 &&OpSys == \"LINUX\"&& (Arch != \"DUMMY\" )&& Disk > 1000000
+Should_Transfer_Files = YES
+WhenToTransferOutput = ON_EXIT
 Notify_User = gomez@physics.rutgers.edu
 
 Outputdir = ${condorLogDir}

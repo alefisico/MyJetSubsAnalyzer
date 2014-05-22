@@ -30,8 +30,8 @@ monthKey   = time.strftime("%y%m%d")
 def CalculateEff( inputFile, outputDir, sample, jetAlgo, grooming, weight, FNAL ):
 	"""docstring for CalculateEff"""
 
-	outputFileName = monthKey+'_'+sample+'_TriggerEfficiency_'+jetAlgo+'.pdf'  
-	#outputFileName = monthKey+'_'+sample+'_TriggerEfficiency_'+jetAlgo+'_HT350.pdf'  
+	#outputFileName = monthKey+'_'+sample+'_TriggerEfficiency_'+jetAlgo+'.pdf'  
+	outputFileName = monthKey+'_'+sample+'_TriggerEfficiency_'+jetAlgo+'_HT350.pdf'  
 	print 'Processing.......', outputFileName
 	targetDir = outputDir + monthKey + '/'
 	if not ( os.path.exists( targetDir ) ): os.makedirs( targetDir )
@@ -39,27 +39,31 @@ def CalculateEff( inputFile, outputDir, sample, jetAlgo, grooming, weight, FNAL 
 
 	inFile = TFile.Open( inputFile )
 
-	HT350 = TH1F( inFile.Get('h_ht_PFHT350_'+jetAlgo+'_') )
-	#HT350 = TH1F( inFile.Get('h_ht_HT350_'+jetAlgo+'_') )
-	#HT650 = TH1F( inFile.Get('h_ht_PFHT650_'+jetAlgo+'_') )		##### is the one with HT350
-	HT650 = TH1F( inFile.Get('h_ht_PFHT650_1_'+jetAlgo+'_') )	##### _1_ the one with PFHT350
+	#HT350 = TH1F( inFile.Get('h_ht_PFHT350_'+jetAlgo+'_') )
+	HT350 = TH1F( inFile.Get('h_ht_HT350_'+jetAlgo+'_') )
+	HT650 = TH1F( inFile.Get('h_ht_PFHT650_'+jetAlgo+'_') )		##### is the one with HT350
+	#HT650 = TH1F( inFile.Get('h_ht_PFHT650_1_'+jetAlgo+'_') )	##### _1_ the one with PFHT350
 	print TEfficiency.CheckConsistency(HT350, HT650)
 	#if TEfficiency.CheckConsistency(ht_HT650, ht_HT350):
 	can2 = TCanvas('can_TrigEff','can_TrigEff',900,600)
-	eff = TEfficiency('efficiency','efficiency', 50, 400, 900.)
+	#eff = TEfficiency('efficiency','efficiency', 50, 400, 900.)  		#### For Data
+	eff = TEfficiency('efficiency','efficiency', 50, 500, 1000.)
 	eff.SetPassedHistogram(HT650,'f')
 	eff.SetTotalHistogram(HT350,'f')
 	eff.SetLineColor(ROOT.kBlack)
 	eff.SetMarkerColor(ROOT.kBlack)
 	eff.SetMarkerStyle(20)
 
-	fit = TF1('fit','(1-[2])+[2]*TMath::Erf((x-[0])/[1])',450,750)
-	fit.SetParameters(600,60,0.5)
+	#fit = TF1('fit','(1-[2])+[2]*TMath::Erf((x-[0])/[1])',450,750) 	### For Data
+	fit = TF1('fit','(1-[2])+[2]*TMath::Erf((x-[0])/[1])',550,900)
+	#fit.SetParameters(600,60,0.5) 				#### For Data
+	fit.SetParameters(710,40,0.3)
 	fit.SetLineColor(ROOT.kBlue)
 	eff.Fit(fit,'RQ')
 	eff.Fit(fit,'RQ')
 
-	line = TF1('line','1',400,900)
+	#line = TF1('line','1',400,900)					##### For Data
+	line = TF1('line','1',500,1000)
 	line.GetXaxis().SetTitle('H_{T} [GeV]')
 	line.GetYaxis().SetTitle('Trigger Efficiency')
 	line.SetLineColor(ROOT.kBlack)
@@ -73,14 +77,15 @@ def CalculateEff( inputFile, outputDir, sample, jetAlgo, grooming, weight, FNAL 
 	textBox.SetNDC()
 	textBox.SetTextSize(0.05) 
 	textBox.SetTextColor(kBlue)
-	#textBox.DrawText(0.16,0.95,"CMS Preliminary Simulation")
-	textBox.DrawText(0.16,0.95,"CMS Preliminary ")
+	textBox.DrawText(0.16,0.95,"CMS Preliminary Simulation")
+	#textBox.DrawText(0.16,0.95,"CMS Preliminary ")
 
 	textBox1=TLatex()
 	textBox1.SetNDC()
 	textBox1.SetTextSize(0.04) 
 	textBox1.SetTextColor(kBlue)
-	textBox1.DrawText(0.20,0.85, sample)
+	#textBox1.DrawText(0.20,0.85, sample)
+	textBox1.DrawText(0.20,0.85, 'RPV Stop 100 GeV')
 
 	textBox3=TLatex()
 	textBox3.SetNDC()
@@ -90,6 +95,7 @@ def CalculateEff( inputFile, outputDir, sample, jetAlgo, grooming, weight, FNAL 
 	textBox4=TLatex()
 	textBox4.SetNDC()
 	textBox4.SetTextSize(0.04) 
+	#textBox4.DrawLatex(0.67,0.35,"Ref. Trigger: PFHT350")
 	textBox4.DrawLatex(0.67,0.35,"Ref. Trigger: HT350")
 	
 	textBox2=TLatex()
@@ -105,7 +111,7 @@ def CalculateEff( inputFile, outputDir, sample, jetAlgo, grooming, weight, FNAL 
 	textBox6=TLatex()
 	textBox6.SetNDC()
 	textBox6.SetTextSize(0.04) 
-	textBox6.DrawLatex(0.67,0.20,"for HT > 720 GeV")
+	textBox6.DrawLatex(0.67,0.20,"for HT > 850 GeV")
 	
 	can2.SaveAs( outputFile )
 
@@ -148,48 +154,39 @@ if __name__ == '__main__':
 	Job = options.nJob
 	FNAL = options.work
 
-#	if 'QCD' in samples: 
-#		sample = 'QCD_HT-'+QCD
-#		if FNAL:
-#			#list = os.popen('ls -1 /eos/uscms/store/user/algomez/'+sample+'_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
-#			tmpList = os.popen('ls -1v /eos/uscms/store/user/algomez/'+sample+'_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
-#			outputDir = '/uscms_data/d3/algomez/files/QCD_8TeV/treeResults/'
-#		else:
-#			tmpList = os.popen('ls -1v /cms/gomez/Files/QCD_8TeV/PATtuples/'+sample+'_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
-#			outputDir = '/cms/gomez/Files/QCD_8TeV/treeResults/'
-#		filesPerJob = round(len(tmpList)/30)+1
-#		iniList = int(filesPerJob*Job)
-#		finList = int((filesPerJob*(Job+1))-1)
-#		print filesPerJob, iniList, finList
-#		list = tmpList[iniList:finList]
-#		#list = tmpList[0:2]
-#		inputList = [i if i.startswith('file') else 'file:' + i for i in list]
-#		if '250To500' in QCD: weight = 19500*276000/27062078.0
-#		elif '500To1000' in QCD: weight = 19500*8426/30599292.0
-#		else: weight = 19500*204/13843863.0
-#	elif 'Signal' in samples: 
-#		sample = 'RPVSt'+str(mass)+'tojj_8TeV_HT500_'+str(Job)
-#		#list = os.popen('ls -1 /cms/gomez/Substructure/Generation/Simulation/CMSSW_5_3_2_patch4/src/mySimulations/stop_UDD312_50/aodsim/*.root').read().splitlines()
-#		#list = os.popen('ls -1v /cms/gomez/Stops/st_jj/patTuples/'+sample+'/results/140418/*.root').read().splitlines()
-#		list = os.popen('ls -1v /cms/gomez/Files/RPVSttojj_8TeV/'+sample+'/PATtuples/*.root').read().splitlines()
-#		#outputDir = '/cms/gomez/Stops/st_jj/treeResults/'
-#		outputDir = '/cms/gomez/Files/RPVSttojj_8TeV/treeResults/'
-#		#list = [ '/cms/gomez/Stops/st_jj/patTuples/stopUDD312_50_tree_test_grom.root' ]
-#		inputList = [i if i.startswith('file') else 'file:' + i for i in list]
-#		if mass == 50: weight = 1
-#		#elif mass == 100: weight = 19500*559.757/100000.0
-#		elif mass == 100: weight = 19500*559.757/443293086.50
-#		elif mass == 200: weight = 19500*18.5245/100000.0
-#	elif 'Data' in samples:
+	if 'QCD' in samples: 
+		sample = 'QCD_HT-'+QCD
+		if FNAL:
+			#list = os.popen('ls -1 /eos/uscms/store/user/algomez/'+sample+'_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
+			tmpList = os.popen('ls -1v /eos/uscms/store/user/algomez/'+sample+'_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
+			outputDir = '/uscms_data/d3/algomez/files/QCD_8TeV/treeResults/'
+		else:
+			tmpList = os.popen('ls -1v /cms/gomez/Files/QCD_8TeV/PATtuples/'+sample+'_8TeV_Summer12_DR53X-PU_S10_START53_V7A-v1/*.root').read().splitlines()
+			outputDir = '/cms/gomez/Files/QCD_8TeV/treeResults/'
+		filesPerJob = round(len(tmpList)/30)+1
+		iniList = int(filesPerJob*Job)
+		finList = int((filesPerJob*(Job+1))-1)
+		print filesPerJob, iniList, finList
+		list = tmpList[iniList:finList]
+		#list = tmpList[0:2]
+		inputList = [i if i.startswith('file') else 'file:' + i for i in list]
+		if '250To500' in QCD: weight = 19500*276000/27062078.0
+		elif '500To1000' in QCD: weight = 19500*8426/30599292.0
+		else: weight = 19500*204/13843863.0
+	elif 'Signal' in samples: 
+		sample = 'RPVSt'+str(mass)+'tojj_8TeV_HT500'
+		inputFile = '/uscms_data/d3/algomez/files/RPVSt100tojj_8TeV_HT500/treeResults/'+sample+'_'+jetAlgo+'_'+grooming+'_Plots.root'
+		outputDir = '/uscms_data/d3/algomez/Substructure/Analyzer/CMSSW_5_3_12/src/jetSubs/MyJetSubsAnalyzer/test/Plots/'
+	elif 'Data' in samples:
 #		sample = 'Data_'+QCD
-	sample = 'Data_HT-Run2012A-22Jan2013'
-	if FNAL:
+		sample = 'Data_HT-Run2012A-22Jan2013'
+		#if FNAL:
 		inputFile = '/eos/uscms/store/user/algomez/Data/treeResults/'+sample+'_'+jetAlgo+'_'+grooming+'_Plots.root'
 		outputDir = '/uscms_data/d3/algomez/Substructure/Analyzer/CMSSW_5_3_12/src/jetSubs/MyJetSubsAnalyzer/test/Plots/'
 
-	else:
-		list = os.popen('ls -1v /cms/gomez/Files/DATA/PATtuples/'+sample+'/*.root').read().splitlines()
-		outputDir = '/cms/gomez/Files/DATA/treeResults/'
+		#else:
+		#	list = os.popen('ls -1v /cms/gomez/Files/DATA/PATtuples/'+sample+'/*.root').read().splitlines()
+		#	outputDir = '/cms/gomez/Files/DATA/treeResults/'
 	weight = 1
 
 

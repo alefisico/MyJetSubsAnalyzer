@@ -56,25 +56,25 @@ patJets${jetAlgo[${j}]}${coneSize[${i}]}CHS.getJetMCFlavour = False
 patJets${jetAlgo[${j}]}${coneSize[${i}]}CHS.jetCorrFactorsSource = cms.VInputTag(cms.InputTag('patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHS'))
 
 ####### Adding jets without JEC (just for comaprison)
-patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC = patJetCorrFactors.clone()
-patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.src = jetSource
-patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.levels = []
-#patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.payload = '${jetAlgo[${j}]}${coneSize[${i}]}PFchs'
-#patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.useRho = True
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC = patJets.clone()
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.jetSource = jetSource
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.addJetCharge = False
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.embedCaloTowers = False
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.embedPFCandidates = False
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.addAssociatedTracks = False
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.addBTagInfo = False
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.addDiscriminators = False
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.addJetID = False
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.addGenPartonMatch = False
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.embedGenPartonMatch = False
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.addGenJetMatch = False
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.getJetMCFlavour = False
-patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.jetCorrFactorsSource = cms.VInputTag(cms.InputTag('patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC'))
+#patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC = patJetCorrFactors.clone()
+#patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.src = jetSource
+#patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.levels = []
+##patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.payload = '${jetAlgo[${j}]}${coneSize[${i}]}PFchs'
+##patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.useRho = True
+#patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC = patJets.clone()
+#patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.jetSource = jetSource
+#patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.addJetCharge = False
+#patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.embedCaloTowers = False
+#patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.embedPFCandidates = False
+#patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.addAssociatedTracks = False
+#patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.addBTagInfo = False
+#patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.addDiscriminators = False
+#patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.addJetID = False
+#patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.addGenPartonMatch = False
+#patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.embedGenPartonMatch = False
+#patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.addGenJetMatch = False
+#patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.getJetMCFlavour = False
+#patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC.jetCorrFactorsSource = cms.VInputTag(cms.InputTag('patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC'))
 
 #### Adding Nsubjetiness
 patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSwithNsub = cms.EDProducer(\"NjettinessAdder\",
@@ -297,8 +297,8 @@ ${jetalgo[${j}]}${coneSize[${i}]}Jets = cms.Sequence(
   ${jetalgo[${j}]}${coneSize[${i}]}PFJetsCHS + 
   patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHS +
   patJets${jetAlgo[${j}]}${coneSize[${i}]}CHS +  
-  patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC +
-  patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC +  
+#  patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC +
+#  patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSNOJEC +  
   patJets${jetAlgo[${j}]}${coneSize[${i}]}CHSwithNsub +
   ${jetalgo[${j}]}${coneSize[${i}]}PFJetsCHSpruned +
   patJetCorrFactors${jetAlgo[${j}]}${coneSize[${i}]}CHSpruned +
